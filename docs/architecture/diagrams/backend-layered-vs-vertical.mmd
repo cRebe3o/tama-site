@@ -1,0 +1,28 @@
+flowchart LR
+    subgraph Layered["Layered / N-Tier classico"]
+        direction TB
+        L1["Controllers"] --> L2["Services"] --> L3["Repositories"] --> L4[(DB)]
+    end
+
+    subgraph Clean["Clean / Onion Architecture"]
+        direction TB
+        C1["Presentation\n(API/Controllers)"] --> C2["Application\n(Use Cases/CQRS)"]
+        C2 --> C3["Domain\n(Entità, interfacce)"]
+        C4["Infrastructure\n(EF Core, repository)"] -.->|implementa interfacce di| C3
+        C2 --> C4
+    end
+
+    subgraph Vertical["Vertical Slice (questo progetto)"]
+        direction TB
+        V1["Feature: CreateCustomer\nCommand + Validator + Handler + Response"]
+        V2["Feature: GetCustomers\nQuery + Handler + Response"]
+        V3["Feature: UpdateCustomer\n..."]
+        Shared["_Shared: Repository, Document,\nBehaviors, Middleware"]
+        V1 --> Shared
+        V2 --> Shared
+        V3 --> Shared
+    end
+
+    style Layered fill:#4a5568,color:#fff
+    style Clean fill:#975a16,color:#fff
+    style Vertical fill:#2f855a,color:#fff

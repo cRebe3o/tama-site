@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Autenticazione — Documentazione Completa (JWT + MSAL)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .header-meta {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .main-content {
+            display: flex;
+            min-height: calc(100vh - 200px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            padding: 2rem 0;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+        }
+
+        .sidebar nav ul li {
+            border-left: 3px solid transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar nav ul li a {
+            display: block;
+            padding: 0.6rem 1.5rem;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar nav ul li a:hover {
+            background: #e9ecef;
+            color: #667eea;
+            padding-left: 1.8rem;
+        }
+
+        .sidebar nav ul li.active a {
+            border-left-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+            background: #f0f4ff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+            color: #667eea;
+            scroll-margin-top: 80px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 0.8rem 0;
+            color: #764ba2;
+            scroll-margin-top: 80px;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 1.2rem 0 0.6rem 0;
+            color: #495057;
+            scroll-margin-top: 80px;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section > h2:first-child {
+            margin-top: 0;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+
+        pre {
+            background: #f8f9fa;
+            color: #333;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border-left: 4px solid #667eea;
+            border: 1px solid #dee2e6;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .flow-step {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .flow-step.client {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0f9ff 100%);
+            border-color: #2196F3;
+            margin-left: 2rem;
+        }
+
+        .flow-step.server {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e7e5ff 100%);
+            border-color: #667eea;
+            margin-right: 2rem;
+        }
+
+        .flow-step.error {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe082 100%);
+            border-color: #ffc107;
+        }
+
+        .flow-step h5 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .flow-step ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .flow-step li {
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: #667eea;
+            color: white;
+        }
+
+        th {
+            padding: 0.8rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge.success {
+            background: #28a745;
+        }
+
+        .badge.warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        footer {
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .checklist {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        .checklist label {
+            display: block;
+            margin: 0.5rem 0;
+            cursor: pointer;
+        }
+
+        .checklist input[type="checkbox"] {
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+                padding: 1rem 0;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .flow-step.client,
+            .flow-step.server {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Autenticazione (JWT + MSAL)</h1>
+            <p>Documentazione Completa dell'Implementazione</p>
+            <div class="header-meta">
+                <strong>Ultimo aggiornamento:</strong> 2026-03-29 |
+                <strong>Versione:</strong> 2.0 |
+                <strong>Lingua:</strong> Italiano
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="sidebar-title">📑 Indice</div>
+                <nav>
+                    <ul>
+                        <li><a href="#livello-base">Livello Base</a></li>
+                        <li><a href="#cosa-jwt">Cos'è JWT?</a></li>
+                        <li><a href="#flussi-principali">Flussi Principali</a></li>
+                        <li><a href="#flusso-msal">Flusso MSAL</a></li>
+                        <li><a href="#architettura">Architettura</a></li>
+                        <li><a href="#frontend">Frontend</a></li>
+                        <li><a href="#sicurezza">Sicurezza</a></li>
+                        <li><a href="#troubleshooting">Troubleshooting</a></li>
+                        <li><a href="#file-correlati">File Correlati</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main class="content">
+                <!-- LIVELLO BASE -->
+                <section class="section" id="livello-base">
+                    <h2>📚 Livello Base</h2>
+
+                    <section id="cosa-jwt">
+                        <h3>Cos'è l'autenticazione JWT?</h3>
+
+                        <p>JWT (JSON Web Token) è un sistema per autenticare gli utenti. Funziona così:</p>
+
+                        <ol>
+                            <li><strong>L'utente accede</strong> con email e password (JWT) o con Microsoft (MSAL)</li>
+                            <li><strong>Il server verifica</strong> le credenziali o il token Azure</li>
+                            <li><strong>Il server crea un JWT interno</strong> — un "biglietto" firmato che contiene l'identità dell'utente</li>
+                            <li><strong>Il client riceve il JWT</strong> e lo usa per fare richieste autenticate</li>
+                            <li><strong>Il server verifica il JWT</strong> su ogni richiesta — se valido, consente l'accesso</li>
+                        </ol>
+
+                        <h4>Perché JWT?</h4>
+
+                        <ul>
+                            <li><span class="badge success">✅</span> <strong>Stateless:</strong> il server non deve ricordare nulla sui client</li>
+                            <li><span class="badge success">✅</span> <strong>Scalabile:</strong> funziona bene anche con molti server</li>
+                            <li><span class="badge success">✅</span> <strong>Sicuro:</strong> il JWT è firmato digitalmente</li>
+                            <li><span class="badge success">✅</span> <strong>Mobile-friendly:</strong> facile da usare nelle app mobili</li>
+                        </ul>
+
+                        <div class="info-box">
+                            <strong>📌 Nota:</strong> Indipendentemente dalla strategia scelta (JWT o MSAL), il backend genera sempre <strong>JWT interni</strong>. Con MSAL, il token Azure AD serve solo per il login iniziale.
+                        </div>
+                    </section>
+
+                    <section id="flussi-principali">
+                        <h3>🔄 Flussi Principali</h3>
+
+                        <h4>1️⃣ Flusso di Login (JWT — Email+Password)</h4>
+
+                        <p><strong>L'utente invia email e password, riceve JWT.</strong></p>
+
+                        <div class="flow-step client">
+                            <h5>📱 BROWSER / APP</h5>
+                            <ul>
+                                <li>Email: mario@example.com</li>
+                                <li>Password: ****</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ POST /api/auth/login</div>
+
+                        <div class="flow-step server">
+                            <h5>⚙️ SERVER - LoginHandler.cs</h5>
+                            <ul>
+                                <li>✓ Cerca utente per email</li>
+                                <li>✓ Verifica password (BCrypt)</li>
+                                <li>✓ Verifica account attivo</li>
+                                <li>✓ Risolve permessi (ruoli diretti + gruppi)</li>
+                                <li>✓ Genera JWT + Refresh Token</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ 200 OK</div>
+
+                        <div class="flow-step client">
+                            <h5>✅ RISPOSTA</h5>
+                            <ul>
+                                <li>accessToken: "eyJ..."</li>
+                                <li>expiresAt, userId, email, displayName, language</li>
+                                <li>permissions: ["users.read", "roles.manage"]</li>
+                                <li>refreshToken in cookie HttpOnly</li>
+                            </ul>
+                        </div>
+
+                        <hr style="margin: 2rem 0; border: none; border-top: 2px dashed #ccc;">
+
+                        <h4>2️⃣ Flusso di Accesso Protetto</h4>
+
+                        <p><strong>Client usa JWT per accedere alle risorse.</strong></p>
+
+                        <div class="flow-step client">
+                            <h5>📱 RICHIESTA PROTETTA</h5>
+                            <ul>
+                                <li>GET /api/users</li>
+                                <li>Authorization: Bearer eyJ...</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️</div>
+
+                        <div class="flow-step server">
+                            <h5>🔐 SERVER - JWT Middleware</h5>
+                            <ul>
+                                <li>✓ Parse il token</li>
+                                <li>✓ Verifica firma (HMAC-SHA256)</li>
+                                <li>✓ Verifica non sia scaduto</li>
+                                <li>✓ Verifica Issuer e Audience</li>
+                                <li>✓ ClockSkew = Zero (nessuna tolleranza)</li>
+                                <li><strong style="color: #28a745;">✅ JWT VALIDO → Accesso consentito</strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️</div>
+
+                        <div class="flow-step client">
+                            <h5>✅ DATI RICEVUTI</h5>
+                            <ul>
+                                <li>200 OK { data }</li>
+                            </ul>
+                        </div>
+
+                        <hr style="margin: 2rem 0; border: none; border-top: 2px dashed #ccc;">
+
+                        <h4>3️⃣ Flusso di Refresh Token</h4>
+
+                        <p><strong>JWT è scaduto? Usa il refresh token per rinnovarlo.</strong></p>
+
+                        <div class="flow-step client">
+                            <h5>📱 JWT SCADUTO</h5>
+                            <ul>
+                                <li>GET /api/users → 401 Unauthorized</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ POST /api/auth/refresh (Cookie: refreshToken=...)</div>
+
+                        <div class="flow-step server">
+                            <h5>⚙️ SERVER - RefreshTokenHandler.cs</h5>
+                            <ul>
+                                <li>✓ Valida refresh token (esiste, non scaduto, non revocato)</li>
+                                <li>✓ Verifica utente esista e sia attivo</li>
+                                <li><strong>🔄 TOKEN ROTATION:</strong></li>
+                                <li>&nbsp;&nbsp;&nbsp;• Revoca vecchio token (RT-old)</li>
+                                <li>&nbsp;&nbsp;&nbsp;• Genera nuovo JWT (AT-new)</li>
+                                <li>&nbsp;&nbsp;&nbsp;• Genera nuovo RefreshToken (RT-new)</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ 200 OK + Set-Cookie</div>
+
+                        <div class="flow-step client">
+                            <h5>✅ NUOVO TOKEN</h5>
+                            <ul>
+                                <li>accessToken: "eyJ..." (nuovo)</li>
+                                <li>refreshToken: "wxyz..." (nuovo, ruotato)</li>
+                            </ul>
+                        </div>
+
+                        <div class="success-box">
+                            <strong>🔒 TOKEN ROTATION (Security Best Practice):</strong><br>
+                            1️⃣ Login → Crea RT-1<br>
+                            2️⃣ Refresh → Revoca RT-1, crea RT-2<br>
+                            3️⃣ Se attacker ruba RT-1 e tenta refresh → "Token not found" (revocato) ❌
+                        </div>
+
+                        <hr style="margin: 2rem 0; border: none; border-top: 2px dashed #ccc;">
+
+                        <h4>4️⃣ Flusso di Logout</h4>
+
+                        <div class="flow-step client">
+                            <h5>📱 LOGOUT REQUEST</h5>
+                            <ul>
+                                <li>POST /api/auth/logout</li>
+                                <li>Cookie: refreshToken=...</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️</div>
+
+                        <div class="flow-step server">
+                            <h5>⚙️ SERVER - LogoutHandler.cs</h5>
+                            <ul>
+                                <li>✓ Cerca token in MongoDB</li>
+                                <li>✓ Marca come revoked (revokedAt = now)</li>
+                                <li>ℹ️ Non lancia errore se non trovato (idempotente)</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ 204 No Content</div>
+
+                        <div class="flow-step client">
+                            <h5>✅ DISCONNESSO</h5>
+                            <ul>
+                                <li>Pulisce localStorage (accessToken, userId, etc.)</li>
+                                <li>Cookie eliminato dal server</li>
+                                <li>Utente DISCONNESSO ✓</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <hr style="margin: 2rem 0; border: none; border-top: 2px dashed #ccc;">
+
+                    <section id="flusso-msal">
+                        <h3>5️⃣ Flusso MSAL Login (Azure AD)</h3>
+
+                        <p><strong>Login con Microsoft/Office 365.</strong></p>
+
+                        <div class="flow-step client">
+                            <h5>📱 LOGIN CON MICROSOFT</h5>
+                            <ul>
+                                <li>Utente clicca "Login con Microsoft"</li>
+                                <li>La libreria <code>@azure/msal-browser</code> redireziona a login.microsoftonline.com</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ Autenticazione Azure AD</div>
+
+                        <div class="flow-step client">
+                            <h5>📱 RICEVE idToken DA AZURE</h5>
+                            <ul>
+                                <li>Azure AD autentica l'utente (email, password, MFA se abilitato)</li>
+                                <li>La libreria MSAL valida la firma RSA del token</li>
+                                <li>Restituisce idToken (JWT firmato da Microsoft)</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ POST /api/auth/msal-login { azureToken: idToken }</div>
+
+                        <div class="flow-step server">
+                            <h5>⚙️ SERVER - MsalLoginHandler.cs</h5>
+                            <ul>
+                                <li>✓ Legge il JWT di Azure (parsing, senza rivalidare la firma)</li>
+                                <li>✓ Estrae email dal claim (<code>preferred_username</code> o <code>email</code>)</li>
+                                <li>✓ Cerca utente LOCALE per email in MongoDB</li>
+                                <li>✓ Verifica account attivo</li>
+                                <li>✓ Risolve permessi (ruoli diretti + gruppi)</li>
+                                <li>✓ Genera JWT INTERNO (formato Tama, non Azure)</li>
+                                <li>✓ Crea Refresh Token</li>
+                            </ul>
+                        </div>
+
+                        <div class="flow-arrow">⬇️ 200 OK + JWT INTERNO</div>
+
+                        <div class="flow-step client">
+                            <h5>✅ LOGGATO CON AZURE</h5>
+                            <ul>
+                                <li>accessToken: "eyJ..." (JWT interno, non Azure)</li>
+                                <li>Usa come qualsiasi JWT normale</li>
+                                <li>refreshToken in cookie HttpOnly</li>
+                            </ul>
+                        </div>
+
+                        <div class="warning-box">
+                            <strong>⚠️ Nota sulla validazione:</strong><br>
+                            Il backend <strong>non rivalidda la firma RSA</strong> del token Azure. La validazione crittografica avviene nel frontend tramite la libreria <code>@azure/msal-browser</code>. Il backend si limita a leggere il token ed estrarre l'email per trovare l'utente locale. L'utente <strong>deve esistere</strong> preventivamente nel database locale.
+                        </div>
+                    </section>
+                </section>
+
+                <!-- ARCHITETTURA -->
+                <section class="section" id="architettura">
+                    <h2>🏗️ Architettura</h2>
+
+                    <h3>Pattern: Vertical Slice</h3>
+                    <p>Ogni feature (Login, RefreshToken, Logout, MsalLogin) è autocontenuta nella propria cartella con Command, Handler, Validator e Response.</p>
+
+                    <pre><code>Features/Auth/
+├── Login/
+│   ├── LoginCommand.cs
+│   ├── LoginHandler.cs
+│   ├── LoginValidator.cs
+│   └── LoginResponse.cs
+├── MsalLogin/
+│   ├── MsalLoginCommand.cs
+│   ├── MsalLoginHandler.cs
+│   └── MsalLoginResponse.cs
+├── RefreshToken/
+│   ├── RefreshTokenCommand.cs
+│   ├── RefreshTokenHandler.cs
+│   └── RefreshTokenResponse.cs
+├── Logout/
+│   ├── LogoutCommand.cs
+│   └── LogoutHandler.cs
+├── Shared/
+│   └── JwtTokenHelper.cs
+└── AuthEndpoints.cs</code></pre>
+
+                    <h3>Tecnologie Utilizzate</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Libreria</th>
+                                <th>Uso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Framework Web</strong></td>
+                                <td>ASP.NET Core (Minimal API)</td>
+                                <td>Routing, middleware, cookie handling</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CQRS / Mediator</strong></td>
+                                <td>MediatR</td>
+                                <td>Command/Query pattern</td>
+                            </tr>
+                            <tr>
+                                <td><strong>JWT</strong></td>
+                                <td>System.IdentityModel.Tokens.Jwt</td>
+                                <td>Creazione e validazione token</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Password</strong></td>
+                                <td>BCrypt.Net</td>
+                                <td>Hash sicuro delle password</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Database</strong></td>
+                                <td>MongoDB</td>
+                                <td>Utenti, refresh token, ruoli, permessi</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Validation</strong></td>
+                                <td>FluentValidation</td>
+                                <td>Validazione input (LoginCommand)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MSAL Client</strong></td>
+                                <td>@azure/msal-browser</td>
+                                <td>Login Azure AD lato frontend</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Endpoint API</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Metodo</th>
+                                <th>Descrizione</th>
+                                <th>Rate Limit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/api/auth/login</code></td>
+                                <td>POST</td>
+                                <td>Login con email + password</td>
+                                <td>10 req / 15 min</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/auth/msal-login</code></td>
+                                <td>POST</td>
+                                <td>Login con token Azure AD</td>
+                                <td>10 req / 15 min</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/auth/refresh</code></td>
+                                <td>POST</td>
+                                <td>Rinnova JWT + ruota refresh token</td>
+                                <td>10 req / 15 min</td>
+                            </tr>
+                            <tr>
+                                <td><code>/api/auth/logout</code></td>
+                                <td>POST</td>
+                                <td>Revoca refresh token + cancella cookie</td>
+                                <td>Nessuno</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box">
+                        <strong>ℹ️ Tutti gli endpoint sono sempre attivi</strong>, indipendentemente dalla strategia configurata. È il frontend a decidere quale flusso mostrare.
+                    </div>
+                </section>
+
+                <!-- FRONTEND -->
+                <section class="section" id="frontend">
+                    <h2>📱 Frontend</h2>
+
+                    <h3>Implementazione Effettiva</h3>
+                    <p>Il frontend usa <strong>Axios</strong> con interceptor, <strong>Pinia</strong> per lo stato, e servizi dedicati.</p>
+
+                    <h4>Axios Interceptor — Gestione 401</h4>
+                    <div class="warning-box">
+                        <strong>⚠️ Comportamento su 401:</strong> Il frontend effettua il <strong>logout automatico</strong> dell'utente (non il retry con refresh). È presente una guardia anti-ricorsione per evitare loop infiniti.
+                    </div>
+
+                    <pre><code>// plugins/axios.ts
+api.interceptors.response.use(
+  res => res,
+  async error => {
+    if (error.response?.status === 401 && !isLoggingOut) {
+      isLoggingOut = true
+      try { await useAuthStore().logout() }
+      finally { isLoggingOut = false }
+    }
+    return Promise.reject(error)
+  }
+)</code></pre>
+
+                    <h4>Router Guard — Protezione Rotte</h4>
+                    <pre><code>// router/index.ts
+router.beforeEach(async (to) => {
+  // Non autenticato + rotta protetta → /login?returnUrl=...
+  if (to.meta.requiresAuth && !authStore.isAuthenticated)
+    return { name: 'login', query: { returnUrl: to.fullPath } }
+
+  // Permesso mancante → dashboard + toast warning
+  if (to.meta.permission)
+    if (!authStore.permissions.includes(to.meta.permission))
+      return { name: 'dashboard' }
+})</code></pre>
+
+                    <h4>LoginPage — Switch Strategia</h4>
+                    <pre><code>const authStrategy = import.meta.env.VITE_AUTH_STRATEGY
+
+// Se authStrategy !== 'msal': mostra form email/password
+// Se authStrategy === 'msal': mostra bottone Microsoft
+// Al mount, se ritorno da redirect MSAL: auto-login con idToken</code></pre>
+                </section>
+
+                <!-- SICUREZZA -->
+                <section class="section" id="sicurezza">
+                    <h2>🔐 Sicurezza</h2>
+
+                    <h3>✅ Cosa è Implementato</h3>
+
+                    <div class="success-box">
+                        <strong>1. HTTPS Only (Production)</strong><br>
+                        Il cookie è inviato solo su HTTPS in produzione (<code>Secure = !IsDevelopment()</code>)
+                    </div>
+
+                    <div class="success-box">
+                        <strong>2. HttpOnly Cookie</strong><br>
+                        Il refresh token è in un cookie HttpOnly → JavaScript non può rubarlo (XSS protection)
+                    </div>
+
+                    <div class="success-box">
+                        <strong>3. SameSite=Lax</strong><br>
+                        Il browser non invia il cookie in richieste cross-site (CSRF protection)
+                    </div>
+
+                    <div class="success-box">
+                        <strong>4. Token Rotation</strong><br>
+                        Ogni uso del refresh token lo revoca e ne genera uno nuovo → una-tantum
+                    </div>
+
+                    <div class="success-box">
+                        <strong>5. BCrypt Password Hashing</strong><br>
+                        Le password sono hashate con BCrypt (slow, con salt) → impossibile recuperarle
+                    </div>
+
+                    <div class="success-box">
+                        <strong>6. JWT Signature (HMAC-SHA256)</strong><br>
+                        Ogni JWT è firmato con HMAC-SHA256, ClockSkew = Zero → non può essere falsificato
+                    </div>
+
+                    <div class="success-box">
+                        <strong>7. Rate Limiting</strong><br>
+                        Login, msal-login e refresh: max 10 richieste ogni 15 minuti → protezione brute-force
+                    </div>
+
+                    <div class="success-box">
+                        <strong>8. Messaggi di Errore Generici</strong><br>
+                        "Credenziali non valide" senza specificare se email o password sbagliata (enumeration protection)
+                    </div>
+
+                    <div class="success-box">
+                        <strong>9. Account Disabilitati</strong><br>
+                        Verifica <code>IsActive</code> in login, refresh, e msal-login
+                    </div>
+
+                    <div class="success-box">
+                        <strong>10. Error Log Automatico</strong><br>
+                        Errori 5xx inviati automaticamente al backend per monitoraggio (fire-and-forget)
+                    </div>
+                </section>
+
+                <!-- TROUBLESHOOTING -->
+                <section class="section" id="troubleshooting">
+                    <h2>🐛 Troubleshooting</h2>
+
+                    <h3>❌ "401 Unauthorized — Token expired"</h3>
+                    <p><strong>Causa:</strong> Il JWT è scaduto (oltre 60 minuti).</p>
+                    <div class="info-box">
+                        Il frontend intercetta automaticamente il 401 ed effettua il logout dell'utente. Per rinnovare preventivamente, usare <code>authStore.refresh()</code>.
+                    </div>
+
+                    <h3>❌ "401 — Refresh token not found"</h3>
+                    <p><strong>Cause:</strong></p>
+                    <ul>
+                        <li>Cookie non inviato (verifica SameSite, Secure, <code>withCredentials: true</code>)</li>
+                        <li>Token revocato (logout o rotation)</li>
+                        <li>Token scaduto (&gt; 7 giorni)</li>
+                    </ul>
+
+                    <h3>❌ "Nessun utente locale con email" (MSAL)</h3>
+                    <p>L'utente deve essere creato in Tama <strong>prima</strong> di poter fare login con Azure AD.</p>
+
+                    <h3>❌ "Token Azure non valido" (MSAL)</h3>
+                    <p>Verificare che il frontend stia inviando l'<code>idToken</code> e non l'<code>accessToken</code> di MSAL.</p>
+
+                    <h3>✅ Debug Checklist</h3>
+
+                    <div class="checklist">
+                        <label><input type="checkbox"> Token presente nella response?</label>
+                        <label><input type="checkbox"> Token nel header Authorization: Bearer {token}?</label>
+                        <label><input type="checkbox"> Secret JWT non vuoto in appsettings.local.json?</label>
+                        <label><input type="checkbox"> Scadenza del token nel futuro?</label>
+                        <label><input type="checkbox"> Refresh token nel cookie?</label>
+                        <label><input type="checkbox"> Cookie è HttpOnly con Path=/api/auth?</label>
+                        <label><input type="checkbox"> HTTPS in produzione?</label>
+                        <label><input type="checkbox"> CORS con AllowCredentials?</label>
+                        <label><input type="checkbox"> Se MSAL: TenantId e ClientId in .env.local?</label>
+                        <label><input type="checkbox"> Se MSAL: utente esiste nel DB locale?</label>
+                        <label><input type="checkbox"> Se MSAL: redirect URI configurato in Azure?</label>
+                    </div>
+                </section>
+
+                <!-- FILE CORRELATI -->
+                <section class="section" id="file-correlati">
+                    <h2>📚 File Correlati nel Progetto</h2>
+
+                    <h3>Backend (C# / ASP.NET Core)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Scopo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AuthEndpoints.cs</strong></td>
+                                <td>Routing, cookie, rate limiting</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LoginHandler.cs</strong></td>
+                                <td>Logica login email+password</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MsalLoginHandler.cs</strong></td>
+                                <td>Logica login Azure AD</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RefreshTokenHandler.cs</strong></td>
+                                <td>Rinnovamento JWT + rotation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LogoutHandler.cs</strong></td>
+                                <td>Revoca refresh token</td>
+                            </tr>
+                            <tr>
+                                <td><strong>JwtTokenHelper.cs</strong></td>
+                                <td>Generazione JWT + refresh token</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AuthExtensions.cs</strong></td>
+                                <td>Registrazione JWT + config auth</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Frontend (Vue 3 / TypeScript)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Scopo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>auth.service.ts</strong></td>
+                                <td>Chiamate API (login, msalLogin, refresh, logout)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>msal.service.ts</strong></td>
+                                <td>Wrapper @azure/msal-browser</td>
+                            </tr>
+                            <tr>
+                                <td><strong>auth.store.ts</strong></td>
+                                <td>Stato Pinia (token, permessi, sessione)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>msal.ts</strong> (plugin)</td>
+                                <td>Configurazione PublicClientApplication</td>
+                            </tr>
+                            <tr>
+                                <td><strong>axios.ts</strong> (plugin)</td>
+                                <td>Interceptor Bearer + gestione 401</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LoginPage.vue</strong></td>
+                                <td>UI login (switch JWT/MSAL)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>router/index.ts</strong></td>
+                                <td>Guard autenticazione + permessi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box">
+                        <strong>ℹ️ Nota:</strong> Per la documentazione tecnica completa con codice sorgente, esempi di request/response e configurazione dettagliata, consultare il file <strong>Authentication.md</strong>.
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <footer>
+            <p><strong>Autenticazione (JWT + MSAL) — Tama API</strong></p>
+            <p>Ultimo aggiornamento: 2026-03-29 | Versione: 2.0</p>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Update active link in sidebar based on scroll
+        const content = document.querySelector('.content');
+        const sidebarLinks = document.querySelectorAll('.sidebar nav a');
+
+        if (content) {
+            content.addEventListener('scroll', () => {
+                let current = '';
+                const sections = document.querySelectorAll('h2, h3');
+
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= 200) {
+                        current = section.id;
+                    }
+                });
+
+                sidebarLinks.forEach(link => {
+                    link.parentElement.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.parentElement.classList.add('active');
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

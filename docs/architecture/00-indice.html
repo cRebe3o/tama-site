@@ -1,0 +1,135 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Concetti architetturali — Indice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 260px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--accent); background: var(--card);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Concetti architetturali</div>
+    <a href="00-indice.html" class="active">Concetti architetturali — Indice</a>
+      <a href="backend-01-pattern.html">Backend — Panoramica pattern</a>
+      <a href="backend-02-confronto.html">Backend — Confronto con le alternative</a>
+      <a href="backend-03-nel-progetto.html">Backend — Dove si vedono nel codice</a>
+      <a href="frontend-01-pattern.html">Frontend — Panoramica pattern</a>
+      <a href="frontend-02-confronto.html">Frontend — Confronto con le alternative</a>
+      <a href="frontend-03-nel-progetto.html">Frontend — Dove si vedono nel codice</a>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+      <a href="../technical/00-indice.html">→ Documentazione tecnica Tama</a>
+    </div>
+  </nav>
+  <main>
+    <h1>Concetti architetturali — Indice</h1>
+<p>Documentazione <strong>tecnologia-agnostica</strong>: spiega i pattern e le scelte architetturali generali (Minimal API, Vertical Slice vs Clean/Onion Architecture, CQRS, Composition API, MVVM, ecc.), confrontandoli con le alternative più comuni. Il progetto Tama è citato solo come esempio concreto per ancorare la teoria al codice reale.</p>
+<p>Per la documentazione tecnica specifica di Tama (come funziona <em>questo</em> progetto, senza il confronto teorico con le alternative), vedi <a href="../technical/00-indice.html">../technical/00-indice.md</a>.</p>
+<h2>Come è organizzata</h2>
+<p>Ogni area (backend/frontend) ha 3 livelli, dal più astratto al più concreto:</p>
+<table>
+<thead>
+<tr>
+<th>Livello</th>
+<th>Cosa contiene</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>01 — Panoramica dei pattern</strong></td>
+<td>Elenco dei concetti/pattern rilevanti, una definizione minima ciascuno, nessun confronto</td>
+</tr>
+<tr>
+<td><strong>02 — Confronto con le alternative</strong></td>
+<td>Spiegazione approfondita di ciascun pattern, messo a confronto con le alternative più comuni (es. Layered vs Clean vs Vertical Slice), con diagrammi comparativi</td>
+</tr>
+<tr>
+<td><strong>03 — Dove si vedono nel codice</strong></td>
+<td>Ogni concetto ancorato a un file/snippet reale del repository Tama</td>
+</tr>
+</tbody></table>
+<h2>Documenti</h2>
+<table>
+<thead>
+<tr>
+<th>Documento</th>
+<th>Argomenti</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="backend-01-pattern.html">backend-01-pattern</a></td>
+<td>Minimal API, Vertical Slice, Layered, Clean/Onion, CQRS, Mediator, Pipeline/Decorator, Repository, DI e service lifetime, Document DB, embedding/denormalizzazione, counter pattern, DTO, Claims-based auth</td>
+</tr>
+<tr>
+<td><a href="backend-02-confronto.html">backend-02-confronto</a></td>
+<td>Minimal API vs Controller; Layered vs Clean/Onion vs Vertical Slice (con diagramma); CQRS+Mediator; Pipeline=Decorator; Repository con Document DB; Document-oriented vs Relazionale (transazioni, denormalizzazione, contatori); DI lifetimes e captive dependency; Claims vs Role-based</td>
+</tr>
+<tr>
+<td><a href="backend-03-nel-progetto.html">backend-03-nel-progetto</a></td>
+<td>Ogni concetto ancorato al codice: <code>Features/Customers/</code>, <code>DraftDocument</code> (embedding/denormalizzazione), cascade delete con transazioni commentate, counter pattern, <code>IServiceScopeFactory</code> nel middleware</td>
+</tr>
+<tr>
+<td><a href="frontend-01-pattern.html">frontend-01-pattern</a></td>
+<td>Reattività fine-grained, Options API, Composition API, <code>&lt;script setup&gt;</code>, Composable, Store pattern, MVVM, Service layer, Optimistic update, Route guard, Interceptor, Single Source of Truth</td>
+</tr>
+<tr>
+<td><a href="frontend-02-confronto.html">frontend-02-confronto</a></td>
+<td>Reattività come Observer pattern (e differenza con React); Options vs Composition API (con diagramma); Composable vs custom Hook; Pinia vs Vuex; MVVM applicato a una SPA (con diagramma); Single Source of Truth; Interceptor=Decorator; Optimistic vs re-fetch; sicurezza a due livelli</td>
+</tr>
+<tr>
+<td><a href="frontend-03-nel-progetto.html">frontend-03-nel-progetto</a></td>
+<td>Ogni concetto ancorato a <code>CustomersPage.vue</code> (incluso accesso reattivo agli store), <code>customers.store.ts</code>, <code>plugins/axios.ts</code>, <code>router/index.ts</code></td>
+</tr>
+</tbody></table>
+<h2>I due concetti-chiave del progetto, in una frase</h2>
+<ul>
+<li><strong>Backend</strong>: Tama usa <strong>Vertical Slice Architecture</strong> (organizzazione per feature, non per layer tecnico) con <strong>CQRS via MediatR</strong> (Command/Query + Handler) invece di Controller+Service+Repository classici o di Clean/Onion Architecture a progetti separati — una scelta pragmatica che privilegia coesione e velocità di sviluppo su un dominio non eccessivamente complesso.</li>
+<li><strong>Frontend</strong>: Tama usa <strong>Composition API + Pinia setup-syntax</strong>, realizzando di fatto un pattern <strong>MVVM</strong> (componente=View, store=ViewModel, service=Model) imposto esplicitamente come regola di progetto (<code>CLAUDE.md</code>: &quot;nessuna logica di business nei componenti&quot;, &quot;nessuna chiamata HTTP diretta fuori dai service&quot;).</li>
+</ul>
+<p>Questi due principi — organizzare per funzionalità coesa, e separare rigidamente presentazione/orchestrazione/accesso dati — sono lo stesso principio applicato simmetricamente sui due lati dello stack.</p>
+
+  </main>
+</div>

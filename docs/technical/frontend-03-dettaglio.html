@@ -1,0 +1,321 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Frontend — Dettaglio con codice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="00-indice.html">Tama — Indice documentazione</a>
+      <a href="backend-01-panoramica.html">Backend — Panoramica tecnologie</a>
+      <a href="backend-02-funzionamento.html">Backend — Come funziona</a>
+      <a href="backend-03-dettaglio.html">Backend — Dettaglio con codice</a>
+      <a href="frontend-01-panoramica.html">Frontend — Panoramica tecnologie</a>
+      <a href="frontend-02-funzionamento.html">Frontend — Come funziona</a>
+      <a href="frontend-03-dettaglio.html" class="active">Frontend — Dettaglio con codice</a>
+  </nav>
+  <main>
+    <h1>Frontend — Livello 3: Dettaglio con codice reale</h1>
+<h2>Store Pinia completo — <code>stores/customers.store.ts</code></h2>
+<pre><code class="language-ts">export const useCustomersStore = defineStore(&#39;customers&#39;, () =&gt; {
+  const items = ref&lt;Customer[]&gt;([])
+  const selectedItem = ref&lt;Customer | null&gt;(null)
+  const loading = ref(false)
+  const error = ref&lt;string | null&gt;(null)
+  const totalCount = ref(0)
+  const page = ref(1)
+  const pageSize = ref(25)
+  const search = ref(&#39;&#39;)
+
+  async function fetchAll() {
+    loading.value = true
+    error.value = null
+    try {
+      const result = await customersService.getAll({
+        search: search.value || undefined,
+        page: page.value,
+        pageSize: pageSize.value,
+      })
+      items.value = result.items
+      totalCount.value = result.totalCount
+    } catch {
+      error.value = i18n.global.t(&#39;errors.loadCustomers&#39;)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function create(data: CreateCustomerRequest) {
+    await customersService.create(data)
+    await fetchAll()               // rilegge la lista intera
+  }
+
+  async function remove(id: string) {
+    await customersService.delete(id)
+    items.value = items.value.filter(x =&gt; x.id !== id)   // optimistic update, no re-fetch
+    totalCount.value--
+  }
+
+  return { items, selectedItem, loading, error, totalCount, page, pageSize, search,
+            fetchAll, fetchById, create, update, remove }
+})
+</code></pre>
+<p>Nota le due strategie diverse di aggiornamento dopo una mutazione: <code>create</code>/<code>update</code> rifanno <code>fetchAll()</code> (semplice ma un round-trip in più), <code>remove</code> aggiorna <code>items</code> localmente (più reattivo, nessun round-trip).</p>
+<h2>Pagina lista CRUD completa — <code>pages/data/CustomersPage.vue</code></h2>
+<pre><code class="language-vue">&lt;script setup lang=&quot;ts&quot;&gt;
+const { mobile } = useDisplay()
+const store = useCustomersStore()
+const { can } = usePermission()
+const { generalError, handleError, clearErrors } = useApiErrors()
+
+const deleteDialog = ref(false)
+const deleteTarget = ref&lt;string | null&gt;(null)
+
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
+  try {
+    await store.remove(deleteTarget.value)
+    deleteDialog.value = false
+  } catch (err) {
+    handleError(err, t(&#39;common.error&#39;))
+  } finally {
+    deleteLoading.value = false
+  }
+}
+
+function onUpdatePage(newPage: number) {
+  store.page = newPage
+  store.fetchAll()
+}
+
+watch(() =&gt; store.search, () =&gt; {
+  store.page = 1
+  store.fetchAll()
+}, { debounce: 300 } as any)
+
+onMounted(() =&gt; store.fetchAll())
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-data-table-server
+    v-if=&quot;!mobile&quot;
+    :headers=&quot;headers&quot;
+    :items=&quot;store.items&quot;
+    :items-length=&quot;store.totalCount&quot;
+    :loading=&quot;store.loading&quot;
+    :items-per-page=&quot;store.pageSize&quot;
+    :page=&quot;store.page&quot;
+    item-value=&quot;id&quot;
+    @update:page=&quot;onUpdatePage&quot;
+  &gt;
+    &lt;template #item.actions=&quot;{ item }&quot;&gt;
+      &lt;v-btn v-if=&quot;can(&#39;customers.write&#39;)&quot; icon=&quot;mdi-pencil&quot;
+             :to=&quot;{ name: &#39;customer-detail&#39;, params: { id: item.id } }&quot; /&gt;
+      &lt;v-btn v-if=&quot;can(&#39;customers.delete&#39;)&quot; icon=&quot;mdi-delete&quot;
+             @click=&quot;openDeleteDialog(item.id)&quot; /&gt;
+    &lt;/template&gt;
+  &lt;/v-data-table-server&gt;
+
+  &lt;!-- su mobile: v-list con paginazione manuale, non v-data-table-server --&gt;
+&lt;/template&gt;
+</code></pre>
+<p>Punti chiave del pattern:</p>
+<ul>
+<li><strong>Responsive duplicato</strong>: <code>v-data-table-server</code> per desktop, <code>v-list</code> + paginazione manuale (<code>onUpdatePage(store.page ± 1)</code>) per mobile — pattern ripetuto identico in tutte le pagine lista del progetto, non estratto in un componente condiviso.</li>
+<li><strong>Permessi UI</strong>: ogni azione di riga è avvolta in <code>v-if=&quot;can(&#39;permesso&#39;)&quot;</code> — il permesso non nasconde solo l&#39;azione ma anche l&#39;endpoint lato backend (difesa in profondità: la UI nasconde, il backend rifiuta comunque).</li>
+<li><strong>Eliminazione</strong>: dialog di conferma locale alla pagina (non un componente <code>ConfirmDialog.vue</code> condiviso in questo caso specifico — verifica caso per caso quale pattern seguire).</li>
+<li>⚠️ <strong>Da verificare</strong>: l&#39;opzione <code>{ debounce: 300 }</code> passata a <code>watch()</code> <strong>non è un&#39;opzione nativa</strong> dell&#39;API <code>watch</code> di Vue 3 — il cast <code>as any</code> lo conferma implicitamente. Il progetto usa altrove <code>watchDebounced</code> di <code>@vueuse/core</code> per lo stesso scopo (vedi skill <code>search-filter</code>); qui potrebbe non funzionare come atteso (il debounce verrebbe silenziosamente ignorato da Vue, che eseguirebbe il watcher a ogni keystroke). TODO: verificare se <code>store.search</code> è già bindato con un debounce a monte (es. nel v-text-field) o se questa riga va corretta con <code>watchDebounced</code>.</li>
+</ul>
+<h2>Pagina form Create/Edit — <code>pages/users/UserDetailPage.vue</code></h2>
+<p>A differenza della skill <code>vuetify-dialog-form</code> (pensata per un <code>v-dialog</code>), qui il pattern Create/Edit è applicato a una <strong>pagina intera</strong> condivisa fra le due route <code>user-create</code> e <code>user-detail</code>:</p>
+<pre><code class="language-vue">&lt;script setup lang=&quot;ts&quot;&gt;
+const isCreate = route.name === &#39;user-create&#39;
+const userId = route.params.id as string
+
+const formRef = ref()
+const form = reactive({ email: &#39;&#39;, displayName: &#39;&#39;, password: &#39;&#39;, isActive: true, /* ... */ })
+const saving = ref(false)
+const { fieldErrors, generalError, handleError, clearErrors } = useApiErrors()
+
+const rules = {
+  required: (v: string) =&gt; !!v?.trim() || t(&#39;validation.required&#39;),
+  email: (v: string) =&gt; /.+@.+\..+/.test(v) || t(&#39;validation.email&#39;),
+  passwordMin: (v: string) =&gt; v.length &gt;= 8 || t(&#39;validation.passwordMin&#39;),
+}
+
+onMounted(async () =&gt; {
+  await Promise.all([rolesStore.fetchRoles(), groupsStore.fetchGroups()])
+  if (!isCreate) {
+    await usersStore.fetchUser(userId)
+    // popola form.* da usersStore.selectedUser
+  }
+})
+
+async function save() {
+  const { valid } = await formRef.value.validate()
+  if (!valid) return
+
+  saving.value = true
+  clearErrors()
+  try {
+    if (isCreate) await usersStore.createUser(form)
+    else await usersStore.updateUser(userId, { displayName: form.displayName, /* ... */ })
+    toast.success(t(&#39;common.saved&#39;))
+    await router.push({ name: &#39;users&#39; })
+  } catch (err) {
+    handleError(err, t(&#39;common.error&#39;))
+  } finally {
+    saving.value = false
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-form ref=&quot;formRef&quot; @submit.prevent=&quot;save&quot;&gt;
+    &lt;v-text-field v-model=&quot;form.email&quot; :disabled=&quot;!isCreate&quot;
+                  :rules=&quot;isCreate ? [rules.required, rules.email] : []&quot;
+                  :error-messages=&quot;fieldErrors[&#39;email&#39;]&quot; /&gt;
+    &lt;v-text-field v-if=&quot;isCreate&quot; v-model=&quot;form.password&quot; type=&quot;password&quot;
+                  :rules=&quot;[rules.required, rules.passwordMin]&quot; /&gt;
+    &lt;v-switch v-if=&quot;!isCreate&quot; v-model=&quot;form.isActive&quot; /&gt;
+    &lt;v-btn type=&quot;submit&quot; color=&quot;primary&quot; :loading=&quot;saving&quot;&gt;{{ t(&#39;common.save&#39;) }}&lt;/v-btn&gt;
+  &lt;/v-form&gt;
+&lt;/template&gt;
+</code></pre>
+<p>Pattern da replicare per un nuovo form Create/Edit:</p>
+<ul>
+<li><strong>Stesso componente per create e edit</strong>, distinto da <code>isCreate = route.name === &#39;&lt;entità&gt;-create&#39;</code>, con campi condizionali (<code>v-if=&quot;isCreate&quot;</code> per password/campi solo-creazione, <code>v-if=&quot;!isCreate&quot;</code> per campi solo-modifica come <code>isActive</code>).</li>
+<li><code>formRef.value.validate()</code> <strong>prima</strong> di procedere al salvataggio — non affidarsi solo alle regole inline.</li>
+<li><code>useApiErrors()</code> mappa gli errori 400 di FluentValidation (<code>fieldErrors</code>, chiavi in <strong>lowercase</strong>, es. <code>fieldErrors[&#39;displayname&#39;]</code> non <code>displayName</code>) sui singoli campi via <code>:error-messages</code>, e un eventuale errore generale (<code>generalError</code>) mostrato in un <code>v-alert</code>.</li>
+<li><code>saving</code> pilota lo stato <code>:loading</code> del bottone submit, evitando doppio submit.</li>
+</ul>
+<h2>Composable permessi — <code>composables/usePermission.ts</code></h2>
+<pre><code class="language-ts">export function usePermission() {
+  const authStore = useAuthStore()
+
+  function can(permission: string): boolean {
+    return authStore.permissions.includes(permission)
+  }
+
+  function canAny(...permissions: string[]): boolean {
+    return permissions.some(p =&gt; authStore.permissions.includes(p))
+  }
+
+  return { can, canAny }
+}
+</code></pre>
+<p>Usato ovunque nei template per condizionare <code>v-if</code> su bottoni/azioni. I permessi disponibili arrivano dal claim <code>permissions</code> del JWT, letti in <code>auth.store.ts</code> al login/refresh.</p>
+<h2>Client axios — <code>plugins/axios.ts</code> (vedi anche <a href="frontend-02-funzionamento.html">frontend-02</a>)</h2>
+<pre><code class="language-ts">export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
+})
+
+api.interceptors.request.use(config =&gt; {
+  const authStore = useAuthStore()
+  if (authStore.token) config.headers.Authorization = `Bearer ${authStore.token}`
+  config.headers[&#39;Accept-Language&#39;] = authStore.language ?? &#39;it&#39;
+  useServerWakeStore().start()
+  return config
+})
+
+api.interceptors.response.use(
+  res =&gt; { useServerWakeStore().stop(true); return res },
+  async error =&gt; {
+    useServerWakeStore().stop(false)
+    const status = error.response?.status
+    const isAuthRequest = /* url include /login o /msal-login */ true
+    if (status === 401 &amp;&amp; !isLoggingOut &amp;&amp; !isAuthRequest) {
+      isLoggingOut = true
+      try { await useAuthStore().logout() } finally { isLoggingOut = false }
+    }
+    if (status &gt;= 500 &amp;&amp; !error.config.url.includes(&#39;/api/error-logs&#39;)) {
+      api.post(&#39;/api/error-logs&#39;, { level: &#39;Error&#39;, source: &#39;Frontend&#39;, message: /* ... */ }).catch(() =&gt; {})
+    }
+    return Promise.reject(error)
+  }
+)
+</code></pre>
+<h2>Come aggiungere una nuova view/rotta seguendo le convenzioni del progetto</h2>
+<ol>
+<li><code>services/&lt;entità&gt;.service.ts</code> — metodi CRUD che chiamano <code>api</code> e ritornano <code>.then(r =&gt; r.data)</code>.</li>
+<li><code>stores/&lt;entità&gt;.store.ts</code> — <code>defineStore(&#39;&lt;entità&gt;&#39;, () =&gt; {...})</code> con lo stesso scheletro di <code>customers.store.ts</code> (state: <code>items/selectedItem/loading/error/totalCount/page/pageSize/search</code>; actions: <code>fetchAll/fetchById/create/update/remove</code>).</li>
+<li><code>pages/.../&lt;Entità&gt;Page.vue</code> — lista, seguendo il pattern <code>v-data-table-server</code> desktop + <code>v-list</code> mobile di <code>CustomersPage.vue</code>.</li>
+<li>Se serve create/edit: <code>pages/.../&lt;Entità&gt;DetailPage.vue</code>, unico componente per le due route <code>&lt;entità&gt;-create</code>/<code>&lt;entità&gt;-detail</code>, seguendo il pattern di <code>UserDetailPage.vue</code>.</li>
+<li>In <code>router/index.ts</code>, aggiungi le route con <code>component: () =&gt; import(...)</code> (lazy, sempre) e <code>meta: { requiresAuth: true, permission: &#39;&lt;entità&gt;.read&#39;, title: &#39;...&#39;, section: &#39;...&#39; }</code>.</li>
+<li>Aggiungi le chiavi di traduzione in <code>locales/it.ts</code> <strong>e</strong> <code>en.ts</code> sotto il namespace <code>&lt;entità&gt;</code>.</li>
+<li>Aggiungi i tipi in <code>types/api.types.ts</code> (<code>&lt;Entità&gt;</code>, <code>Create&lt;Entità&gt;Request</code>, <code>Update&lt;Entità&gt;Request</code>) — <strong>a mano</strong>, tenendoli sincronizzati con i record C# del backend.</li>
+<li>Se la entità compare nel menu, aggiorna <code>config/sections.config.ts</code>.</li>
+</ol>
+<p>Skill di progetto correlate: <code>vue-feature</code> (scaffolding store+service+page+route), <code>vuetify-dialog-form</code> (per dialog invece di pagina full), <code>pagination</code>, <code>search-filter</code>, <code>permissions</code>.</p>
+<h2>Come intervenire in sicurezza nel frontend</h2>
+<p><strong>Convenzioni obbligatorie</strong> (da <code>apps/frontend/CLAUDE.md</code>, verificate nel codice):</p>
+<ul>
+<li>Tutti i componenti in <code>&lt;script setup lang=&quot;ts&quot;&gt;</code>.</li>
+<li><strong>Nessuna chiamata axios/fetch diretta</strong> in componenti o store — sempre passando dal service layer.</li>
+<li><strong>Nessun testo hardcoded</strong> nei template — sempre <code>t(&#39;chiave&#39;)</code>, chiavi strutturate <code>dominio.elemento</code> in entrambi <code>it.ts</code>/<code>en.ts</code>.</li>
+<li>Ogni route protetta deve avere <code>meta.permission</code>.</li>
+<li>Componenti indicativamente non oltre ~150 righe — se crescono, estrarre in composable.</li>
+<li>Preferire <code>v-if</code> a <code>v-show</code> per elementi condizionati dai permessi (evita che l&#39;elemento nascosto resti comunque nel DOM).</li>
+<li>Colori sempre dal tema Vuetify (<code>color=&quot;primary&quot;</code>, <code>color=&quot;error&quot;</code>), mai esadecimali hardcoded.</li>
+</ul>
+<p><strong>Dove aggiungere codice nuovo</strong>: segui la struttura a 8 passi sopra; componenti realmente riusabili tra più feature vanno in <code>components/shared/</code>, non duplicati per pagina.</p>
+<p><strong>Cosa NON toccare senza motivo</strong>:</p>
+<ul>
+<li><code>plugins/axios.ts</code> — è il punto singolo di attach del JWT e di gestione 401/5xx; una modifica sbagliata rompe autenticazione o logging errori per <strong>tutta</strong> l&#39;app.</li>
+<li><code>plugins/vuetify.ts</code> (blocco <code>defaults</code>) — cambia l&#39;aspetto di default di ogni componente Vuetify nell&#39;app, non solo di uno.</li>
+<li><code>router/index.ts</code> (guardie <code>beforeEach</code>/<code>afterEach</code>) — logica di sicurezza condivisa da tutte le route.</li>
+<li><code>types/api.types.ts</code> — va aggiornato in sincronia con i DTO C# backend: un disallineamento qui produce errori silenziosi a runtime (TypeScript non può verificare la forma reale della risposta HTTP).</li>
+</ul>
+
+  </main>
+</div>

@@ -1,0 +1,30 @@
+flowchart TB
+    subgraph Client["Browser"]
+        FE["Frontend Vue 3 + Vuetify 3\n(Vite, porta 5173 in dev)"]
+    end
+
+    subgraph AzureCloud["Azure AD (opzionale, strategia MSAL)"]
+        AAD["Azure Active Directory\nlogin.microsoftonline.com"]
+    end
+
+    subgraph Server["Backend .NET 10 - Tama.Api"]
+        MW["Middleware pipeline\nCORS -> ExceptionHandling -> RateLimiter -> Auth -> Endpoints"]
+        EP["Minimal API Endpoints\n(un MapGroup per feature)"]
+        MED["MediatR\nLoggingBehavior -> ValidationBehavior -> Handler"]
+        REPO["Repository (MongoDB.Driver)"]
+    end
+
+    subgraph DB["MongoDB"]
+        COLS["Collections:\nusers, customers, series, drafts,\ntemplates, auditLogs, errorLogs, ..."]
+    end
+
+    FE -- "axios (Bearer JWT interno)\n/api/*" --> MW
+    MW --> EP --> MED --> REPO --> COLS
+    FE -. "1. login redirect (solo se VITE_AUTH_STRATEGY=msal)" .-> AAD
+    AAD -. "2. id_token Azure" .-> FE
+    FE -. "3. POST /api/auth/msal-login (id_token)" .-> EP
+
+    style FE fill:#2b6cb0,color:#fff
+    style Server fill:#2f855a,color:#fff
+    style DB fill:#975a16,color:#fff
+    style AzureCloud fill:#4a5568,color:#fff

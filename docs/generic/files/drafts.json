@@ -1,0 +1,540 @@
+[
+  {
+    "_id": { "$oid": "665a000000000000000003d1" },
+    "number": "PRV-2026-001",
+    "customerId": { "$oid": "665a000000000000000002c1" },
+    "customerName": "Mario Rossi",
+    "createdAt": { "$date": "2026-01-15T09:30:00Z" },
+    "validUntil": { "$date": "2026-02-15T00:00:00Z" },
+    "margin": 0.30,
+    "vatRate": 0.22,
+    "notes": "Ristrutturazione appartamento piano terzo. Cliente richiede consegna entro marzo.",
+    "items": [
+      {
+        "_id": { "$oid": "665a000000000000000004e1" },
+        "productId": { "$oid": "665a000000000000000001b2" },
+        "productCode": "AWS70-W2",
+        "productName": "Schüco AWS 70 – Finestra 2 ante",
+        "type": "window",
+        "width": 1500,
+        "height": 1400,
+        "leafCount": 2,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_CASEMENT_STD", "label": "Ferramenta battente standard", "price": 65.00 }
+        ],
+        "unitPrice": 621.50,
+        "manualPrice": null,
+        "lineTotal": 621.50
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004e2" },
+        "productId": { "$oid": "665a000000000000000001b2" },
+        "productCode": "AWS70-W2",
+        "productName": "Schüco AWS 70 – Finestra 2 ante",
+        "type": "window",
+        "width": 1200,
+        "height": 1400,
+        "leafCount": 2,
+        "openingType": "tilt",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_TILT_STD", "label": "Ferramenta ribalta standard", "price": 88.00 }
+        ],
+        "unitPrice": 558.00,
+        "manualPrice": null,
+        "lineTotal": 558.00
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004e3" },
+        "productId": { "$oid": "665a000000000000000001c2" },
+        "productCode": "AWS70-PF1",
+        "productName": "Schüco AWS 70 – Porta finestra 1 anta",
+        "type": "door",
+        "width": 900,
+        "height": 2400,
+        "leafCount": 1,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_CASEMENT_STD", "label": "Ferramenta battente standard", "price": 65.00 }
+        ],
+        "unitPrice": 742.00,
+        "manualPrice": null,
+        "lineTotal": 742.00
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004e4" },
+        "productId": { "$oid": "665a000000000000000001b1" },
+        "productCode": "AWS70-W1",
+        "productName": "Schüco AWS 70 – Finestra 1 anta",
+        "type": "window",
+        "width": 600,
+        "height": 900,
+        "leafCount": 1,
+        "openingType": "tilt",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_TILT_STD", "label": "Ferramenta ribalta standard", "price": 88.00 }
+        ],
+        "unitPrice": 312.50,
+        "manualPrice": null,
+        "lineTotal": 312.50
+      }
+    ],
+    "totals": {
+      "net": 2234.00,
+      "withMargin": 2904.20,
+      "vat": 639.00,
+      "grand": 3543.20
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000003d2" },
+    "number": "PRV-2026-002",
+    "customerId": { "$oid": "665a000000000000000002c2" },
+    "customerName": "Costruzioni Bianchi Srl",
+    "createdAt": { "$date": "2026-01-28T14:00:00Z" },
+    "validUntil": { "$date": "2026-03-28T00:00:00Z" },
+    "margin": 0.25,
+    "vatRate": 0.22,
+    "notes": "Fornitura per cantiere residenziale via Manzoni. 8 unità abitative, consegna scaglionata.",
+    "items": [
+      {
+        "_id": { "$oid": "665a000000000000000004e5" },
+        "productId": { "$oid": "665a000000000000000001bd" },
+        "productCode": "ASE80-S2FM",
+        "productName": "Schüco ASE 80 – Scorrevole 2 ante (1 fissa + 1 mobile)",
+        "type": "sliding",
+        "width": 3000,
+        "height": 2200,
+        "leafCount": null,
+        "openingType": null,
+        "slidingSchema": "1fix_1mob",
+        "glassType": "triple",
+        "colorType": "special",
+        "colorSurcharge": 0.15,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_SLIDING_STD", "label": "Ferramenta scorrevole standard", "price": 145.00 },
+          { "code": "EXTRA_INSECT_NET", "label": "Zanzariera a rullo", "price": 95.00 }
+        ],
+        "unitPrice": 2044.70,
+        "manualPrice": null,
+        "lineTotal": 2044.70
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004e6" },
+        "productId": { "$oid": "665a000000000000000001bd" },
+        "productCode": "ASE80-S2FM",
+        "productName": "Schüco ASE 80 – Scorrevole 2 ante (1 fissa + 1 mobile)",
+        "type": "sliding",
+        "width": 2400,
+        "height": 2200,
+        "leafCount": null,
+        "openingType": null,
+        "slidingSchema": "1fix_1mob",
+        "glassType": "triple",
+        "colorType": "special",
+        "colorSurcharge": 0.15,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_SLIDING_STD", "label": "Ferramenta scorrevole standard", "price": 145.00 },
+          { "code": "EXTRA_INSECT_NET", "label": "Zanzariera a rullo", "price": 95.00 }
+        ],
+        "unitPrice": 1742.30,
+        "manualPrice": null,
+        "lineTotal": 1742.30
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004e7" },
+        "productId": { "$oid": "665a000000000000000001b5" },
+        "productCode": "AWS75-W2",
+        "productName": "Schüco AWS 75.SI – Finestra 2 ante",
+        "type": "window",
+        "width": 1500,
+        "height": 1400,
+        "leafCount": 2,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "triple",
+        "colorType": "special",
+        "colorSurcharge": 0.15,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_TILTURN", "label": "Ferramenta ribalta-battente", "price": 112.00 }
+        ],
+        "unitPrice": 968.50,
+        "manualPrice": null,
+        "lineTotal": 968.50
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004e8" },
+        "productId": { "$oid": "665a000000000000000001b9" },
+        "productCode": "ADS80-D1",
+        "productName": "Schüco ADS 80 – Porta 1 anta",
+        "type": "door",
+        "width": 1000,
+        "height": 2150,
+        "leafCount": 1,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "special",
+        "colorSurcharge": 0.15,
+        "accessories": [
+          { "code": "HANDLE_INOX", "label": "Maniglia in acciaio inox", "price": 72.00 },
+          { "code": "HW_CASEMENT_STD", "label": "Ferramenta battente standard", "price": 65.00 }
+        ],
+        "unitPrice": 885.40,
+        "manualPrice": null,
+        "lineTotal": 885.40
+      }
+    ],
+    "totals": {
+      "net": 5640.90,
+      "withMargin": 7051.13,
+      "vat": 1551.25,
+      "grand": 8602.38
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000003d3" },
+    "number": "PRV-2026-003",
+    "customerId": { "$oid": "665a000000000000000002c3" },
+    "customerName": "Giulia Ferretti",
+    "createdAt": { "$date": "2026-02-10T10:15:00Z" },
+    "validUntil": { "$date": "2026-03-10T00:00:00Z" },
+    "margin": 0.30,
+    "vatRate": 0.22,
+    "notes": "Villa unifamiliare, classe energetica A4. Cliente vuole tutto Passive House.",
+    "items": [
+      {
+        "_id": { "$oid": "665a000000000000000004e9" },
+        "productId": { "$oid": "665a000000000000000001b7" },
+        "productCode": "AWS90-W1",
+        "productName": "Schüco AWS 90.SI+ – Finestra 1 anta",
+        "type": "window",
+        "width": 800,
+        "height": 1200,
+        "leafCount": 1,
+        "openingType": "tilt",
+        "slidingSchema": null,
+        "glassType": "triple",
+        "colorType": "special",
+        "colorSurcharge": 0.18,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_TILTURN", "label": "Ferramenta ribalta-battente", "price": 112.00 },
+          { "code": "EXTRA_BLIND_INT", "label": "Veneziana interna integrata", "price": 185.00 }
+        ],
+        "unitPrice": 812.60,
+        "manualPrice": null,
+        "lineTotal": 812.60
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004ea" },
+        "productId": { "$oid": "665a000000000000000001b7" },
+        "productCode": "AWS90-W1",
+        "productName": "Schüco AWS 90.SI+ – Finestra 1 anta",
+        "type": "window",
+        "width": 600,
+        "height": 1200,
+        "leafCount": 1,
+        "openingType": "tilt",
+        "slidingSchema": null,
+        "glassType": "triple",
+        "colorType": "special",
+        "colorSurcharge": 0.18,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_TILTURN", "label": "Ferramenta ribalta-battente", "price": 112.00 }
+        ],
+        "unitPrice": 632.40,
+        "manualPrice": null,
+        "lineTotal": 632.40
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004eb" },
+        "productId": { "$oid": "665a000000000000000001c0" },
+        "productCode": "ASE80HI-S2FM",
+        "productName": "Schüco ASE 80 HI – Scorrevole alzante 2 ante (1 fissa + 1 mobile)",
+        "type": "sliding",
+        "width": 4200,
+        "height": 2400,
+        "leafCount": null,
+        "openingType": null,
+        "slidingSchema": "1fix_1mob",
+        "glassType": "triple",
+        "colorType": "special",
+        "colorSurcharge": 0.18,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_SLIDING_LIFT", "label": "Ferramenta alzante scorrevole", "price": 210.00 },
+          { "code": "EXTRA_INSECT_NET", "label": "Zanzariera a rullo", "price": 95.00 },
+          { "code": "EXTRA_BLIND_INT", "label": "Veneziana interna integrata", "price": 185.00 }
+        ],
+        "unitPrice": 4218.80,
+        "manualPrice": null,
+        "lineTotal": 4218.80
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004ec" },
+        "productId": { "$oid": "665a000000000000000001bc" },
+        "productCode": "ADS90-D1",
+        "productName": "Schüco ADS 90.SI – Porta 1 anta",
+        "type": "door",
+        "width": 1000,
+        "height": 2150,
+        "leafCount": 1,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "triple",
+        "colorType": "special",
+        "colorSurcharge": 0.18,
+        "accessories": [
+          { "code": "HANDLE_INOX", "label": "Maniglia in acciaio inox", "price": 72.00 },
+          { "code": "HW_CASEMENT_STD", "label": "Ferramenta battente standard", "price": 65.00 }
+        ],
+        "unitPrice": 1124.60,
+        "manualPrice": null,
+        "lineTotal": 1124.60
+      }
+    ],
+    "totals": {
+      "net": 6788.40,
+      "withMargin": 8824.92,
+      "vat": 1941.48,
+      "grand": 10766.40
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000003d4" },
+    "number": "PRV-2026-004",
+    "customerId": { "$oid": "665a000000000000000002c4" },
+    "customerName": "Immobiliare Verde Srl",
+    "createdAt": { "$date": "2026-03-05T08:45:00Z" },
+    "validUntil": { "$date": "2026-05-05T00:00:00Z" },
+    "margin": 0.22,
+    "vatRate": 0.22,
+    "notes": "Complesso residenziale 12 unità, fornitura standard. Richiesta sconto volume già applicata nel margine.",
+    "items": [
+      {
+        "_id": { "$oid": "665a000000000000000004ed" },
+        "productId": { "$oid": "665a000000000000000001b2" },
+        "productCode": "AWS70-W2",
+        "productName": "Schüco AWS 70 – Finestra 2 ante",
+        "type": "window",
+        "width": 1500,
+        "height": 1400,
+        "leafCount": 2,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_TILTURN", "label": "Ferramenta ribalta-battente", "price": 112.00 }
+        ],
+        "unitPrice": 621.50,
+        "manualPrice": null,
+        "lineTotal": 621.50
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004ee" },
+        "productId": { "$oid": "665a000000000000000001b1" },
+        "productCode": "AWS70-W1",
+        "productName": "Schüco AWS 70 – Finestra 1 anta",
+        "type": "window",
+        "width": 700,
+        "height": 1100,
+        "leafCount": 1,
+        "openingType": "tilt",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_TILT_STD", "label": "Ferramenta ribalta standard", "price": 88.00 }
+        ],
+        "unitPrice": 348.50,
+        "manualPrice": null,
+        "lineTotal": 348.50
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004ef" },
+        "productId": { "$oid": "665a000000000000000001c2" },
+        "productCode": "AWS70-PF1",
+        "productName": "Schüco AWS 70 – Porta finestra 1 anta",
+        "type": "door",
+        "width": 900,
+        "height": 2600,
+        "leafCount": 1,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_CASEMENT_STD", "label": "Ferramenta battente standard", "price": 65.00 }
+        ],
+        "unitPrice": 798.50,
+        "manualPrice": null,
+        "lineTotal": 798.50
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004f0" },
+        "productId": { "$oid": "665a000000000000000001c6" },
+        "productCode": "AWS70-W1-FIX",
+        "productName": "Schüco AWS 70 – Finestra fissa 1 luce",
+        "type": "window",
+        "width": 1200,
+        "height": 600,
+        "leafCount": 0,
+        "openingType": null,
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [],
+        "unitPrice": 218.40,
+        "manualPrice": null,
+        "lineTotal": 218.40
+      }
+    ],
+    "totals": {
+      "net": 1986.90,
+      "withMargin": 2424.02,
+      "vat": 533.28,
+      "grand": 2957.30
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000003d5" },
+    "number": "PRV-2026-005",
+    "customerId": { "$oid": "665a000000000000000002c5" },
+    "customerName": "Roberto Conti",
+    "createdAt": { "$date": "2026-03-20T11:00:00Z" },
+    "validUntil": { "$date": "2026-04-20T00:00:00Z" },
+    "margin": 0.30,
+    "vatRate": 0.22,
+    "notes": "Ristrutturazione completa con prezzo manuale su scorrevole per accordo diretto con cliente.",
+    "items": [
+      {
+        "_id": { "$oid": "665a000000000000000004f1" },
+        "productId": { "$oid": "665a000000000000000001b4" },
+        "productCode": "AWS75-W1",
+        "productName": "Schüco AWS 75.SI – Finestra 1 anta",
+        "type": "window",
+        "width": 900,
+        "height": 1400,
+        "leafCount": 1,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "triple",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_CASEMENT_STD", "label": "Ferramenta battente standard", "price": 65.00 }
+        ],
+        "unitPrice": 718.40,
+        "manualPrice": null,
+        "lineTotal": 718.40
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004f2" },
+        "productId": { "$oid": "665a000000000000000001b4" },
+        "productCode": "AWS75-W1",
+        "productName": "Schüco AWS 75.SI – Finestra 1 anta",
+        "type": "window",
+        "width": 900,
+        "height": 1400,
+        "leafCount": 1,
+        "openingType": "tilt",
+        "slidingSchema": null,
+        "glassType": "triple",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_TILT_STD", "label": "Ferramenta ribalta standard", "price": 88.00 }
+        ],
+        "unitPrice": 741.40,
+        "manualPrice": null,
+        "lineTotal": 741.40
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004f3" },
+        "productId": { "$oid": "665a000000000000000001be" },
+        "productCode": "ASE80-S2MM",
+        "productName": "Schüco ASE 80 – Scorrevole 2 ante (entrambe mobili)",
+        "type": "sliding",
+        "width": 3600,
+        "height": 2200,
+        "leafCount": null,
+        "openingType": null,
+        "slidingSchema": "2mob",
+        "glassType": "triple",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_PREM", "label": "Maniglia in alluminio premium", "price": 54.00 },
+          { "code": "HW_SLIDING_STD", "label": "Ferramenta scorrevole standard", "price": 145.00 },
+          { "code": "EXTRA_INSECT_NET", "label": "Zanzariera a rullo", "price": 95.00 }
+        ],
+        "unitPrice": 2380.00,
+        "manualPrice": 2200.00,
+        "lineTotal": 2200.00
+      },
+      {
+        "_id": { "$oid": "665a000000000000000004f4" },
+        "productId": { "$oid": "665a000000000000000001c3" },
+        "productCode": "AWS70-PF2",
+        "productName": "Schüco AWS 70 – Porta finestra 2 ante",
+        "type": "door",
+        "width": 1800,
+        "height": 2600,
+        "leafCount": 2,
+        "openingType": "casement",
+        "slidingSchema": null,
+        "glassType": "double",
+        "colorType": "standard",
+        "colorSurcharge": 0.00,
+        "accessories": [
+          { "code": "HANDLE_ALU_STD", "label": "Maniglia in alluminio standard", "price": 28.50 },
+          { "code": "HW_CASEMENT_STD", "label": "Ferramenta battente standard", "price": 65.00 }
+        ],
+        "unitPrice": 1124.00,
+        "manualPrice": null,
+        "lineTotal": 1124.00
+      }
+    ],
+    "totals": {
+      "net": 4783.80,
+      "withMargin": 6218.94,
+      "vat": 1368.17,
+      "grand": 7587.11
+    }
+  }
+]

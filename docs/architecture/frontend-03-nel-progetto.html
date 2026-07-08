@@ -1,0 +1,156 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Frontend — Dove si vedono nel codice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 260px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--accent); background: var(--card);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Concetti architetturali</div>
+    <a href="00-indice.html">Concetti architetturali — Indice</a>
+      <a href="backend-01-pattern.html">Backend — Panoramica pattern</a>
+      <a href="backend-02-confronto.html">Backend — Confronto con le alternative</a>
+      <a href="backend-03-nel-progetto.html">Backend — Dove si vedono nel codice</a>
+      <a href="frontend-01-pattern.html">Frontend — Panoramica pattern</a>
+      <a href="frontend-02-confronto.html">Frontend — Confronto con le alternative</a>
+      <a href="frontend-03-nel-progetto.html" class="active">Frontend — Dove si vedono nel codice</a>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+      <a href="../technical/00-indice.html">→ Documentazione tecnica Tama</a>
+    </div>
+  </nav>
+  <main>
+    <h1>Concetti architetturali — Frontend — Livello 3: dove si vedono nel codice di Tama</h1>
+<p>Ancoraggio al codice reale dei concetti spiegati in <a href="frontend-02-confronto.html">frontend-02-confronto</a>. Per il dettaglio implementativo completo, vedi <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a>.</p>
+<h2>Composition API + <code>&lt;script setup&gt;</code></h2>
+<p>File: <code>apps/frontend/src/pages/data/CustomersPage.vue</code></p>
+<pre><code class="language-ts">&lt;script setup lang=&quot;ts&quot;&gt;
+const store = useCustomersStore()
+const { can } = usePermission()
+const deleteDialog = ref(false)
+
+async function confirmDelete() { /* ... */ }
+&lt;/script&gt;
+</code></pre>
+<p>Non c&#39;è nessun <code>export default { data() {...} }</code> in nessun componente del progetto — è stato verificato con l&#39;esplorazione del codice (report agente frontend) che <strong>tutti</strong> i componenti usano <code>&lt;script setup&gt;</code>. Se stai cercando &quot;dove sono i <code>methods</code>&quot; di un componente Vue in questo progetto, cerca semplicemente le <code>function</code> dichiarate nello <code>&lt;script setup&gt;</code>.</p>
+<h2>Reattività e Single Source of Truth</h2>
+<p>Sempre in <code>CustomersPage.vue</code>, nota come lo store viene consumato nel template:</p>
+<pre><code class="language-html">&lt;v-data-table-server
+  :items=&quot;store.items&quot;
+  :items-length=&quot;store.totalCount&quot;
+  :loading=&quot;store.loading&quot;
+</code></pre>
+<p>Il componente <strong>non copia mai</strong> lo stato dello store in variabili locali (<code>const items = store.items</code> non compare da nessuna parte nel progetto, e nemmeno <code>storeToRefs</code> — verificato con grep): accede sempre a <code>store.items</code> direttamente. È questo che mantiene viva la catena reattiva descritta in <a href="frontend-02-confronto.html">frontend-02</a>: quando <code>fetchAll()</code> nello store assegna <code>items.value = result.items</code>, la tabella si ridisegna da sola, senza eventi né callback.</p>
+<p>I dati derivati sono sempre <code>computed</code>, mai copie: le intestazioni tradotte della tabella, ad esempio, sono <code>const headers = computed(() =&gt; [...])</code> — si ricalcolano da sole al cambio lingua perché leggono <code>t(...)</code>, che è reattivo.</p>
+<h2>Composable</h2>
+<p>File: <code>apps/frontend/src/composables/usePermission.ts</code></p>
+<pre><code class="language-ts">export function usePermission() {
+  const authStore = useAuthStore()
+  function can(permission: string): boolean {
+    return authStore.permissions.includes(permission)
+  }
+  function canAny(...permissions: string[]): boolean {
+    return permissions.some(p =&gt; authStore.permissions.includes(p))
+  }
+  return { can, canAny }
+}
+</code></pre>
+<p>Usato identicamente in <strong>ogni</strong> pagina che deve nascondere/mostrare azioni in base ai permessi (<code>v-if=&quot;can(&#39;customers.write&#39;)&quot;</code>). Se dovessi aggiungere una logica riusabile nuova (es. un composable per il debounce coerente con <code>@vueuse/core</code>), questa è la cartella (<code>composables/</code>) e questo il pattern da seguire: una funzione che ritorna un oggetto con lo stato/le funzioni esposte, niente classi.</p>
+<h2>Pinia in setup-syntax</h2>
+<p>File: <code>apps/frontend/src/stores/customers.store.ts</code></p>
+<pre><code class="language-ts">export const useCustomersStore = defineStore(&#39;customers&#39;, () =&gt; {
+  const items = ref&lt;Customer[]&gt;([])
+  const loading = ref(false)
+  // ...
+  async function fetchAll() { /* ... */ }
+  return { items, loading, /* ... */, fetchAll }
+})
+</code></pre>
+<p>Nota la somiglianza strutturale con un composable: <code>ref</code>, funzioni, <code>return</code> esplicito di ciò che va esposto. La differenza pratica tra questo e un composable &quot;normale&quot; è solo <code>defineStore(...)</code>: rende lo stato <strong>condiviso e persistente per tutta la sessione dell&#39;app</strong> invece che locale al singolo componente che lo chiama.</p>
+<h2>MVVM: View → ViewModel → Model</h2>
+<p>Tracciando una singola azione utente attraverso i tre livelli, nel codice reale:</p>
+<ol>
+<li><strong>View</strong> — <code>CustomersPage.vue</code>: <code>@click=&quot;openDeleteDialog(item.id)&quot;</code> → poi <code>store.remove(deleteTarget.value)</code>.</li>
+<li><strong>ViewModel</strong> — <code>customers.store.ts</code>, funzione <code>remove(id)</code>: chiama il service, poi aggiorna lo stato locale (<code>items.value = items.value.filter(...)</code>).</li>
+<li><strong>Model</strong> — <code>customers.service.ts</code>, funzione <code>delete(id)</code>: <code>api.delete(&#39;/api/customers/&#39; + id)</code>.</li>
+</ol>
+<p>Il componente <strong>non</strong> chiama mai <code>customersService</code> direttamente, e lo store <strong>non</strong> chiama mai <code>axios</code> direttamente (chiama sempre <code>customersService</code>) — questa disciplina a due hop è quella imposta dal <code>CLAUDE.md</code> del frontend (&quot;nessuna chiamata axios/fetch diretta nei componenti o negli store&quot;).</p>
+<h2>Interceptor HTTP</h2>
+<p>File: <code>apps/frontend/src/plugins/axios.ts</code>:</p>
+<pre><code class="language-ts">api.interceptors.request.use(config =&gt; {
+  const authStore = useAuthStore()
+  if (authStore.token) config.headers.Authorization = `Bearer ${authStore.token}`
+  return config
+})
+</code></pre>
+<p>Ogni <code>services/*.service.ts</code> importa <code>api</code> da qui (<code>import { api } from &#39;@/plugins/axios&#39;</code>) invece di usare <code>axios</code> direttamente — è così che <strong>tutte</strong> le ~19 famiglie di chiamate del progetto ottengono automaticamente il token, senza doverlo aggiungere manualmente in ciascuna.</p>
+<h2>Route guard</h2>
+<p>File: <code>apps/frontend/src/router/index.ts</code>:</p>
+<pre><code class="language-ts">router.beforeEach(async (to) =&gt; {
+  const authStore = useAuthStore()
+  if (to.meta.requiresAuth &amp;&amp; !authStore.isAuthenticated) {
+    return { name: &#39;login&#39;, query: { returnUrl: to.fullPath } }
+  }
+  if (to.meta.permission &amp;&amp; !authStore.permissions.includes(to.meta.permission as string)) {
+    return { name: &#39;dashboard&#39; }
+  }
+})
+</code></pre>
+<p>Da notare: questo guard usa <code>authStore.permissions</code>, la stessa lista di permessi letta dal claim JWT <code>&quot;permissions&quot;</code> popolato dal backend (vedi documentazione concetti backend, sezione claims-based authorization) — è la <strong>stessa fonte di verità</strong>, replicata sul client per UX, non un sistema di permessi separato o ridondante da mantenere manualmente allineato.</p>
+<h2>Optimistic/local update dopo conferma server</h2>
+<pre><code class="language-ts">async function remove(id: string) {
+  await customersService.delete(id)          // aspetta conferma server
+  items.value = items.value.filter(x =&gt; x.id !== id)   // poi aggiorna localmente
+  totalCount.value--
+}
+</code></pre>
+<p>Da <code>customers.store.ts</code> — nota che l&#39;<code>await</code> precede l&#39;aggiornamento locale: se la <code>delete</code> fallisce, l&#39;<code>throw</code> propagato dall&#39;interceptor axios interrompe la funzione <strong>prima</strong> di modificare <code>items</code>, quindi lo stato locale non si disallinea mai da quello reale sul server in caso di errore.</p>
+
+  </main>
+</div>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configurazione Azure — App Registration per MSAL</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-card: #f6f8fa;
+      --bg-code: #f0f2f5;
+      --bg-pre: #f6f8fa;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --text-muted: #636c76;
+      --accent: #0969da;
+      --accent-hover: #0550ae;
+      --green: #1a7f37;
+      --yellow: #9a6700;
+      --red: #cf222e;
+      --purple: #8250df;
+      --orange: #bc4c00;
+      --blockquote-border: #0969da;
+      --blockquote-bg: #f0f6ff;
+      --table-head: #f6f8fa;
+      --table-row-alt: #fafbfc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .doc-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem 2.5rem 1.6rem;
+      margin-bottom: 2.5rem;
+    }
+    .doc-header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: .5rem .75rem;
+    }
+    .meta-item {
+      font-size: .85rem;
+      color: var(--text-muted);
+    }
+    .meta-item strong { color: var(--text); }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem 1.8rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 1rem; }
+    .toc ol { padding-left: 1.4rem; }
+    .toc li { padding: .18rem 0; }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    /* ── Section headings ── */
+    h1, h2, h3, h4 {
+      color: var(--text);
+      scroll-margin-top: 1.5rem;
+    }
+    h1 { font-size: 1.6rem; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+    h2 { font-size: 1.25rem; margin: 2rem 0 .75rem; color: var(--accent); }
+    h3 { font-size: 1.05rem; margin: 1.5rem 0 .5rem; color: var(--orange); }
+    h4 { font-size: .95rem; margin: 1.2rem 0 .4rem; color: var(--purple); }
+
+    /* ── Paragraphs ── */
+    p { margin: .75rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+    /* ── Links ── */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; color: var(--accent-hover); }
+
+    /* ── Blockquotes ── */
+    blockquote {
+      border-left: 4px solid var(--blockquote-border);
+      background: var(--blockquote-bg);
+      border-radius: 0 8px 8px 0;
+      padding: .8rem 1.2rem;
+      margin: 1rem 0;
+      color: var(--text-muted);
+      font-size: .93rem;
+    }
+    blockquote strong { color: var(--text); }
+    blockquote p { margin: .3rem 0; }
+    blockquote.warn { border-color: var(--yellow); background: #fff8c5; }
+    blockquote.warn strong { color: var(--yellow); }
+
+    /* ── Code ── */
+    code {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: .15em .4em;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .88em;
+      color: var(--orange);
+    }
+    pre {
+      background: var(--bg-pre);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.3rem;
+      overflow-x: auto;
+      margin: .9rem 0 1.1rem;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .865rem;
+      line-height: 1.6;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+      color: var(--text);
+    }
+    /* language-specific coloring helpers */
+    pre.lang-json code  { color: #0550ae; }
+    pre.lang-env  code  { color: #116329; }
+    pre.lang-ts   code  { color: #953800; }
+    pre.lang-bash code  { color: #0550ae; }
+    pre.lang-ascii code { color: #636c76; white-space: pre; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+    thead th {
+      background: var(--table-head);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-align: left;
+      padding: .55rem .9rem;
+      border: 1px solid var(--border);
+    }
+    tbody td {
+      padding: .5rem .9rem;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) td { background: var(--table-row-alt); }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; padding-left: .5rem; margin: .75rem 0; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      padding: .25rem 0;
+      font-size: .93rem;
+    }
+    .checklist li input[type="checkbox"] {
+      margin-top: .25rem;
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    /* ── Step badges ── */
+    .step-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #ddf4ff, #f0f6ff);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 6px;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      padding: .15rem .55rem;
+      margin-bottom: .5rem;
+      text-transform: uppercase;
+    }
+
+    /* ── Callout boxes ── */
+    .callout {
+      border-radius: 8px;
+      padding: .85rem 1.1rem;
+      margin: 1rem 0;
+      font-size: .91rem;
+      border: 1px solid transparent;
+    }
+    .callout-info    { background: #f0f6ff; border-color: var(--accent);  color: #0550ae; }
+    .callout-warn    { background: #fff8c5; border-color: var(--yellow); color: #7d4e00; }
+    .callout-danger  { background: #ffebe9; border-color: var(--red);    color: #a40e26; }
+    .callout-success { background: #dcffe4; border-color: var(--green);  color: #116329; }
+    .callout strong  { color: inherit; }
+
+    /* ── Misc utils ── */
+    ul, ol { padding-left: 1.4rem; margin: .5rem 0 .75rem; }
+    li { margin: .25rem 0; }
+    strong { color: #1f2328; }
+    em { color: var(--text-muted); font-style: italic; }
+
+    .badge-ok  { color: var(--green); font-weight: 700; }
+    .badge-err { color: var(--red);   font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── HEADER ── -->
+  <div class="doc-header">
+    <h1>&#9729;&#65039; Configurazione Azure — App Registration per MSAL</h1>
+    <div class="meta-grid">
+      <div class="meta-item"><strong>Documento:</strong> Guida step-by-step per configurare Azure AD (Entra ID)</div>
+      <div class="meta-item"><strong>Lingua:</strong> Italiano</div>
+      <div class="meta-item"><strong>Ultimo aggiornamento:</strong> 2026-03-29</div>
+      <div class="meta-item"><strong>Versione:</strong> 1.0</div>
+      <div class="meta-item"><strong>Prerequisiti:</strong> Account Azure con permessi App Registration</div>
+    </div>
+  </div>
+
+  <!-- ── TOC ── -->
+  <nav class="toc">
+    <h2>&#128203; Indice</h2>
+    <ol>
+      <li><a href="#panoramica">Panoramica</a> — cosa serve e perché</li>
+      <li><a href="#step1">Step 1: Accedere al portale Azure</a></li>
+      <li><a href="#step2">Step 2: Creare una App Registration</a></li>
+      <li><a href="#step3">Step 3: Configurare la piattaforma SPA</a></li>
+      <li><a href="#step4">Step 4: Copiare TenantId e ClientId</a></li>
+      <li><a href="#step5">Step 5: Configurare i permessi API</a></li>
+      <li><a href="#step6">Step 6: Configurare il progetto Tama</a></li>
+      <li><a href="#step7">Step 7: Verificare il funzionamento</a></li>
+      <li><a href="#produzione">Configurazione per Produzione</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ol>
+  </nav>
+
+  <hr />
+
+  <!-- ── PANORAMICA ── -->
+  <section id="panoramica">
+    <h1>Panoramica</h1>
+
+    <h2>Cosa serve?</h2>
+    <p>Per far funzionare l'autenticazione MSAL nel progetto Tama servono due valori che si ottengono da Azure:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Valore</th><th>Cos'è</th><th>Dove si usa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>TenantId</strong></td><td>Identificativo dell'organizzazione Azure AD (la tua azienda)</td><td>Backend + Frontend</td></tr>
+          <tr><td><strong>ClientId</strong></td><td>Identificativo dell'app registrata in Azure</td><td>Backend + Frontend</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Come funziona il flusso</h2>
+<pre class="lang-ascii"><code>┌─────────────────────────────────┐
+│   Azure AD (Entra ID)           │
+│                                 │
+│  App Registration               │
+│  ├─ ClientId: edf643a0-...     │
+│  ├─ TenantId: b04fdd3d-...     │
+│  ├─ Redirect URI: /login        │
+│  └─ Piattaforma: SPA            │
+│                                 │
+│  Utenti autorizzati:            │
+│  ├─ mario@tuaazienda.com        │
+│  └─ giulia@tuaazienda.com       │
+└────────────────┬────────────────┘
+                 │
+                 │  Token JWT firmato da Microsoft
+                 │  (contiene email dell'utente)
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│   Tama Frontend           │
+│   @azure/msal-browser           │
+│   → Invia token al backend      │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│   Tama Backend            │
+│   Legge email dal token Azure   │
+│   Cerca utente locale (MongoDB) │
+│   Genera JWT interno            │
+└─────────────────────────────────┘</code></pre>
+
+    <blockquote>
+      <p><strong>Importante</strong>: L'utente <strong>deve esistere sia in Azure AD che nel database locale</strong> di Tama (con la stessa email). Azure AD autentica l'identità, ma i permessi vengono dal database locale.</p>
+    </blockquote>
+  </section>
+
+  <hr />
+
+  <!-- ── STEP 1 ── -->
+  <section id="step1">
+    <h1><span class="step-badge">Step 1</span> Accedere al portale Azure</h1>
+    <ol>
+      <li>Vai su <a href="https://portal.azure.com" target="_blank">https://portal.azure.com</a></li>
+      <li>Accedi con un account che ha il ruolo <strong>Amministratore globale</strong> o <strong>Amministratore applicazioni</strong></li>
+      <li>Nella barra di ricerca in alto, cerca <strong>"Microsoft Entra ID"</strong> (ex Azure Active Directory)</li>
+    </ol>
+<pre class="lang-ascii"><code>┌─────────────────────────────────────────────────────┐
+│  🔍 Cerca: "Microsoft Entra ID"                     │
+│                                                     │
+│  Risultati:                                         │
+│  ► Microsoft Entra ID ← Clicca qui                  │
+└─────────────────────────────────────────────────────┘</code></pre>
+    <blockquote>
+      <p><strong>Nota</strong>: Microsoft ha rinominato "Azure Active Directory" in "Microsoft Entra ID". Sono la stessa cosa.</p>
+    </blockquote>
+  </section>
+
+  <hr />
+
+  <!-- ── STEP 2 ── -->
+  <section id="step2">
+    <h1><span class="step-badge">Step 2</span> Creare una App Registration</h1>
+    <ol>
+      <li>Nel pannello di Microsoft Entra ID, clicca <strong>"Registrazioni app"</strong> nel menu laterale (sotto "Gestisci")</li>
+      <li>Clicca <strong>"+ Nuova registrazione"</strong> in alto</li>
+    </ol>
+<pre class="lang-ascii"><code>┌─────────────────────────────────────────────────────┐
+│  Registra un'applicazione                           │
+│                                                     │
+│  Nome: Tama                                   │
+│        (o un nome descrittivo a tua scelta)         │
+│                                                     │
+│  Tipi di account supportati:                        │
+│  ○ Account solo in questa directory organizzativa   │
+│    (Single tenant) ← SELEZIONA QUESTO               │
+│  ○ Account in qualsiasi directory organizzativa     │
+│  ○ Account in qualsiasi directory + account         │
+│    Microsoft personali                              │
+│                                                     │
+│  URI di reindirizzamento (facoltativo):             │
+│  → Configureremo dopo nello Step 3                  │
+│                                                     │
+│  [ Registra ]                                       │
+└─────────────────────────────────────────────────────┘</code></pre>
+
+    <h3>Quale tipo di account scegliere?</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Opzione</th><th>Quando usarla</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Solo questa directory (Single tenant)</strong></td><td>&#9989; <strong>Consigliato</strong> — se tutti gli utenti appartengono alla stessa organizzazione Azure AD</td></tr>
+          <tr><td><strong>Qualsiasi directory (Multi-tenant)</strong></td><td>Se utenti di organizzazioni Azure diverse devono accedere</td></tr>
+          <tr><td><strong>Qualsiasi directory + personali</strong></td><td>Se anche account Microsoft personali (outlook.com, hotmail) devono accedere</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <blockquote>
+      <p>Per la maggior parte dei casi aziendali, <strong>Single tenant</strong> è la scelta corretta.</p>
+    </blockquote>
+    <ol start="3">
+      <li>Clicca <strong>"Registra"</strong></li>
+      <li>Verrai reindirizzato alla pagina di panoramica della nuova app</li>
+    </ol>
+  </section>
+
+  <hr />
+
+  <!-- ── STEP 3 ── -->
+  <section id="step3">
+    <h1><span class="step-badge">Step 3</span> Configurare la piattaforma SPA</h1>
+    <p>Questo è il passaggio <strong>più importante</strong> — senza questa configurazione, MSAL non funziona.</p>
+    <ol>
+      <li>Nella pagina della tua app, vai a <strong>"Autenticazione"</strong> nel menu laterale</li>
+      <li>Clicca <strong>"+ Aggiungi una piattaforma"</strong></li>
+      <li>Seleziona <strong>"Applicazione a pagina singola (SPA)"</strong></li>
+    </ol>
+<pre class="lang-ascii"><code>┌─────────────────────────────────────────────────────┐
+│  Configura applicazione a pagina singola (SPA)      │
+│                                                     │
+│  URI di reindirizzamento:                           │
+│  ┌─────────────────────────────────────────────┐    │
+│  │ http://localhost:5173/login                  │    │ ← Sviluppo
+│  └─────────────────────────────────────────────┘    │
+│                                                     │
+│  [ Configura ]                                      │
+└─────────────────────────────────────────────────────┘</code></pre>
+    <ol start="4">
+      <li>Clicca <strong>"Configura"</strong></li>
+    </ol>
+
+    <h3>Aggiungere URI aggiuntivi</h3>
+    <p>Dopo aver configurato la piattaforma, puoi aggiungere altri URI di reindirizzamento:</p>
+    <ul>
+      <li>Torna su <strong>"Autenticazione"</strong></li>
+      <li>Nella sezione <strong>"Applicazione a pagina singola (SPA)"</strong> → <strong>"URI di reindirizzamento"</strong></li>
+      <li>Clicca <strong>"Aggiungi URI"</strong> per aggiungere altri ambienti:</li>
+    </ul>
+<pre class="lang-ascii"><code>URI di reindirizzamento:
+┌─────────────────────────────────────────────────────┐
+│ ✓ http://localhost:5173/login        ← Sviluppo     │
+│ ✓ http://localhost:5174/login        ← Porta alt.   │
+│ ✓ https://tuodominio.com/login       ← Produzione   │
+└─────────────────────────────────────────────────────┘</code></pre>
+    <blockquote class="warn">
+      <p><strong>&#9888;&#65039; Attenzione</strong>: L'URI di reindirizzamento <strong>deve corrispondere esattamente</strong> a <code>window.location.origin + '/login'</code> configurato nel file <code>plugins/msal.ts</code> del frontend. Ogni mismatch causa un errore <code>redirect_uri_mismatch</code>.</p>
+    </blockquote>
+
+    <h3>Impostazioni avanzate</h3>
+    <p>Scorri verso il basso nella pagina "Autenticazione":</p>
+<pre class="lang-ascii"><code>┌─────────────────────────────────────────────────────┐
+│  Concessione implicita e flussi ibridi               │
+│                                                     │
+│  ☐ Token di accesso                                 │
+│  ☐ Token ID                                         │
+│                                                     │
+│  → Lascia ENTRAMBI DESELEZIONATI                    │
+│  (Il progetto usa il flusso Authorization Code       │
+│   con PKCE, non il flusso implicito)                │
+└─────────────────────────────────────────────────────┘</code></pre>
+    <blockquote>
+      <p>Il flusso <strong>Authorization Code con PKCE</strong> è più sicuro del flusso implicito e viene usato automaticamente dalla libreria <code>@azure/msal-browser</code>.</p>
+    </blockquote>
+  </section>
+
+  <hr />
+
+  <!-- ── STEP 4 ── -->
+  <section id="step4">
+    <h1><span class="step-badge">Step 4</span> Copiare TenantId e ClientId</h1>
+
+    <h3>ClientId (ID applicazione)</h3>
+    <ol>
+      <li>Vai alla pagina <strong>"Panoramica"</strong> della tua app registration</li>
+      <li>Copia il valore <strong>"ID applicazione (client)"</strong></li>
+    </ol>
+<pre class="lang-ascii"><code>┌─────────────────────────────────────────────────────┐
+│  Panoramica                                         │
+│                                                     │
+│  Nome visualizzato:  Tama                     │
+│  ID applicazione (client):                          │
+│    edf643a0................9ed9  📋 Copia  │
+│                                                     │
+│  ID della directory (tenant):                       │
+│    b04fdd3d................1b5f07  📋 Copia  │
+└─────────────────────────────────────────────────────┘</code></pre>
+
+    <h3>TenantId (ID directory)</h3>
+    <p>Si trova nella stessa pagina <strong>"Panoramica"</strong>, campo <strong>"ID della directory (tenant)"</strong>.</p>
+    <blockquote>
+      <p><strong>Conserva entrambi i valori</strong>: ti serviranno nello Step 6 per configurare backend e frontend.</p>
+    </blockquote>
+  </section>
+
+  <hr />
+
+  <!-- ── STEP 5 ── -->
+  <section id="step5">
+    <h1><span class="step-badge">Step 5</span> Configurare i permessi API</h1>
+    <p>Configura i permessi API su Azure esponendo la tua app come API e definendo uno scope custom <code>access_as_user</code>.</p>
+    <blockquote>
+      <p><strong>Nota</strong>: il backend di Tama <strong>valida la firma (JWKS), l'issuer e l'audience</strong> del token Azure. Configurare "Expose an API" con lo scope <code>access_as_user</code> fa sì che il frontend ottenga un <strong>Access Token</strong> (anziché un semplice ID Token). Il backend accetta come audience sia <code>api://{clientId}</code> sia il <code>clientId</code> nudo, quindi funziona anche se lo scope non è ancora stato esposto — ma è comunque consigliato configurarlo per ottenere un Access Token corretto.</p>
+    </blockquote>
+
+    <h2>Expose an API + Scope custom <code>access_as_user</code></h2>
+
+    <h3>Passo 1: Expose an API</h3>
+    <ol>
+      <li>Vai alla sezione <strong>"Esponi un'API"</strong> nel menu laterale</li>
+      <li>Clicca <strong>"Aggiungi"</strong> accanto a "URI ID applicazione". Azure proporrà automaticamente:
+        <pre class="lang-ascii"><code>api://edf643a0................9ed9</code></pre>
+        (dove <code>edf643a0-...</code> è il tuo ClientId)
+      </li>
+      <li>Conferma cliccando <strong>"Salva"</strong></li>
+    </ol>
+
+    <h3>Passo 2: Aggiungere lo scope</h3>
+    <ol>
+      <li>Clicca <strong>"+ Aggiungi un ambito"</strong></li>
+      <li>Compila i campi:</li>
+    </ol>
+<pre class="lang-ascii"><code>┌─────────────────────────────────────────────────────┐
+│  Aggiungi un ambito                                 │
+│                                                     │
+│  Nome ambito:      access_as_user                   │
+│                                                     │
+│  Autorizzazione:   Amministratori e utenti          │
+│                    (Admins and users)                │
+│                                                     │
+│  Nome visualizzato consenso amministratore:         │
+│    Accedi a Tama come utente                  │
+│                                                     │
+│  Descrizione consenso amministratore:               │
+│    Consente all'app di accedere a Tama        │
+│    per conto dell'utente connesso.                  │
+│                                                     │
+│  Nome visualizzato consenso utente:                 │
+│    Accedi a Tama come utente                  │
+│                                                     │
+│  Descrizione consenso utente:                       │
+│    Consente all'app di accedere a Tama        │
+│    per conto tuo.                                   │
+│                                                     │
+│  Stato: Abilitato                                   │
+│                                                     │
+│  [ Aggiungi ambito ]                                │
+└─────────────────────────────────────────────────────┘</code></pre>
+    <ol start="3">
+      <li>Lo scope risultante sarà: <code>api://edf643a0-.../access_as_user</code></li>
+    </ol>
+
+    <h3>Passo 3: Aggiungere il permesso API</h3>
+    <ol>
+      <li>Vai alla sezione <strong>"Autorizzazioni API"</strong> nel menu laterale</li>
+      <li>Clicca <strong>"+ Aggiungi un'autorizzazione"</strong></li>
+      <li>Seleziona il tab <strong>"Le mie API"</strong> (My APIs)</li>
+      <li>Seleziona la tua App Registration (es. "Tama")</li>
+      <li>Vedrai solo <strong>"Autorizzazioni delegate"</strong> — selezionalo</li>
+      <li>Spunta il check <strong><code>access_as_user</code></strong></li>
+      <li>Clicca <strong>"Aggiungi autorizzazioni"</strong></li>
+    </ol>
+<pre class="lang-ascii"><code>┌─────────────────────────────────────────────────────┐
+│  Autorizzazioni API                                 │
+│                                                     │
+│  API / Nome permesso        Tipo          Stato     │
+│  ─────────────────────────────────────────────────  │
+│  Tama (api://edf643a0-...)                    │
+│    └─ access_as_user        Delegato    ✅ Concesso  │
+└─────────────────────────────────────────────────────┘</code></pre>
+
+    <p><strong>Frontend — <code>services/msal.service.ts</code></strong> (configurazione corrispondente):</p>
+<pre class="lang-ts"><code>const loginRequest = {
+  scopes: ['api://edf643a0................9ed9/access_as_user'],
+}</code></pre>
+    <blockquote>
+      <p>Sostituisci il ClientId nell'URI con il tuo.</p>
+      <p><strong>Nota</strong>: MSAL aggiunge automaticamente <code>openid</code> e <code>profile</code> alla richiesta anche se non li specifichi esplicitamente negli scope. Il frontend invia l'<strong>Access Token</strong> (non l'ID Token) al backend.</p>
+    </blockquote>
+
+    <hr />
+
+    <h2>Concedere il consenso amministratore</h2>
+    <p>Indipendentemente dall'opzione scelta, se vedi lo stato "Non concesso" accanto ai permessi:</p>
+    <ol>
+      <li>Clicca <strong>"Concedi consenso amministratore per [tua organizzazione]"</strong></li>
+      <li>Conferma cliccando <strong>"Sì"</strong></li>
+    </ol>
+    <blockquote>
+      <p>Senza il consenso amministratore, ogni utente dovrà accettare individualmente i permessi al primo login. Con il consenso amministratore, il processo è trasparente.</p>
+    </blockquote>
+  </section>
+
+  <hr />
+
+  <!-- ── STEP 6 ── -->
+  <section id="step6">
+    <h1><span class="step-badge">Step 6</span> Configurare il progetto Tama</h1>
+    <p>Ora che hai <code>TenantId</code> e <code>ClientId</code>, configura il progetto.</p>
+
+    <h3>Backend — <code>appsettings.local.json</code></h3>
+<pre class="lang-json"><code>{
+  "Auth": {
+    "Strategy": "Msal",
+    "Jwt": {
+      "Secret": "CAMBIA_QUESTO_SEGRETO_IN_PRODUZIONE_MIN_32_CHARS"
+    },
+    "Msal": {
+      "TenantId": "b04fdd3d................1b5f07",
+      "ClientId": "edf643a0................9ed9"
+    }
+  }
+}</code></pre>
+    <blockquote>
+      <p>Sostituisci i valori di <code>TenantId</code> e <code>ClientId</code> con quelli copiati dallo Step 4.</p>
+    </blockquote>
+
+    <h3>Frontend — <code>.env.local</code></h3>
+    <p>Crea (o modifica) il file <code>.env.local</code> nella cartella <code>apps/frontend/</code>:</p>
+<pre class="lang-env"><code>VITE_API_BASE_URL=http://localhost:5001
+VITE_AUTH_STRATEGY=Msal
+VITE_MSAL_CLIENT_ID=edf643a0................9ed9
+VITE_MSAL_TENANT_ID=b04fdd3d................1b5f07</code></pre>
+    <blockquote>
+      <p>Sostituisci i valori con quelli copiati dallo Step 4.</p>
+    </blockquote>
+
+    <h3>Corrispondenza valori</h3>
+    <p>Assicurati che i valori coincidano in tutti i file:</p>
+<pre class="lang-ascii"><code>Azure Portal                    Backend                     Frontend
+─────────────────────────────────────────────────────────────────────
+ID applicazione (client)   →   Auth:Msal:ClientId      →   VITE_MSAL_CLIENT_ID
+ID directory (tenant)      →   Auth:Msal:TenantId      →   VITE_MSAL_TENANT_ID</code></pre>
+  </section>
+
+  <hr />
+
+  <!-- ── STEP 7 ── -->
+  <section id="step7">
+    <h1><span class="step-badge">Step 7</span> Verificare il funzionamento</h1>
+
+    <h3>Checklist pre-test</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" /> App Registration creata su Azure</li>
+      <li><input type="checkbox" /> Piattaforma SPA configurata con redirect URI <code>http://localhost:5173/login</code></li>
+      <li><input type="checkbox" /> Expose an API configurato con scope <code>access_as_user</code> e consenso amministratore concesso</li>
+      <li><input type="checkbox" /> <code>TenantId</code> e <code>ClientId</code> configurati nel backend (<code>appsettings.local.json</code>)</li>
+      <li><input type="checkbox" /> <code>VITE_AUTH_STRATEGY=Msal</code> nel frontend (<code>.env.local</code>)</li>
+      <li><input type="checkbox" /> <code>VITE_MSAL_CLIENT_ID</code> e <code>VITE_MSAL_TENANT_ID</code> configurati nel frontend</li>
+      <li><input type="checkbox" /> L'utente Azure AD esiste anche nel database locale di Tama (stessa email)</li>
+    </ul>
+
+    <h3>Test</h3>
+    <ol>
+      <li>Avvia il backend:
+<pre class="lang-bash"><code>pnpm serve:backend</code></pre>
+      </li>
+      <li>Avvia il frontend:
+<pre class="lang-bash"><code>pnpm serve:frontend</code></pre>
+      </li>
+      <li>Vai su <code>http://localhost:5173</code></li>
+      <li>Dovresti vedere il bottone <strong>"Login con Microsoft"</strong></li>
+      <li>Clicca → verrai reindirizzato a <code>login.microsoftonline.com</code></li>
+      <li>Inserisci le credenziali dell'utente Azure AD</li>
+      <li>Dopo il login, verrai reindirizzato a <code>http://localhost:5173/login</code></li>
+      <li>Il frontend invia il token Azure al backend → il backend genera il JWT interno → sei loggato</li>
+    </ol>
+
+    <h3>Verifica nel browser (DevTools → Network)</h3>
+<pre class="lang-ascii"><code>1. POST http://localhost:5001/api/auth/msal-login
+   Body: { "azureToken": "eyJ..." }
+   Response: { "accessToken": "eyJ...", "expiresAt": "...", ... }
+
+2. Da questo punto, tutte le richieste usano il JWT interno:
+   GET http://localhost:5001/api/users
+   Headers: Authorization: Bearer eyJ...</code></pre>
+  </section>
+
+  <hr />
+
+  <!-- ── PRODUZIONE ── -->
+  <section id="produzione">
+    <h1>Configurazione per Produzione</h1>
+
+    <h3>Aggiungere il dominio di produzione</h3>
+    <ol>
+      <li>Torna su Azure Portal → App Registration → <strong>Autenticazione</strong></li>
+      <li>Nella sezione SPA, aggiungi l'URI di produzione:</li>
+    </ol>
+<pre class="lang-ascii"><code>URI di reindirizzamento:
+┌─────────────────────────────────────────────────────┐
+│ ✓ http://localhost:5173/login        ← Sviluppo     │
+│ ✓ https://app.tuodominio.com/login   ← Produzione   │
+└─────────────────────────────────────────────────────┘</code></pre>
+    <blockquote>
+      <p>In produzione è <strong>obbligatorio</strong> usare HTTPS.</p>
+    </blockquote>
+
+    <h3>App Registration separata (consigliato)</h3>
+    <p>Per ambienti production è consigliato creare una <strong>App Registration separata</strong>:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ambiente</th><th>App Registration</th><th>Redirect URI</th></tr></thead>
+        <tbody>
+          <tr><td>Development</td><td>Tama-Dev</td><td><code>http://localhost:5173/login</code></td></tr>
+          <tr><td>Production</td><td>Tama-Prod</td><td><code>https://app.tuodominio.com/login</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Questo garantisce isolamento completo tra gli ambienti e permette policy diverse.</p>
+
+    <h3>Variabili d'ambiente in produzione</h3>
+    <p>Non committare mai <code>appsettings.local.json</code> o <code>.env.local</code>. In produzione, usa:</p>
+    <ul>
+      <li><strong>Backend</strong>: variabili d'ambiente di sistema o Azure App Configuration
+<pre class="lang-env"><code>Auth__Msal__TenantId=your-tenant-id
+Auth__Msal__ClientId=your-client-id
+Auth__Jwt__Secret=your-production-secret-min-32-chars</code></pre>
+      </li>
+      <li><strong>Frontend</strong>: variabili d'ambiente nel processo di build (CI/CD)
+<pre class="lang-env"><code>VITE_MSAL_CLIENT_ID=your-client-id
+VITE_MSAL_TENANT_ID=your-tenant-id
+VITE_AUTH_STRATEGY=Msal</code></pre>
+      </li>
+    </ul>
+  </section>
+
+  <hr />
+
+  <!-- ── TROUBLESHOOTING ── -->
+  <section id="troubleshooting">
+    <h1>Troubleshooting</h1>
+
+    <h2>Errori Comuni</h2>
+
+    <h3><code>redirect_uri_mismatch</code></h3>
+    <p><strong>Causa</strong>: L'URI di reindirizzamento nel browser non corrisponde a quello registrato su Azure.</p>
+    <p><strong>Soluzione</strong>:</p>
+    <ol>
+      <li>Verifica l'URI esatto nel browser (es. <code>http://localhost:5173/login</code>)</li>
+      <li>Vai su Azure → App Registration → Autenticazione</li>
+      <li>Assicurati che l'URI sia <strong>identico</strong> (attenzione a: protocollo, porta, path, trailing slash)</li>
+    </ol>
+<pre class="lang-ascii"><code><span style="color:#3fb950">✅ http://localhost:5173/login</span>
+<span style="color:#f85149">❌ http://localhost:5173/login/     ← trailing slash</span>
+<span style="color:#f85149">❌ https://localhost:5173/login     ← https vs http</span>
+<span style="color:#f85149">❌ http://localhost:5174/login      ← porta diversa</span></code></pre>
+
+    <h3><code>AADSTS700054: response_type 'id_token' is not enabled</code></h3>
+    <p><strong>Causa</strong>: Hai selezionato la piattaforma <strong>"Web"</strong> invece di <strong>"SPA"</strong>.</p>
+    <p><strong>Soluzione</strong>:</p>
+    <ol>
+      <li>Azure → App Registration → Autenticazione</li>
+      <li>Rimuovi la piattaforma "Web" se presente</li>
+      <li>Aggiungi la piattaforma <strong>"Applicazione a pagina singola (SPA)"</strong></li>
+    </ol>
+    <blockquote>
+      <p>La differenza è fondamentale: "Web" usa il flusso implicito (token nell'URL), "SPA" usa Authorization Code con PKCE (più sicuro).</p>
+    </blockquote>
+
+    <h3><code>AADSTS50011: The redirect URI specified in the request does not match</code></h3>
+    <p>Stesso problema di <code>redirect_uri_mismatch</code>. Vedi sopra.</p>
+
+    <h3><code>AADSTS65001: The user or administrator has not consented to use the application</code></h3>
+    <p><strong>Causa</strong>: I permessi API non hanno il consenso dell'amministratore.</p>
+    <p><strong>Soluzione</strong>:</p>
+    <ol>
+      <li>Azure → App Registration → Autorizzazioni API</li>
+      <li>Clicca <strong>"Concedi consenso amministratore"</strong></li>
+    </ol>
+
+    <h3><code>Nessun utente locale con email 'xxx@yyy.com'</code></h3>
+    <p><strong>Causa</strong>: L'utente esiste su Azure AD ma <strong>non</strong> nel database locale di Tama.</p>
+    <p><strong>Soluzione</strong>:</p>
+    <ol>
+      <li>Crea l'utente nel pannello admin di Tama con la <strong>stessa email</strong> dell'account Azure AD</li>
+      <li>L'email deve corrispondere al campo <code>preferred_username</code> del token Azure (solitamente è l'email UPN dell'utente)</li>
+    </ol>
+    <blockquote>
+      <p><strong>Ricorda</strong>: Azure AD verifica l'identità, ma l'utente deve esistere nel database locale per avere ruoli e permessi nel sistema.</p>
+    </blockquote>
+
+    <h3><code>IDX10214: Audience validation failed</code></h3>
+    <p><strong>Causa</strong>: Il claim <code>aud</code> nel token Azure non corrisponde all'audience atteso dal backend. Succede tipicamente quando lo scope <code>access_as_user</code> non è stato ancora esposto su Azure (in quel caso <code>aud</code> contiene il ClientId nudo anziché <code>api://{clientId}</code>), oppure quando si usa una versione recente (7.x+) di <code>Microsoft.IdentityModel</code> che ha una validazione audience più restrittiva.</p>
+    <p><strong>Soluzione</strong>:</p>
+    <ol>
+      <li>Decodifica il token su <a href="https://jwt.ms" target="_blank">https://jwt.ms</a> e controlla il valore esatto del claim <code>aud</code></li>
+      <li>Verifica che lo Step 5 ("Expose an API" + scope <code>access_as_user</code>) sia stato completato correttamente</li>
+      <li>Se il problema persiste, il backend di Tama usa un <code>AudienceValidator</code> custom che accetta sia <code>clientId</code> sia <code>api://{clientId}</code> — verifica che il codice in <code>MsalLoginHandler.cs</code> sia aggiornato</li>
+    </ol>
+
+    <h3><code>Token Azure non valido</code></h3>
+    <p><strong>Causa</strong>: Il frontend ha inviato un token malformato o scaduto.</p>
+    <p><strong>Soluzione</strong>:</p>
+    <ol>
+      <li>Verifica che <code>VITE_MSAL_CLIENT_ID</code> e <code>VITE_MSAL_TENANT_ID</code> nel frontend siano corretti</li>
+      <li>Pulisci il localStorage del browser e riprova</li>
+      <li>Controlla la console del browser per errori MSAL</li>
+    </ol>
+
+    <h3>Login funziona ma l'utente non ha permessi</h3>
+    <p><strong>Causa</strong>: L'utente locale nel database non ha ruoli/permessi assegnati.</p>
+    <p><strong>Soluzione</strong>:</p>
+    <ol>
+      <li>Accedi con un account admin</li>
+      <li>Vai a Gestione Utenti</li>
+      <li>Assegna ruoli all'utente (direttamente o tramite gruppi)</li>
+    </ol>
+
+    <hr />
+
+    <h2>FAQ</h2>
+
+    <h3>Serve un Client Secret (segreto client)?</h3>
+    <p><strong>No</strong>. Il progetto Tama usa la libreria <code>@azure/msal-browser</code> che è un client <strong>pubblico</strong> (SPA). I client pubblici non possono custodire segreti in modo sicuro, quindi usano il flusso <strong>Authorization Code con PKCE</strong> che non richiede un client secret.</p>
+    <blockquote>
+      <p>Non generare un Client Secret per questa App Registration — non serve e non andrebbe mai esposto nel frontend.</p>
+    </blockquote>
+
+    <h3>Posso usare account Microsoft personali (outlook.com)?</h3>
+    <p>Solo se hai selezionato <strong>"Account in qualsiasi directory + account Microsoft personali"</strong> come tipo di account nello Step 2. Per uso aziendale, <strong>Single tenant</strong> è consigliato.</p>
+
+    <h3>Serve configurare i "Certificati e segreti"?</h3>
+    <p><strong>No</strong>. Questa sezione serve per applicazioni backend (confidential clients). La nostra app è un SPA (public client) — non serve nessun certificato o segreto.</p>
+
+    <h3>Posso limitare quali utenti Azure AD possono accedere?</h3>
+    <p>Sì, in due modi:</p>
+    <ol>
+      <li><strong>Su Azure</strong>: App Registration → Proprietà enterprise → Assegnazione utenti obbligatoria → Sì. Poi assegna solo gli utenti/gruppi desiderati.</li>
+      <li><strong>Su Tama</strong>: L'utente deve esistere nel database locale. Se l'utente Azure AD non ha un corrispondente locale, il backend rifiuta il login con errore 401.</li>
+    </ol>
+
+    <h3>Dove trovo l'authority URL?</h3>
+    <p>L'authority è composta così:</p>
+<pre class="lang-ascii"><code>https://login.microsoftonline.com/{TenantId}</code></pre>
+    <p>Il frontend la costruisce automaticamente nel file <code>plugins/msal.ts</code>:</p>
+<pre class="lang-ts"><code>authority: `https://login.microsoftonline.com/${import.meta.env.VITE_MSAL_TENANT_ID}`</code></pre>
+
+    <hr />
+
+    <h2>Riferimenti</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Risorsa</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td>Portale Azure</td><td><a href="https://portal.azure.com" target="_blank">https://portal.azure.com</a></td></tr>
+          <tr><td>Documentazione Entra ID</td><td><a href="https://learn.microsoft.com/it-it/entra/identity/" target="_blank">https://learn.microsoft.com/it-it/entra/identity/</a></td></tr>
+          <tr><td>MSAL.js (libreria frontend)</td><td><a href="https://github.com/AzureAD/microsoft-authentication-library-for-js" target="_blank">https://github.com/AzureAD/microsoft-authentication-library-for-js</a></td></tr>
+          <tr><td>Flusso Auth Code + PKCE</td><td><a href="https://learn.microsoft.com/it-it/entra/identity-platform/v2-oauth2-auth-code-flow" target="_blank">https://learn.microsoft.com/it-it/entra/identity-platform/v2-oauth2-auth-code-flow</a></td></tr>
+          <tr><td>Documentazione autenticazione Tama</td><td><code>Authentication.md</code></td></tr>
+          <tr><td>Documentazione strategia JWT/MSAL</td><td><code>Authentication-Strategy.md</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Autenticazione — JWT vs MSAL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .main {
+            display: flex;
+            min-height: calc(100vh - 300px);
+        }
+
+        .toc-sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 300px);
+            position: sticky;
+            top: 0;
+        }
+
+        .toc-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .toc-sidebar nav ul {
+            list-style: none;
+        }
+
+        .toc-sidebar nav ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .toc-sidebar nav ul li a {
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            padding: 0.4rem 0;
+            display: block;
+            border-left: 3px solid transparent;
+            padding-left: 0.8rem;
+        }
+
+        .toc-sidebar nav ul li a:hover {
+            color: #667eea;
+            border-left-color: #667eea;
+        }
+
+        .content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 300px);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 2.5rem 0 1.5rem 0;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+            color: #764ba2;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem 0;
+            color: #555;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #d63384;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            color: #333;
+            line-height: 1.4;
+            white-space: pre;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.6rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge.success {
+            background: #28a745;
+        }
+
+        .badge.danger {
+            background: #dc3545;
+        }
+
+        footer {
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            padding: 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main {
+                flex-direction: column;
+            }
+
+            .toc-sidebar {
+                width: 100%;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 1.5rem;
+            }
+
+            .content {
+                padding: 2rem;
+                max-height: none;
+            }
+        }
+
+        .comparison-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card .card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: #fafafa;
+        }
+
+        .comparison-card .card h4 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-card {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Autenticazione — JWT vs MSAL</h1>
+            <p>Strategie di autenticazione nel sistema Tama</p>
+            <div style="margin-top: 1rem; opacity: 0.9;">
+                <strong>Ultimo aggiornamento:</strong> 2026-03-29 | <strong>Versione:</strong> 2.0
+            </div>
+        </header>
+
+        <div class="main">
+            <aside class="toc-sidebar">
+                <div class="toc-title">📑 Indice</div>
+                <nav>
+                    <ul>
+                        <li><a href="#overview">Overview</a></li>
+                        <li><a href="#strategia-jwt">JWT (Email+Password)</a></li>
+                        <li><a href="#strategia-msal">MSAL (Azure AD)</a></li>
+                        <li><a href="#flussi-completi">Flussi Completi</a></li>
+                        <li><a href="#come-switchare">Come Switchare</a></li>
+                        <li><a href="#livello-tecnico">Livello Tecnico</a></li>
+                        <li><a href="#confronto">Confronto Dettagliato</a></li>
+                        <li><a href="#sicurezza">Sicurezza</a></li>
+                        <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main class="content">
+                <!-- OVERVIEW -->
+                <section class="section" id="overview">
+                    <h2>Overview</h2>
+
+                    <h3>Quale Strategia Scegliere?</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Aspetto</th>
+                                <th>JWT</th>
+                                <th>MSAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Autenticazione</strong></td>
+                                <td>Email + Password</td>
+                                <td>Microsoft/Office 365</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gestione utenti</strong></td>
+                                <td>Manuale (backend)</td>
+                                <td>Azure AD + sync locale</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Single Sign-On</strong></td>
+                                <td><span class="badge danger">❌ No</span></td>
+                                <td><span class="badge success">✅ Sì</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>MFA / 2FA</strong></td>
+                                <td>❌ Da implementare</td>
+                                <td>✅ Microsoft Authenticator</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Password Reset</strong></td>
+                                <td>❌ Da implementare</td>
+                                <td>✅ Gestito da Microsoft</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Complessità setup</strong></td>
+                                <td>⭐ Bassa</td>
+                                <td>⭐⭐⭐ Media-Alta</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ideale per</strong></td>
+                                <td>Startup, app interna</td>
+                                <td>Enterprise con Azure AD</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Costo</strong></td>
+                                <td>Gratuito</td>
+                                <td>Azure AD Free/Premium</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box">
+                        <strong>📌 Consiglio:</strong><br>
+                        • <strong>Piccoli team</strong>: JWT è più semplice<br>
+                        • <strong>Aziende enterprise</strong>: MSAL integra con ecosistema Microsoft (Azure, Office 365, Teams)
+                    </div>
+
+                    <h3>Che Succede Dietro le Quinte</h3>
+
+                    <p>Entrambe le strategie fanno <strong>la stessa cosa al backend</strong>:</p>
+
+                    <div class="diagram">STRATEGIA SCELTA (JWT o MSAL)
+           │
+           ▼
+    ┌─────────────────────┐
+    │  Server Backend     │
+    ├─────────────────────┤
+    │ ✓ Autentica utente  │
+    │ ✓ Risolve permessi  │
+    │ ✓ Genera JWT interno│
+    │ ✓ Crea Refresh Token│
+    └─────────────────────┘
+           │
+           ▼
+  Ritorna JWT + Refresh
+           │
+           ▼
+  Client usa JWT interno
+  per tutte le richieste
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Nota fondamentale:</strong><br>
+                        Il backend <strong>genera sempre JWT interni</strong>, indipendentemente da quale strategia usi. Con MSAL, il token Azure AD serve <strong>solo per il login iniziale</strong> per identificare l'utente. Poi il backend emette un JWT locale che il client usa normalmente.
+                    </div>
+
+                    <div class="info-box">
+                        <strong>ℹ️ Endpoint sempre attivi:</strong><br>
+                        Il backend <strong>non disabilita endpoint</strong> in base alla strategia configurata. Sia <code>/api/auth/login</code> che <code>/api/auth/msal-login</code> sono sempre disponibili. È il <strong>frontend</strong> che decide quale UI mostrare.
+                    </div>
+                </section>
+
+                <!-- JWT -->
+                <section class="section" id="strategia-jwt">
+                    <h2>Strategia JWT</h2>
+
+                    <h3>📧 Email + Password (Classica)</h3>
+
+                    <h4>Configurazione Backend</h4>
+                    <pre>{
+  "Auth": {
+    "Strategy": "Jwt",
+    "Jwt": {
+      "Secret": "your-super-secret-key-at-least-32-characters",
+      "Issuer": "Tama",
+      "Audience": "TamaClients",
+      "ExpiresInMinutes": 60,
+      "RefreshExpiresInDays": 7
+    }
+  }
+}</pre>
+
+                    <h4>Configurazione Frontend</h4>
+                    <pre>VITE_API_BASE_URL=http://localhost:5001
+VITE_AUTH_STRATEGY=jwt</pre>
+
+                    <h4>File Backend Principali</h4>
+                    <ul>
+                        <li><code>Features/Auth/Login/LoginHandler.cs</code> — logica di login</li>
+                        <li><code>Features/Auth/Shared/JwtTokenHelper.cs</code> — generazione JWT</li>
+                        <li><code>Features/Auth/Login/LoginValidator.cs</code> — validazione input (FluentValidation)</li>
+                    </ul>
+
+                    <h4>Come Funziona Tecnicamente</h4>
+                    <ul>
+                        <li><strong>Password</strong>: verificata con BCrypt (one-way hash, slow)</li>
+                        <li><strong>JWT</strong>: firmato con HMAC-SHA256</li>
+                        <li><strong>Claims</strong>: sub, email, name, jti, permissions[]</li>
+                        <li><strong>Scadenza</strong>: 60 minuti (configurabile)</li>
+                        <li><strong>Refresh</strong>: ogni ora ottieni un nuovo JWT</li>
+                    </ul>
+
+                    <div class="success-box">
+                        ✅ <strong>Vantaggi:</strong><br>
+                        • Setup semplice (5 minuti)<br>
+                        • Nessuna dipendenza da Azure<br>
+                        • Completo controllo su password policy<br>
+                        • Funziona offline/on-premise<br>
+                        • Debug facile (tutto nel tuo codice)
+                    </div>
+
+                    <div class="error-box">
+                        ❌ <strong>Svantaggi:</strong><br>
+                        • Gestione password manuale<br>
+                        • Nessun SSO<br>
+                        • 2FA/MFA: implementare da zero<br>
+                        • Password reset: implementare da zero
+                    </div>
+                </section>
+
+                <!-- MSAL -->
+                <section class="section" id="strategia-msal">
+                    <h2>Strategia MSAL</h2>
+
+                    <h3>☁️ Azure AD (Microsoft/Office 365)</h3>
+
+                    <h4>Configurazione Backend</h4>
+                    <pre>{
+  "Auth": {
+    "Strategy": "Msal",
+    "Jwt": { "Secret": "..." },
+    "Msal": {
+      "Instance": "https://login.microsoftonline.com/",
+      "TenantId": "your-azure-tenant-id",
+      "ClientId": "your-azure-app-client-id"
+    }
+  }
+}</pre>
+
+                    <h4>Configurazione Frontend</h4>
+                    <pre>VITE_API_BASE_URL=http://localhost:5001
+VITE_AUTH_STRATEGY=msal
+VITE_MSAL_CLIENT_ID=your-azure-app-client-id
+VITE_MSAL_TENANT_ID=your-azure-tenant-id</pre>
+
+                    <h4>Dove Ottenere TenantId e ClientId</h4>
+                    <ol>
+                        <li>Vai su <strong>Azure Portal</strong> → <strong>Azure Active Directory</strong></li>
+                        <li><strong>TenantId</strong>: Home → Gestisci → Proprietà → ID directory</li>
+                        <li><strong>ClientId</strong>: Registrazioni app → Seleziona app → ID applicazione (client)</li>
+                    </ol>
+
+                    <h4>File Backend Principali</h4>
+                    <ul>
+                        <li><code>Features/Auth/MsalLogin/MsalLoginHandler.cs</code> — parsing token Azure + lookup utente</li>
+                    </ul>
+
+                    <h4>Come Funziona Tecnicamente</h4>
+                    <ul>
+                        <li><strong>Token Azure</strong>: firmato con chiave RSA di Microsoft, validato da <code>@azure/msal-browser</code> nel frontend</li>
+                        <li><strong>Backend</strong>: legge il token ricevuto (parsing JWT, senza rivalidare la firma)</li>
+                        <li><strong>Email estrapolata</strong>: dal claim <code>preferred_username</code> o <code>email</code></li>
+                        <li><strong>Utente locale</strong>: cercato in MongoDB per email corrispondente</li>
+                        <li><strong>JWT interno</strong>: generato come JWT standard (stesso della strategia JWT)</li>
+                    </ul>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Nota sulla validazione:</strong><br>
+                        Il backend <strong>non rivalidda la firma RSA</strong> del token Azure. La validazione crittografica avviene nel frontend tramite la libreria <code>@azure/msal-browser</code>. Il backend si limita a estrarre l'email per trovare l'utente locale.
+                    </div>
+
+                    <div class="success-box">
+                        ✅ <strong>Vantaggi:</strong><br>
+                        • SSO con Office 365, Teams, Outlook<br>
+                        • 2FA/MFA gestito da Microsoft<br>
+                        • Niente gestione password<br>
+                        • Conditional Access (Azure AD P1/P2)<br>
+                        • Compliance built-in (SOC 2, ISO 27001)
+                    </div>
+
+                    <div class="error-box">
+                        ❌ <strong>Svantaggi:</strong><br>
+                        • Richiede Azure AD Tenant<br>
+                        • Setup più complesso (Azure Portal)<br>
+                        • Dipendenza da Microsoft services<br>
+                        • Doppia gestione utenti (Azure AD + DB locale)<br>
+                        • Debug più difficile
+                    </div>
+                </section>
+
+                <!-- FLUSSI -->
+                <section class="section" id="flussi-completi">
+                    <h2>Flussi Completi</h2>
+
+                    <h3>Flusso 1: Login JWT</h3>
+
+                    <div class="diagram">CLIENT: POST /api/auth/login
+         { email, password }
+              │
+              ▼
+         SERVER AUTENTICA
+         • Verifica email
+         • Verifica password BCrypt
+         • Risolve permessi (diretti + gruppi)
+         • Genera JWT interno (HMAC-SHA256)
+         • Salva refresh token (MongoDB)
+              │
+              ▼
+         200 OK
+         {
+           accessToken: "eyJ...",
+           expiresAt: "...",
+           userId, email, displayName, language,
+           permissions: [...]
+         }
+         Set-Cookie: refreshToken=... (HttpOnly)
+              │
+              ▼
+    BROWSER RICEVE JWT
+    • Salva in localStorage
+    • Riceve refreshToken in cookie
+    • LOGGATO ✓</div>
+
+                    <h3>Flusso 2: Login MSAL</h3>
+
+                    <div class="diagram">BROWSER: msalInstance.loginRedirect()
+              │
+              ▼
+    AZURE AD: login.microsoftonline.com
+    • Utente inserisce credenziali Microsoft
+    • MFA se abilitato
+    • Genera idToken (JWT firmato RSA)
+              │
+              ▼
+    BROWSER: Redirect a /login con idToken
+    • @azure/msal-browser valida la firma
+              │
+              ▼
+CLIENT: POST /api/auth/msal-login
+         { azureToken: idToken }
+              │
+              ▼
+         SERVER:
+         • Legge JWT Azure (parsing, no validazione firma)
+         • Estrae email (preferred_username / email)
+         • Cerca utente locale per email
+         • Risolve permessi (diretti + gruppi)
+         • Genera JWT INTERNO (formato Tama)
+         • Salva refresh token
+              │
+              ▼
+         200 OK (stessa response di JWT)
+         Set-Cookie: refreshToken=...
+              │
+              ▼
+    Da qui in poi: IDENTICO a JWT</div>
+
+                    <h3>Flusso 3: Refresh + Rotation</h3>
+
+                    <div class="diagram">CLIENT: POST /api/auth/refresh
+         Cookie: refreshToken=RT-1
+              │
+              ▼
+         SERVER:
+         • Trova RT-1 nel DB → esiste, non scaduto
+         • Verifica utente attivo
+         • REVOCA RT-1 (token rotation)
+         • Risolve permessi aggiornati
+         • Genera nuovo JWT (AT-2)
+         • Crea nuovo refresh token (RT-2)
+              │
+              ▼
+         200 OK
+         { accessToken: AT-2, expiresAt, permissions }
+         Set-Cookie: refreshToken=RT-2</div>
+
+                    <h3>Flusso 4: Logout</h3>
+
+                    <div class="diagram">CLIENT: POST /api/auth/logout
+         Cookie: refreshToken=...
+              │
+              ▼
+         BACKEND: Revoca refreshToken
+                  Cancella cookie
+              │
+              ▼
+         204 No Content
+              │
+              ▼
+    CLIENT: Pulisce localStorage
+            Redirect a /
+            Utente DISCONNESSO ✓</div>
+                </section>
+
+                <!-- COME SWITCHARE -->
+                <section class="section" id="come-switchare">
+                    <h2>Come Switchare</h2>
+
+                    <h3>Da JWT → MSAL</h3>
+
+                    <h4>Passo 1: Configura Azure AD</h4>
+                    <ol>
+                        <li><strong>Azure Portal</strong> → Registra una nuova app</li>
+                        <li>Annota: <code>TenantId</code> e <code>ClientId</code></li>
+                        <li>Configura redirect URI: <code>http://localhost:5173/login</code></li>
+                    </ol>
+
+                    <h4>Passo 2: Aggiorna Backend</h4>
+                    <pre>{
+  "Auth": {
+    "Strategy": "Msal",
+    "Msal": {
+      "TenantId": "your-tenant-id",
+      "ClientId": "your-client-id"
+    }
+  }
+}</pre>
+
+                    <h4>Passo 3: Aggiorna Frontend</h4>
+                    <pre>VITE_AUTH_STRATEGY=msal
+VITE_MSAL_CLIENT_ID=your-client-id
+VITE_MSAL_TENANT_ID=your-tenant-id</pre>
+
+                    <div class="info-box">
+                        <strong>📌 Risultato:</strong><br>
+                        • <code>/api/auth/msal-login</code> — usato dal frontend<br>
+                        • <code>/api/auth/login</code> — sempre disponibile ma non usato dal frontend MSAL<br>
+                        • LoginPage mostra solo bottone "Login con Microsoft"
+                    </div>
+
+                    <h3>Da MSAL → JWT</h3>
+                    <p>Cambia <code>Strategy</code> a <code>"Jwt"</code> nel backend e <code>VITE_AUTH_STRATEGY=jwt</code> nel frontend. Le variabili MSAL possono essere rimosse o lasciate.</p>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Nota importante:</strong><br>
+                        Il backend <strong>non disabilita</strong> nessun endpoint. Entrambi i percorsi (<code>/login</code> e <code>/msal-login</code>) sono sempre disponibili. La configurazione <code>Auth:Strategy</code> serve per documentazione. È il <strong>frontend</strong> che sceglie quale UI mostrare in base a <code>VITE_AUTH_STRATEGY</code>.
+                    </div>
+                </section>
+
+                <!-- LIVELLO TECNICO -->
+                <section class="section" id="livello-tecnico">
+                    <h2>Livello Tecnico</h2>
+
+                    <h3>Struttura Backend</h3>
+
+                    <pre>Features/Auth/
+├── Login/
+│   ├── LoginCommand.cs
+│   ├── LoginHandler.cs          ← Email + password
+│   ├── LoginValidator.cs        ← FluentValidation
+│   └── LoginResponse.cs
+├── MsalLogin/
+│   ├── MsalLoginCommand.cs
+│   ├── MsalLoginHandler.cs      ← Token Azure
+│   └── MsalLoginResponse.cs
+├── RefreshToken/
+│   ├── RefreshTokenCommand.cs
+│   ├── RefreshTokenHandler.cs   ← Rinnova JWT (uguale per entrambe)
+│   └── RefreshTokenResponse.cs
+├── Logout/
+│   ├── LogoutCommand.cs
+│   └── LogoutHandler.cs         ← Revoca token (uguale per entrambe)
+├── Shared/
+│   └── JwtTokenHelper.cs        ← Generazione JWT interno + refresh
+└── AuthEndpoints.cs             ← Routing (tutti gli endpoint sempre attivi)</pre>
+
+                    <h3>File Critici</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Ruolo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>JwtTokenHelper.cs</strong></td>
+                                <td>Genera JWT (HMAC-SHA256) + RefreshToken (64 byte random)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LoginHandler.cs</strong></td>
+                                <td>Verifica BCrypt, risolve permessi, genera token</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MsalLoginHandler.cs</strong></td>
+                                <td>Legge JWT Azure, estrae email, genera token interno</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RefreshTokenHandler.cs</strong></td>
+                                <td>Token rotation: revoca vecchio, crea nuovo</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AuthExtensions.cs</strong></td>
+                                <td>Registra JWT Bearer auth + configurazione</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AuthEndpoints.cs</strong></td>
+                                <td>Espone 4 endpoint + gestione cookie</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Struttura Frontend</h3>
+                    <pre>src/
+├── pages/auth/LoginPage.vue     ← Switch JWT/MSAL UI
+├── services/
+│   ├── auth.service.ts          ← POST /login e /msal-login
+│   └── msal.service.ts          ← Wrapper @azure/msal-browser
+├── plugins/
+│   ├── msal.ts                  ← PublicClientApplication
+│   └── axios.ts                 ← Interceptor Bearer + 401 logout
+├── stores/auth.store.ts         ← Pinia (login, logout, refresh)
+├── composables/usePermission.ts ← can(), canAny()
+└── router/index.ts              ← Guard auth + permessi</pre>
+                </section>
+
+                <!-- CONFRONTO DETTAGLIATO -->
+                <section class="section" id="confronto">
+                    <h2>Confronto Dettagliato</h2>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Caratteristica</th>
+                                <th>JWT</th>
+                                <th>MSAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Credenziali</strong></td>
+                                <td>Email + Password locale</td>
+                                <td>Account Microsoft/Azure AD</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Storage credenziali</strong></td>
+                                <td>MongoDB (hash BCrypt)</td>
+                                <td>Azure AD (cloud Microsoft)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Login UI</strong></td>
+                                <td>Form email/password</td>
+                                <td>Bottone Microsoft → redirect</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SSO</strong></td>
+                                <td>❌ No</td>
+                                <td>✅ Office 365, Teams, etc.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MFA</strong></td>
+                                <td>❌ Da implementare</td>
+                                <td>✅ Microsoft Authenticator, SMS, FIDO2</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Password reset</strong></td>
+                                <td>❌ Da implementare</td>
+                                <td>✅ Gestito da Microsoft</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pre-requisiti</strong></td>
+                                <td>Utente nel sistema</td>
+                                <td>Utente in Azure AD + nel sistema</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dipendenze esterne</strong></td>
+                                <td>Nessuna</td>
+                                <td>Azure AD, Microsoft Identity</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Token per API</strong></td>
+                                <td>JWT interno (identico)</td>
+                                <td>JWT interno (identico)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Refresh token</strong></td>
+                                <td>Rotation + HttpOnly cookie</td>
+                                <td>Rotation + HttpOnly cookie</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rate limiting</strong></td>
+                                <td>10 req / 15 min</td>
+                                <td>10 req / 15 min</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="comparison-card">
+                        <div class="card">
+                            <h4>🔑 Quando scegliere JWT</h4>
+                            <ul>
+                                <li>App interna o prototipo</li>
+                                <li>Team piccolo senza Office 365</li>
+                                <li>Massimo controllo sul flusso auth</li>
+                                <li>Nessun tenant Azure AD</li>
+                                <li>Deploy on-premise/offline</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>☁️ Quando scegliere MSAL</h4>
+                            <ul>
+                                <li>Azienda con Office 365 / Microsoft 365</li>
+                                <li>Servono SSO e MFA senza implementarli</li>
+                                <li>Azure AD tenant già configurato</li>
+                                <li>Ecosistema enterprise Microsoft</li>
+                                <li>Requisiti di Conditional Access</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SICUREZZA -->
+                <section class="section" id="sicurezza">
+                    <h2>Sicurezza</h2>
+
+                    <h3>✅ Implementato (comune a entrambe)</h3>
+
+                    <div class="success-box">
+                        <strong>HTTPS Only (Prod)</strong> · <strong>HttpOnly Cookie</strong> · <strong>SameSite=Lax</strong> · <strong>Token Rotation</strong> · <strong>HMAC-SHA256</strong> · <strong>Rate Limiting</strong> · <strong>Generic Error Messages</strong> · <strong>Account Disable Check</strong>
+                    </div>
+
+                    <h3>JWT-specific</h3>
+                    <div class="success-box">
+                        ✅ BCrypt password hashing (slow, salted)<br>
+                        ✅ FluentValidation su LoginCommand (email + password)
+                    </div>
+
+                    <h3>MSAL-specific</h3>
+                    <div class="success-box">
+                        ✅ Token Azure validato dalla libreria <code>@azure/msal-browser</code> (firma RSA)<br>
+                        ✅ Cache MSAL in localStorage (gestita dalla libreria)<br>
+                        ✅ Redirect flow (non popup) — più sicuro
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Considerazione MSAL:</strong><br>
+                        Il backend non rivalidda la firma del token Azure. La sicurezza dipende dalla validazione lato client tramite <code>@azure/msal-browser</code>. In produzione, valutare l'implementazione della validazione server-side con JWKS per difesa in profondità.
+                    </div>
+
+                    <h3>⚠️ Best Practices</h3>
+                    <ul>
+                        <li><strong>Secret JWT</strong>: generare casuale (min 32 char), usare Azure Key Vault in prod</li>
+                        <li><strong>HTTPS</strong>: sempre in produzione (cookie Secure flag)</li>
+                        <li><strong>User sync MSAL</strong>: utenti devono esistere nel DB locale prima del login Azure</li>
+                        <li><strong>Logging</strong>: mai loggare password, token, o dati sensibili</li>
+                    </ul>
+                </section>
+
+                <!-- TROUBLESHOOTING -->
+                <section class="section" id="troubleshooting">
+                    <h2>Troubleshooting</h2>
+
+                    <h3>❌ "401 Unauthorized — Token expired"</h3>
+                    <p>Il frontend intercetta il 401 ed effettua <strong>logout automatico</strong>. Per rinnovare preventivamente usare <code>authStore.refresh()</code>.</p>
+
+                    <h3>❌ "Nessun utente locale con email" (MSAL)</h3>
+                    <p>L'utente deve essere creato in Tama <strong>prima</strong> di fare login con Azure AD.</p>
+
+                    <h3>❌ "Token Azure non valido" (MSAL)</h3>
+                    <p>Verificare che il frontend invii l'<code>idToken</code>, non l'<code>accessToken</code> di MSAL.</p>
+
+                    <h3>❌ Bottone Microsoft non appare</h3>
+                    <p><strong>Causa:</strong> <code>VITE_AUTH_STRATEGY</code> è diverso da <code>msal</code> (il confronto è case-sensitive).</p>
+
+                    <h3>❌ Form login non visibile</h3>
+                    <p><strong>Causa:</strong> <code>VITE_AUTH_STRATEGY=msal</code>. Cambiare a <code>jwt</code> per mostrare il form.</p>
+
+                    <h3>✅ Debug Checklist</h3>
+
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> appsettings.local.json ha Auth:Jwt:Secret?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> .env.local ha VITE_AUTH_STRATEGY?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> Se MSAL: TenantId e ClientId in .env.local?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> Se MSAL: utenti esistono nel DB locale?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> Se MSAL: redirect URI configurato in Azure?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> Backend su http://localhost:5001?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> Frontend su http://localhost:5173?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> Browser Console: errori?</label>
+                        <label style="display: block; margin: 0.4rem 0"><input type="checkbox"> Network tab: request/response codes?</label>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <footer>
+            <p><strong>Autenticazione JWT vs MSAL — Tama API</strong></p>
+            <p>Ultimo aggiornamento: 2026-03-29 | Versione: 2.0</p>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

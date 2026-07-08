@@ -1,0 +1,12 @@
+flowchart LR
+    View["View\nComponente .vue\n(template + script setup)"]
+    ViewModel["ViewModel\nPinia store\n(stato + azioni)"]
+    Model["Model\nService layer\n(chiamate axios) + tipi"]
+    API["Backend API"]
+
+    View <-->|"legge/scrive stato reattivo\nchiama azioni"| ViewModel
+    ViewModel <-->|"chiama metodi,\nriceve Promise"| Model
+    Model <-->|"HTTP"| API
+
+    style ViewModel fill:#2f855a,color:#fff
+    style Model fill:#975a16,color:#fff

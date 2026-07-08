@@ -1,0 +1,16 @@
+flowchart LR
+    Client["Chiamante\n(Endpoint HTTP)"]
+    Mediator["IMediator\n(mediatore)"]
+    CmdH["Command Handler\n(scrive, muta stato)"]
+    QryH["Query Handler\n(legge, nessuna mutazione)"]
+    DB[(Database)]
+
+    Client -->|"Send(command)"| Mediator
+    Client -->|"Send(query)"| Mediator
+    Mediator --> CmdH
+    Mediator --> QryH
+    CmdH --> DB
+    QryH --> DB
+
+    style CmdH fill:#c53030,color:#fff
+    style QryH fill:#2b6cb0,color:#fff

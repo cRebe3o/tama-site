@@ -1,0 +1,210 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Frontend — Panoramica tecnologie</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="00-indice.html">Tama — Indice documentazione</a>
+      <a href="backend-01-panoramica.html">Backend — Panoramica tecnologie</a>
+      <a href="backend-02-funzionamento.html">Backend — Come funziona</a>
+      <a href="backend-03-dettaglio.html">Backend — Dettaglio con codice</a>
+      <a href="frontend-01-panoramica.html" class="active">Frontend — Panoramica tecnologie</a>
+      <a href="frontend-02-funzionamento.html">Frontend — Come funziona</a>
+      <a href="frontend-03-dettaglio.html">Frontend — Dettaglio con codice</a>
+  </nav>
+  <main>
+    <h1>Frontend — Livello 1: Panoramica tecnologie</h1>
+<blockquote>
+<p>Progetto: <code>apps/frontend</code> — Vue 3 (Composition API) + Vuetify 3, build con Vite. Verificato in <code>package.json</code>.</p>
+</blockquote>
+<h2>Framework e build</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Versione</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Vue 3</strong></td>
+<td>^3.5.0</td>
+<td>Framework UI. Il progetto usa <strong>esclusivamente Composition API</strong> con <code>&lt;script setup&gt;</code> (nessun componente Options API riscontrato).</td>
+</tr>
+<tr>
+<td><strong>Vite</strong></td>
+<td>^5.4.0</td>
+<td>Dev server e bundler. Script <code>dev</code>/<code>build</code>/<code>preview</code> in <code>package.json</code>.</td>
+</tr>
+<tr>
+<td><strong>TypeScript</strong> + <strong>vue-tsc</strong></td>
+<td>^5.5.0 / ^2.1.0</td>
+<td>Tipizzazione statica; <code>build</code> esegue <code>vue-tsc</code> prima di <code>vite build</code> (fallisce la build se ci sono errori di tipo).</td>
+</tr>
+<tr>
+<td><strong>vite-plugin-vuetify</strong></td>
+<td>^2.0.0</td>
+<td>Integrazione Vuetify con Vite (tree-shaking automatico dei componenti).</td>
+</tr>
+</tbody></table>
+<h2>UI</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Vuetify 3</strong> (^3.7.0)</td>
+<td>Libreria di componenti Material Design. Quasi tutta la UI è costruita con componenti Vuetify (<code>v-data-table-server</code>, <code>v-form</code>, <code>v-dialog</code>, ecc.), con pochi componenti custom condivisi in <code>components/shared/</code>.</td>
+</tr>
+<tr>
+<td><strong>@mdi/font</strong> (^7.4.0)</td>
+<td>Set di icone Material Design Icons usato da Vuetify.</td>
+</tr>
+</tbody></table>
+<h2>Routing e stato</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>vue-router</strong></td>
+<td>^4.4.0</td>
+</tr>
+<tr>
+<td><strong>Pinia</strong></td>
+<td>^2.2.0</td>
+</tr>
+</tbody></table>
+<h2>Comunicazione con il backend</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>axios</strong></td>
+<td>^1.7.0</td>
+</tr>
+<tr>
+<td><strong>@azure/msal-browser</strong></td>
+<td>^3.0.0</td>
+</tr>
+</tbody></table>
+<h2>Altro</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>vue-i18n</strong></td>
+<td>^10.0.0</td>
+</tr>
+<tr>
+<td><strong>@vueuse/core</strong></td>
+<td>^11.0.0</td>
+</tr>
+</tbody></table>
+<h2>Testing</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Vitest</strong> + <strong>@vitest/coverage-v8</strong></td>
+<td>Test runner unitario/integrazione, ambiente <code>jsdom</code>.</td>
+</tr>
+<tr>
+<td><strong>@vue/test-utils</strong></td>
+<td>Montaggio componenti Vue nei test.</td>
+</tr>
+</tbody></table>
+<h2>Qualità codice</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ESLint</strong> (<code>eslint</code>, <code>eslint-plugin-vue</code>, <code>typescript-eslint</code>)</td>
+<td>Linting JS/TS/Vue.</td>
+</tr>
+<tr>
+<td><strong>Prettier</strong></td>
+<td>Formattazione codice.</td>
+</tr>
+</tbody></table>
+<h2>Cosa NON c&#39;è</h2>
+<ul>
+<li>Nessuna generazione automatica dei tipi da OpenAPI/Swagger: i tipi TypeScript in <code>types/api.types.ts</code> sono scritti e mantenuti <strong>a mano</strong>, in parallelo ai DTO C# del backend — vanno tenuti sincronizzati manualmente quando cambia un contratto API.</li>
+<li>Nessun handler globale di errori JavaScript (<code>window.onerror</code>, <code>app.config.errorHandler</code>): la cattura errori verso il backend avviene solo per le risposte HTTP 5xx via interceptor axios (vedi <a href="frontend-02-funzionamento.html">frontend-02</a>).</li>
+<li>Nessun framework CSS aggiuntivo oltre a Vuetify (niente Tailwind/Bootstrap).</li>
+</ul>
+
+  </main>
+</div>

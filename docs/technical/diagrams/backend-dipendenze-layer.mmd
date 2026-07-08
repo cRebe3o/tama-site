@@ -1,0 +1,22 @@
+flowchart TB
+    Program["Program.cs\n(composition root)"]
+    Endpoints["Endpoints\n(Minimal API, per feature)"]
+    MediatR["MediatR\nCommand/Query + Handler"]
+    Behaviors["Pipeline Behaviors\nLoggingBehavior, ValidationBehavior"]
+    Validators["FluentValidation\nValidators"]
+    Repos["Repository\n(interfaccia + impl. MongoDB.Driver)"]
+    Documents["Documents (POCO)\nmappati su collection Mongo"]
+    Mongo[(MongoDB)]
+
+    Program --> Endpoints
+    Program --> MediatR
+    MediatR --> Behaviors
+    Behaviors --> Validators
+    Behaviors --> Endpoints
+    Endpoints --> MediatR
+    MediatR -->|Handle| Repos
+    Repos --> Documents
+    Repos --> Mongo
+
+    style Program fill:#4a5568,color:#fff
+    style Mongo fill:#975a16,color:#fff

@@ -1,0 +1,271 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Backend — Dettaglio con codice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="00-indice.html">Tama — Indice documentazione</a>
+      <a href="backend-01-panoramica.html">Backend — Panoramica tecnologie</a>
+      <a href="backend-02-funzionamento.html">Backend — Come funziona</a>
+      <a href="backend-03-dettaglio.html" class="active">Backend — Dettaglio con codice</a>
+      <a href="frontend-01-panoramica.html">Frontend — Panoramica tecnologie</a>
+      <a href="frontend-02-funzionamento.html">Frontend — Come funziona</a>
+      <a href="frontend-03-dettaglio.html">Frontend — Dettaglio con codice</a>
+  </nav>
+  <main>
+    <h1>Backend — Livello 3: Dettaglio con codice reale</h1>
+<h2>Esempio end-to-end: creazione di un cliente (<code>POST /api/customers</code>)</h2>
+<h3>1. Endpoint — <code>Features/Customers/CustomerEndpoints.cs</code></h3>
+<pre><code class="language-csharp">public static class CustomerEndpoints
+{
+    public static IEndpointRouteBuilder MapCustomerEndpoints(this IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup(&quot;/api/customers&quot;).WithTags(&quot;Customers&quot;).RequireAuthorization();
+
+        group.MapPost(&quot;/&quot;, async (CreateCustomerCommand cmd, IMediator mediator, CancellationToken ct) =&gt;
+        {
+            var result = await mediator.Send(cmd, ct);
+            return Results.Created($&quot;/api/customers/{result.Id}&quot;, result);
+        })
+            .RequireAuthorization(p =&gt; p.RequireClaim(&quot;permissions&quot;, &quot;customers.write&quot;))
+            .WithName(&quot;CreateCustomer&quot;)
+            .WithSummary(&quot;Crea un nuovo cliente&quot;)
+            .Produces(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        return app;
+    }
+}
+</code></pre>
+<p>Il gruppo <code>/api/customers</code> richiede autenticazione (<code>RequireAuthorization()</code> senza argomenti = JWT valido), e ogni singolo endpoint aggiunge il permesso specifico via <code>RequireClaim(&quot;permissions&quot;, &quot;...&quot;)</code>. <code>CreateCustomerCommand</code> è bindato <strong>direttamente dal body JSON</strong> — con Minimal API, se il primo parametro è un tipo complesso non è necessario <code>[FromBody]</code> esplicito.</p>
+<h3>2. Command — <code>Features/Customers/CreateCustomer/CreateCustomerCommand.cs</code></h3>
+<pre><code class="language-csharp">public record CreateCustomerCommand(
+    string Name,
+    string Email,
+    string Phone,
+    string Address,
+    string? VatOrFiscalCode
+) : IRequest&lt;CreateCustomerResponse&gt;;
+</code></pre>
+<p>Un <code>record</code> immutabile che implementa <code>IRequest&lt;TResponse&gt;</code> di MediatR. Fa da DTO di input <strong>e</strong> da payload spedito al mediatore: non c&#39;è un livello di mapping separato tra &quot;richiesta HTTP&quot; e &quot;comando applicativo&quot;.</p>
+<h3>3. Validator — <code>Features/Customers/CreateCustomer/CreateCustomerValidator.cs</code></h3>
+<pre><code class="language-csharp">public class CreateCustomerValidator : AbstractValidator&lt;CreateCustomerCommand&gt;
+{
+    public CreateCustomerValidator()
+    {
+        RuleFor(x =&gt; x.Name).NotEmpty().MaximumLength(200);
+        RuleFor(x =&gt; x.Email).NotEmpty().EmailAddress().MaximumLength(200);
+        RuleFor(x =&gt; x.Phone).NotEmpty().MaximumLength(50);
+        RuleFor(x =&gt; x.Address).NotEmpty().MaximumLength(500);
+        RuleFor(x =&gt; x.VatOrFiscalCode).MaximumLength(32);
+    }
+}
+</code></pre>
+<p>Non viene invocato esplicitamente da nessuna parte: è scoperto per assembly-scan (<code>AddValidatorsFromAssemblyContaining&lt;Program&gt;()</code>) ed eseguito automaticamente da <code>ValidationBehavior</code> prima che l&#39;Handler venga chiamato. Se una regola fallisce, l&#39;Handler <strong>non viene mai eseguito</strong>.</p>
+<h3>4. Handler — <code>Features/Customers/CreateCustomer/CreateCustomerHandler.cs</code></h3>
+<pre><code class="language-csharp">public class CreateCustomerHandler(
+    ICustomerRepository repo,
+    IAuditLogRepository auditRepo,
+    IHttpContextAccessor httpContextAccessor) : IRequestHandler&lt;CreateCustomerCommand, CreateCustomerResponse&gt;
+{
+    public async Task&lt;CreateCustomerResponse&gt; Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+    {
+        var now = DateTime.UtcNow;
+        var doc = new CustomerDocument
+        {
+            Id = ObjectId.GenerateNewId(),
+            Name = request.Name,
+            Email = request.Email,
+            Phone = request.Phone,
+            Address = request.Address,
+            VatOrFiscalCode = request.VatOrFiscalCode ?? string.Empty,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await repo.InsertAsync(doc, cancellationToken);
+
+        var actorId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? &quot;system&quot;;
+        var actorEmail = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email) ?? &quot;system&quot;;
+        await auditRepo.InsertAsync(new AuditLogDocument
+        {
+            Id = ObjectId.GenerateNewId(),
+            ActorId = ObjectId.TryParse(actorId, out var aid) ? aid : ObjectId.Empty,
+            ActorEmail = actorEmail,
+            EntityType = &quot;Customer&quot;,
+            EntityId = doc.Id,
+            Action = &quot;Created&quot;,
+            After = doc.ToBsonDocument(),
+            Timestamp = now,
+            IpAddress = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+        }, cancellationToken);
+
+        return new CreateCustomerResponse(doc.Id.ToString());
+    }
+}
+</code></pre>
+<p>Punti da notare per chi scrive un nuovo Handler:</p>
+<ul>
+<li><strong>Mapping manuale</strong> <code>Command → Document</code>: nessun AutoMapper.</li>
+<li><code>ObjectId.GenerateNewId()</code> genera l&#39;id lato applicazione (non delegato a Mongo).</li>
+<li>L&#39;attore per l&#39;audit log è letto dai claim del JWT tramite <code>IHttpContextAccessor</code> (<code>ClaimTypes.NameIdentifier</code>, <code>ClaimTypes.Email</code>), con fallback <code>&quot;system&quot;</code> se non presenti (es. seed).</li>
+<li>La scrittura dell&#39;audit log è <strong>esplicita e manuale</strong>, non automatica — va replicata in ogni Handler che deve essere tracciato.</li>
+</ul>
+<h2>Gestione delle eccezioni</h2>
+<p><code>Features/_Shared/Middleware/ExceptionHandlingMiddleware.cs</code> (estratto):</p>
+<pre><code class="language-csharp">public async Task InvokeAsync(HttpContext context)
+{
+    try { await next(context); }
+    catch (Exception ex) { await HandleExceptionAsync(context, ex); }
+}
+
+private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+{
+    var (status, title) = exception switch
+    {
+        ValidationException      =&gt; (StatusCodes.Status400BadRequest,  &quot;Validation failed&quot;),
+        NotFoundException        =&gt; (StatusCodes.Status404NotFound,    &quot;Resource not found&quot;),
+        UnauthorizedException    =&gt; (StatusCodes.Status401Unauthorized, &quot;Unauthorized&quot;),
+        ForbiddenException       =&gt; (StatusCodes.Status403Forbidden,   &quot;Forbidden&quot;),
+        ConflictException        =&gt; (StatusCodes.Status409Conflict,    &quot;Conflict&quot;),
+        MongoWriteException we when we.WriteError?.Category == ServerErrorCategory.DuplicateKey
+                                 =&gt; (StatusCodes.Status409Conflict,    &quot;Conflict&quot;),
+        _                        =&gt; (StatusCodes.Status500InternalServerError, &quot;Internal server error&quot;)
+    };
+
+    if (status == StatusCodes.Status500InternalServerError)
+    {
+        logger.LogError(exception, &quot;Unhandled exception&quot;);
+        await SaveErrorLogAsync(context, exception);   // scope dedicato: repository è scoped, middleware è singleton
+    }
+
+    var problem = new ProblemDetails { Status = status, Title = title, Detail = exception.Message, Instance = context.Request.Path };
+    if (exception is ValidationException validationEx)
+    {
+        problem.Extensions[&quot;errors&quot;] = validationEx.Errors
+            .GroupBy(e =&gt; e.PropertyName)
+            .ToDictionary(g =&gt; g.Key, g =&gt; g.Select(e =&gt; e.ErrorMessage).ToArray());
+    }
+    // ... scrive problem come JSON camelCase, content-type application/problem+json
+}
+</code></pre>
+<p>Da notare: il salvataggio dell&#39;<code>ErrorLogDocument</code> avviene <strong>solo</strong> per errori 500 non gestiti, dentro un <code>try/catch</code> interno che non ripropaga (<code>SaveErrorLogAsync</code>) — se il logging stesso fallisce, non deve far cadere la risposta di errore originale.</p>
+<h2>Come aggiungere un nuovo endpoint CRUD (convenzione del progetto)</h2>
+<p>Segui esattamente la struttura di <code>Features/Customers/</code>:</p>
+<ol>
+<li>Crea <code>Features/&lt;Entità&gt;/</code> con una sottocartella per ogni operazione: <code>Create&lt;Entità&gt;/</code>, <code>Update&lt;Entità&gt;/</code>, <code>Delete&lt;Entità&gt;/</code>, <code>Get&lt;Entità&gt;ById/</code>, <code>Get&lt;Entità&gt;/</code>.</li>
+<li>In ciascuna, crea <code>Command</code>/<code>Query</code> (record <code>IRequest&lt;TResponse&gt;</code>), <code>Handler</code>, <code>Response</code>, e — solo per Create/Update — un <code>Validator</code>.</li>
+<li>Aggiungi il documento Mongo in <code>Features/_Shared/Documents/&lt;Entità&gt;Document.cs</code> e la coppia repository (<code>I&lt;Entità&gt;Repository</code> + <code>&lt;Entità&gt;Repository</code>) in <code>Features/_Shared/Repositories/</code>.</li>
+<li>Registra il repository in <code>Features/_Shared/Extensions/RepositoryExtensions.cs::AddRepositories()</code>.</li>
+<li>Crea <code>Features/&lt;Entità&gt;/&lt;Entità&gt;Endpoints.cs</code> con <code>MapGroup(&quot;/api/&lt;entità&gt;&quot;)</code> e i vari <code>Map{Get,Post,Put,Delete}</code> con <code>RequireAuthorization(p =&gt; p.RequireClaim(&quot;permissions&quot;, &quot;&lt;entità&gt;.&lt;azione&gt;&quot;))</code>.</li>
+<li>Aggiungi la chiamata <code>app.Map&lt;Entità&gt;Endpoints();</code> in <code>Features/_Shared/Extensions/EndpointExtensions.cs::MapAllEndpoints()</code> — <strong>passaggio facile da dimenticare</strong>, senza di esso l&#39;endpoint non esiste a runtime.</li>
+<li>Se serve tracciamento, aggiungi manualmente la scrittura di <code>AuditLogDocument</code> negli Handler Create/Update/Delete (vedi skill di progetto <code>audit-log</code>).</li>
+<li>Se servono permessi nuovi, seguili end-to-end con la skill di progetto <code>permissions</code> (seed permesso, assegnazione a ruolo, claim, guardia frontend).</li>
+</ol>
+<p>Skill già presenti nel repo che automatizzano parte di questo scaffolding: <code>vertical-slice-backend</code>, <code>mongo-entity</code>, <code>audit-log</code>, <code>permissions</code>, <code>pagination</code>, <code>search-filter</code>.</p>
+<h2>Stampa preventivo (.docx)</h2>
+<p>Flusso: <code>Features/Drafts/PrintDraft/PrintDraftHandler.cs</code> carica il <code>DraftDocument</code>, il <code>CustomerDocument</code>, sceglie il <code>TemplateDocument</code> (di default o per id esplicito), costruisce i token e chiama <code>TemplateRenderer.Render</code>:</p>
+<pre><code class="language-csharp">var globalTokens = BuildGlobalTokens(draft, customer);   // es. NUMERO_PREVENTIVO, CLIENTE_NOME, TOTALE_PREVENTIVO
+var positions = draft.Items.Select(item =&gt;
+{
+    imageFileByType.TryGetValue(item.WindowTypeId, out var fileName);
+    var imageBytes = WindowTypeAssets.Load(fileName);
+    return new RenderPosition(BuildItemTokens(item, draft), fileName, imageBytes);
+}).ToList();
+var rendered = TemplateRenderer.Render(template.FileContent, globalTokens, positions);
+</code></pre>
+<p>Il motore <code>Features/Drafts/PrintDraft/TemplateRenderer.cs</code> <strong>non usa una libreria OOXML</strong> (niente OpenXML SDK): apre il <code>.docx</code> come <code>ZipArchive</code>, individua <code>word/document.xml</code> e lo tratta come XML puro (<code>XDocument</code>):</p>
+<pre><code class="language-csharp">private static readonly Regex TokenRegex = new(@&quot;\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}&quot;, RegexOptions.Compiled);
+private static readonly Regex ItemTokenRegex = new(@&quot;\{\{\s*POS_(?:N|\d+)_([A-Za-z0-9_]+)\s*\}\}&quot;, RegexOptions.Compiled);
+private static readonly Regex MarkerRegex = new(@&quot;\{\{\s*POS_(?:START|END)\s*\}\}&quot;, RegexOptions.Compiled);
+private static readonly Regex PosNumberRegex = new(@&quot;\{\{\s*POS_N\s*\}\}&quot;, RegexOptions.Compiled);
+private static readonly Regex ImageMarkerRegex = new(@&quot;\{\{\s*POS_(?:N|\d+)_IMMAGINE\s*\}\}&quot;, RegexOptions.Compiled);
+</code></pre>
+<p>Convenzioni token (già annotate in memoria di progetto, confermate nel codice):</p>
+<ul>
+<li><strong>Token globali</strong> <code>{{NOME_TOKEN}}</code> — sostituiti ovunque nel documento (testata, footer, ecc.).</li>
+<li><strong>Blocco ripetibile posizioni</strong>: delimitato dai marcatori <code>{{POS_START}}</code> / <code>{{POS_END}}</code> nel template Word. Il renderer individua il più piccolo elemento OOXML che contiene entrambi i marcatori (riga di tabella <code>&lt;w:tr&gt;</code>, tabella <code>&lt;w:tbl&gt;</code> o paragrafo <code>&lt;w:p&gt;</code>) e lo <strong>clona una volta per ogni voce</strong> del preventivo (<code>ExpandItems</code>).</li>
+<li>Dentro il blocco clonato: <code>{{POS_N_CAMPO}}</code> (es. <code>{{POS_N_TIPOLOGIA}}</code>, <code>{{POS_N_DIMENSIONI}}</code>, <code>{{POS_N_VETRO}}</code>, <code>{{POS_N_FERRAMENTA}}</code>) e <code>{{POS_N}}</code> per il numero progressivo di posizione.</li>
+<li><strong>Immagini tipologia</strong>: un&#39;immagine segnaposto nel template con Alt Text <code>{{POS_N_IMMAGINE}}</code> viene, per ogni posizione clonata, ricollegata (<code>r:embed</code>) all&#39;immagine reale della tipologia serramento — aggiunta come nuova &quot;media part&quot; nel pacchetto ZIP, con relationship e content-type registrati (<code>AddMediaParts</code>, <code>AddImageRelationships</code>, <code>EnsurePngContentType</code>).</li>
+<li>Gestisce anche il caso (frequente con Word) in cui un token è spezzato su più <code>&lt;w:r&gt;</code> (run) a causa di correzioni automatiche — <code>NormalizeSplitTokens</code> ricompone il testo prima di applicare le regex.</li>
+</ul>
+<p>Le immagini delle tipologie di serramento sono caricate da <code>WindowTypeAssets.cs</code> come <strong>embedded resource</strong> (<code>Features/_Shared/Assets/WindowTypes/*.png</code>, dichiarate nel <code>.csproj</code>), non da filesystem, con cache statica in <code>ConcurrentDictionary</code>.</p>
+<p>I 4 template di partenza (<code>TEMPLATE_Preventivo_BASE/BOZZA/CLASSICO/MINIMAL.docx</code>) sono anch&#39;essi embedded resource, caricati dal <code>DataSeeder</code> al primo avvio se il DB è vuoto.</p>
+<blockquote>
+<p>⚠️ <strong>TODO verificato</strong>: il pacchetto <strong>SkiaSharp</strong> è referenziato nel <code>.csproj</code> ma non risulta usato in nessun file <code>.cs</code> del progetto (nessun <code>SKBitmap</code>/<code>SKImage</code>/<code>SkiaSharp</code> nel codice). Se stai cercando dove viene elaborata la grafica delle immagini, non è qui — probabilmente dipendenza non ancora utilizzata o residuo da funzionalità pianificata. Verifica con il team prima di rimuoverla o di basarti su di essa.</p>
+</blockquote>
+<p>Per modificare un template esistente o crearne uno nuovo, vedi la memoria di progetto su convenzioni token e marcatori (<code>preventivo-print-templates</code>), che descrive come ri-creare i file <code>.docx</code> mantenendo i marcatori <code>{{POS_START}}</code>/<code>{{POS_END}}</code> intatti in Word.</p>
+<h2>Come intervenire in sicurezza nel backend</h2>
+<p><strong>Convenzioni di naming</strong>:</p>
+<ul>
+<li>Cartelle feature in PascalCase plurale (<code>Customers</code>, <code>Series</code>), sottocartelle operazione in PascalCase verbo+entità singolare (<code>CreateCustomer</code>, <code>GetCustomerById</code>).</li>
+<li>File <code>&lt;Operazione&gt;&lt;Entità&gt;Command.cs</code> / <code>...Query.cs</code> / <code>...Handler.cs</code> / <code>...Validator.cs</code> / <code>...Response.cs</code>.</li>
+<li>Permessi come stringa <code>entità_plurale.azione</code> (<code>customers.read</code>, <code>customers.write</code>, <code>customers.delete</code>) — azione tipicamente <code>read</code>/<code>write</code>/<code>delete</code>, mai verbi liberi.</li>
+</ul>
+<p><strong>Dove aggiungere codice nuovo</strong>:</p>
+<ul>
+<li>Nuova feature CRUD → nuova cartella sotto <code>Features/</code>, seguendo i 8 passi sopra.</li>
+<li>Logica cross-cutting riusabile da più feature → <code>Features/_Shared/</code> (behaviors, extensions, helpers), non duplicata per feature.</li>
+<li>Nuovo tipo di eccezione applicativa → <code>Features/_Shared/Exceptions/</code>, e aggiungi il case nello <code>switch</code> di <code>ExceptionHandlingMiddleware</code>.</li>
+</ul>
+<p><strong>Cosa NON toccare senza motivo</strong>:</p>
+<ul>
+<li>L&#39;<strong>ordine dei middleware</strong> in <code>Program.cs</code> (CORS prima di tutto, ExceptionHandling subito dopo) — invertirlo cambia comportamento di CORS/preflight e di gestione errori.</li>
+<li>L&#39;<strong>ordine di registrazione dei pipeline behavior MediatR</strong> (<code>LoggingBehavior</code> prima di <code>ValidationBehavior</code>) — se invertito, gli errori di validazione non verrebbero più loggati correttamente.</li>
+<li>Il <code>ConventionPack</code> globale Mongo (<code>AddMongoDb</code>) — è condiviso da <strong>tutte</strong> le collection; una modifica (es. cambiare naming convention) impatta ogni documento esistente nel DB.</li>
+<li><code>EnsureIndexesAsync</code> — attenzione a non introdurre indici <code>Unique = true</code> su collection con dati esistenti non conformi, l&#39;avvio dell&#39;app fallirebbe.</li>
+<li>I file <code>.docx</code> in <code>Features/_Shared/Seed/Templates/</code> — vanno editati solo in Word preservando i marcatori <code>{{...}}</code>, mai come testo semplice (l&#39;XML sottostante si romperebbe).</li>
+</ul>
+
+  </main>
+</div>

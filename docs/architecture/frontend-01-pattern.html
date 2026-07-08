@@ -1,0 +1,133 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Frontend — Panoramica pattern</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 260px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--accent); background: var(--card);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Concetti architetturali</div>
+    <a href="00-indice.html">Concetti architetturali — Indice</a>
+      <a href="backend-01-pattern.html">Backend — Panoramica pattern</a>
+      <a href="backend-02-confronto.html">Backend — Confronto con le alternative</a>
+      <a href="backend-03-nel-progetto.html">Backend — Dove si vedono nel codice</a>
+      <a href="frontend-01-pattern.html" class="active">Frontend — Panoramica pattern</a>
+      <a href="frontend-02-confronto.html">Frontend — Confronto con le alternative</a>
+      <a href="frontend-03-nel-progetto.html">Frontend — Dove si vedono nel codice</a>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+      <a href="../technical/00-indice.html">→ Documentazione tecnica Tama</a>
+    </div>
+  </nav>
+  <main>
+    <h1>Concetti architetturali — Frontend — Livello 1: Panoramica dei pattern</h1>
+<blockquote>
+<p>Documento tecnologia-agnostico. Per il confronto approfondito vedi <a href="frontend-02-confronto.html">frontend-02-confronto</a>, per l&#39;ancoraggio al codice reale <a href="frontend-03-nel-progetto.html">frontend-03-nel-progetto</a>.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Pattern / concetto</th>
+<th>Definizione in una frase</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Reattività fine-grained</strong></td>
+<td>Il meccanismo fondante di Vue: lo stato è avvolto in contenitori osservabili (<code>ref</code>, <code>reactive</code>) e il framework traccia automaticamente chi li legge (template, <code>computed</code>, <code>watch</code>), ri-eseguendo solo quei punti quando il valore cambia — un&#39;applicazione dell&#39;Observer pattern.</td>
+</tr>
+<tr>
+<td><strong>Options API</strong></td>
+<td>Stile &quot;storico&quot; di Vue in cui un componente è un oggetto con proprietà fisse (<code>data</code>, <code>computed</code>, <code>methods</code>, <code>watch</code>), ognuna raggruppata per <em>tipo</em>.</td>
+</tr>
+<tr>
+<td><strong>Composition API</strong></td>
+<td>Stile introdotto in Vue 3 in cui la logica di un componente è scritta come funzioni JavaScript/TypeScript (<code>ref</code>, <code>computed</code>, funzioni) che puoi raggruppare liberamente per <em>funzionalità</em> invece che per tipo.</td>
+</tr>
+<tr>
+<td><strong><code>&lt;script setup&gt;</code></strong></td>
+<td>Sintassi zucchero-sintattico sopra la Composition API: tutto ciò che dichiari nel blocco è automaticamente esposto al template, senza un <code>return</code> esplicito.</td>
+</tr>
+<tr>
+<td><strong>Composable</strong></td>
+<td>Funzione riusabile che incapsula logica stateful con la Composition API (es. <code>usePermission()</code>), l&#39;equivalente Vue dei React Hooks personalizzati.</td>
+</tr>
+<tr>
+<td><strong>Store pattern (state management centralizzato)</strong></td>
+<td>Stato condiviso tra più componenti, gestito fuori dai singoli componenti in un oggetto centrale con regole su come può essere letto/modificato.</td>
+</tr>
+<tr>
+<td><strong>MVVM (Model-View-ViewModel)</strong></td>
+<td>Pattern architetturale dove la View (UI) si lega reattivamente a un ViewModel (stato + logica di presentazione), che a sua volta orchestra il Model (dati/business logic) — le SPA reattive (Vue, React+hooks) sono di fatto varianti di MVVM.</td>
+</tr>
+<tr>
+<td><strong>Service layer (API layer)</strong></td>
+<td>Modulo dedicato esclusivamente a effettuare chiamate HTTP verso il backend, isolato da componenti e store.</td>
+</tr>
+<tr>
+<td><strong>Optimistic update</strong></td>
+<td>Aggiornare l&#39;interfaccia (o lo stato locale) <em>prima</em> di avere conferma dal server, assumendo che l&#39;operazione avrà successo, per dare percezione di maggiore reattività.</td>
+</tr>
+<tr>
+<td><strong>Route guard (navigation guard)</strong></td>
+<td>Funzione eseguita dal router prima/dopo una navigazione, usata per bloccare o redirigere l&#39;accesso a una rotta (es. per autenticazione).</td>
+</tr>
+<tr>
+<td><strong>Interceptor (HTTP)</strong></td>
+<td>Funzione che intercetta ogni richiesta/risposta HTTP in un punto centrale, per aggiungere comportamento trasversale (token, gestione errori) senza ripeterlo in ogni chiamata.</td>
+</tr>
+<tr>
+<td><strong>Single Source of Truth</strong></td>
+<td>Principio per cui un dato ha un solo &quot;proprietario&quot; autorevole nello stato dell&#39;app; tutti gli altri punti che lo mostrano lo derivano da lì, non ne tengono una copia propria.</td>
+</tr>
+</tbody></table>
+<h2>Come si combinano in una SPA moderna</h2>
+<p>Una SPA Vue/React moderna tipicamente è: <strong>Composition API</strong> (o Hooks) per la logica dei componenti, <strong>store centralizzato</strong> (Pinia/Vuex/Redux) come Single Source of Truth per lo stato condiviso, <strong>service layer</strong> per isolare le chiamate HTTP, <strong>route guard</strong> per proteggere le rotte. Il pattern architetturale complessivo che ne risulta è una forma di <strong>MVVM</strong>: il componente (<code>View</code>) non parla mai direttamente con il backend, passa sempre dal ViewModel (store), che a sua volta usa il Model (service layer) per i dati.</p>
+
+  </main>
+</div>

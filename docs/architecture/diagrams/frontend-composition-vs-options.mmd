@@ -1,0 +1,18 @@
+flowchart TB
+    subgraph Options["Options API (non usato qui)"]
+        direction TB
+        O1["export default {\n  data() {...},\n  computed: {...},\n  methods: {...}\n}"]
+        O2["Logica sparsa per 'tipo'\n(tutti i data insieme,\ntutti i methods insieme)"]
+        O1 --> O2
+    end
+
+    subgraph Composition["Composition API (usato qui)"]
+        direction TB
+        CO1["&lt;script setup&gt;\nconst x = ref(...)\nfunction doThing() {...}"]
+        CO2["Logica raggruppata per 'feature'\n(stato + funzioni correlate\nvicini nel codice)"]
+        CO3["Estraibile in composables/\nse riusata altrove"]
+        CO1 --> CO2 --> CO3
+    end
+
+    style Composition fill:#2f855a,color:#fff
+    style Options fill:#4a5568,color:#fff

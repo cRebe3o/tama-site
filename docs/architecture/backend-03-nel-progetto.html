@@ -1,0 +1,182 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Backend — Dove si vedono nel codice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 260px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--accent); background: var(--card);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Concetti architetturali</div>
+    <a href="00-indice.html">Concetti architetturali — Indice</a>
+      <a href="backend-01-pattern.html">Backend — Panoramica pattern</a>
+      <a href="backend-02-confronto.html">Backend — Confronto con le alternative</a>
+      <a href="backend-03-nel-progetto.html" class="active">Backend — Dove si vedono nel codice</a>
+      <a href="frontend-01-pattern.html">Frontend — Panoramica pattern</a>
+      <a href="frontend-02-confronto.html">Frontend — Confronto con le alternative</a>
+      <a href="frontend-03-nel-progetto.html">Frontend — Dove si vedono nel codice</a>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+      <a href="../technical/00-indice.html">→ Documentazione tecnica Tama</a>
+    </div>
+  </nav>
+  <main>
+    <h1>Concetti architetturali — Backend — Livello 3: dove si vedono nel codice di Tama</h1>
+<p>Questo documento ancora ogni concetto spiegato nei livelli precedenti a un file/snippet reale del repository. Per la spiegazione teorica, vedi <a href="backend-02-confronto.html">backend-02-confronto</a>; per il dettaglio implementativo completo, vedi <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>.</p>
+<h2>Minimal API</h2>
+<p>File: <code>apps/backend/Tama.Api/Features/Customers/CustomerEndpoints.cs</code></p>
+<pre><code class="language-csharp">var group = app.MapGroup(&quot;/api/customers&quot;).WithTags(&quot;Customers&quot;).RequireAuthorization();
+group.MapPost(&quot;/&quot;, async (CreateCustomerCommand cmd, IMediator mediator, CancellationToken ct) =&gt; { ... })
+     .RequireAuthorization(p =&gt; p.RequireClaim(&quot;permissions&quot;, &quot;customers.write&quot;));
+</code></pre>
+<p>Nessun <code>[ApiController]</code>, nessuna classe <code>CustomersController</code>. La registrazione dell&#39;intera &quot;famiglia&quot; di endpoint (<code>GET/POST/PUT/DELETE /api/customers</code>) è tutta in un unico metodo di estensione. Il fatto che tutti gli endpoint di <code>MapAllEndpoints()</code> (<code>apps/backend/Tama.Api/Features/_Shared/Extensions/EndpointExtensions.cs</code>) siano registrati <strong>esplicitamente uno per uno</strong> è la conseguenza diretta di non avere convenzioni automatiche: è il prezzo pagato per la semplicità del modello.</p>
+<h2>Vertical Slice Architecture</h2>
+<p>Confronta la struttura reale:</p>
+<pre><code>Features/Customers/
+├── CustomerEndpoints.cs
+├── CreateCustomer/   (Command, Handler, Validator, Response)
+├── UpdateCustomer/
+├── DeleteCustomer/
+├── GetCustomerById/
+└── GetCustomers/
+</code></pre>
+<p>con come sarebbe in Layered Architecture: <code>Controllers/CustomersController.cs</code>, <code>Services/CustomerService.cs</code> (con dentro <code>CreateAsync</code>, <code>UpdateAsync</code>, <code>DeleteAsync</code>, <code>GetByIdAsync</code>, <code>GetAllAsync</code> tutti insieme), <code>Repositories/CustomerRepository.cs</code>. In Tama, invece, ogni operazione ha la propria cartella isolata — <strong>non esiste</strong> una classe <code>CustomerService</code> con 5 metodi: esistono 5 Handler distinti, ciascuno con una singola responsabilità (Single Responsibility Principle applicato al livello della singola operazione, non della classe &quot;servizio&quot;).</p>
+<p>Il piccolo strato condiviso <code>Features/_Shared/</code> (repository, documenti Mongo, behavior, middleware) è l&#39;unica parte &quot;orizzontale&quot; del progetto — usalo come bussola: se una cosa è specifica di <strong>una</strong> feature, va nella cartella della feature; se serve a <strong>più</strong> feature, va in <code>_Shared/</code>.</p>
+<h2>CQRS + Mediator</h2>
+<p><code>CreateCustomerCommand</code> (muta stato) e <code>GetCustomersQuery</code> (legge) sono entrambi <code>IRequest&lt;TResponse&gt;</code>, ma concettualmente distinti per convenzione di naming (<code>...Command</code> vs <code>...Query</code>) — nulla lo impone a livello di tipo C#, è una convenzione osservata in ogni feature del progetto.</p>
+<p>L&#39;endpoint non conosce mai l&#39;Handler direttamente:</p>
+<pre><code class="language-csharp">var result = await mediator.Send(cmd, ct);   // non &quot;new CreateCustomerHandler(...).Handle(cmd)&quot;
+</code></pre>
+<p><code>mediator.Send</code> risolve <code>CreateCustomerHandler</code> automaticamente perché implementa <code>IRequestHandler&lt;CreateCustomerCommand, CreateCustomerResponse&gt;</code> ed è registrato in DI da <code>AddMediatR(cfg =&gt; cfg.RegisterServicesFromAssemblyContaining&lt;Program&gt;())</code> (<code>Features/_Shared/Extensions/MediatRExtensions.cs</code>).</p>
+<h2>Pipeline behavior (Decorator)</h2>
+<pre><code class="language-csharp">services.AddTransient(typeof(IPipelineBehavior&lt;,&gt;), typeof(LoggingBehavior&lt;,&gt;));
+services.AddTransient(typeof(IPipelineBehavior&lt;,&gt;), typeof(ValidationBehavior&lt;,&gt;));
+</code></pre>
+<p>Questa riga in <code>MediatRExtensions.cs</code> è dove il pattern Decorator viene &quot;assemblato&quot;: ogni <code>Send()</code> passa attraverso <code>LoggingBehavior</code> (esterno) che avvolge <code>ValidationBehavior</code> (interno) che avvolge l&#39;Handler. Nessuno dei tre sa dell&#39;esistenza degli altri due — puoi aggiungere un nuovo behavior (es. un futuro <code>CachingBehavior</code>) senza toccare nessuna riga degli Handler esistenti: è esattamente il beneficio &quot;open/closed&quot; del pattern.</p>
+<h2>Repository pattern (non generico)</h2>
+<p><code>ICustomerRepository</code> (<code>Features/_Shared/Repositories/</code>) espone <code>GetPagedAsync</code>, <code>GetByIdAsync</code>, <code>InsertAsync</code>, <code>UpdateAsync</code>, <code>DeleteAsync</code> — metodi pensati per come i Customer vengono effettivamente interrogati in questo progetto, non un <code>IRepository&lt;T&gt;</code> generico riusato per ogni entità. Ogni feature ha la propria interfaccia repository con la propria &quot;forma&quot;.</p>
+<h2>Document-oriented modeling</h2>
+<p><code>CustomerDocument</code> (<code>Features/_Shared/Documents/</code>) è una classe POCO semplice, senza attributi <code>[Key]</code>/<code>[ForeignKey]</code> di EF Core:</p>
+<pre><code class="language-csharp">public class CustomerDocument
+{
+    public ObjectId Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    // ...
+}
+</code></pre>
+<p>L&#39;esempio migliore di modellazione &quot;a documento&quot; nel progetto è <code>DraftDocument</code> (il preventivo), in <code>Features/_Shared/Documents/DraftDocument.cs</code> — verificato nel codice:</p>
+<pre><code class="language-csharp">public class DraftDocument
+{
+    public ObjectId Id { get; set; }
+    public ObjectId CustomerId { get; set; }
+    public string CustomerName { get; set; } = string.Empty;   // snapshot denormalizzato
+    public ObjectId SeriesId { get; set; }
+    public string SeriesCode { get; set; } = string.Empty;      // snapshot denormalizzato
+    public string SeriesName { get; set; } = string.Empty;      // snapshot denormalizzato
+    public List&lt;DraftItemDocument&gt; Items { get; set; } = [];    // righe EMBEDDED, non tabella separata
+    // ...
+}
+</code></pre>
+<p>Qui si vedono <strong>entrambe</strong> le tecniche tipiche di un Document DB:</p>
+<ul>
+<li><strong>Embedding</strong>: le righe del preventivo (<code>Items</code>, <code>List&lt;DraftItemDocument&gt;</code>) vivono <em>dentro</em> il documento del preventivo — &quot;le cose che si leggono sempre insieme si salvano insieme&quot;. Caricare un preventivo con 20 posizioni è una singola query, zero join. In un RDBMS sarebbero una tabella <code>DraftItems</code> con FK.</li>
+<li><strong>Denormalizzazione</strong>: accanto a <code>CustomerId</code> (il riferimento) c&#39;è <code>CustomerName</code> (una <em>copia</em> del nome al momento della creazione); idem <code>SeriesCode</code>/<code>SeriesName</code> accanto a <code>SeriesId</code>, e <code>WindowType</code> accanto a <code>WindowTypeId</code> nelle righe. Il preventivo mostra così i suoi dati senza fare lookup — ed è anche una scelta di dominio sensata: un preventivo emesso è uno &quot;snapshot storico&quot;, non deve cambiare retroattivamente se il cliente viene rinominato.</li>
+</ul>
+<p>Il riferimento tra entità diverse (<code>CustomerId</code>) resta però un <code>ObjectId</code> &quot;morbido&quot;: nessun vincolo di integrità referenziale a livello di database. Verificato nel codice: <code>DeleteCustomerHandler</code> (<code>Features/Customers/DeleteCustomer/</code>) <strong>non controlla</strong> se esistono preventivi collegati prima di eliminare — elimina e basta. I preventivi orfani continuano a funzionare visivamente grazie al <code>CustomerName</code> denormalizzato, ma il loro <code>CustomerId</code> punta a un documento che non esiste più. È il trade-off documentato in <a href="backend-02-confronto.html">backend-02</a>: con Mongo l&#39;integrità referenziale, se serve, è responsabilità del codice applicativo — e qui (deliberatamente o meno) non è stata implementata. ⚠️ Punto da tenere presente se si aggiunge una feature che naviga da preventivo a cliente.</p>
+<h2>Transazioni e cascade delete</h2>
+<p><code>Features/Roles/DeleteRole/DeleteRoleHandler.cs</code> mostra come il progetto gestisce le eliminazioni con effetti a cascata (un ruolo va rimosso anche da tutti gli utenti e gruppi che lo referenziano):</p>
+<pre><code class="language-csharp">using var session = await mongoClient.StartSessionAsync(cancellationToken: cancellationToken);
+//session.StartTransaction();
+try
+{
+    await userRepo.RemoveRoleFromAllUsersAsync(id, session, cancellationToken);   // Fase 2
+    await groupRepo.RemoveRoleFromAllGroupsAsync(id, session, cancellationToken); // Fase 3
+    await roleRepo.DeleteAsync(id, session, cancellationToken);                   // Fase 4
+    //await session.CommitTransactionAsync(cancellationToken);
+}
+catch
+{
+    //await session.AbortTransactionAsync(cancellationToken);
+    throw;
+}
+</code></pre>
+<p>Da notare: la sessione viene creata e passata ai repository, ma le chiamate <code>StartTransaction</code>/<code>Commit</code>/<code>Abort</code> sono <strong>commentate</strong>. Il motivo (non documentato nel codice, ma quasi certamente questo): le transazioni multi-documento di MongoDB richiedono un <strong>replica set</strong> — su un&#39;istanza standalone (tipica in sviluppo locale e su hosting economici) lanciano un errore a runtime. Il codice è quindi &quot;pronto&quot; per diventare transazionale scommentando tre righe quando l&#39;infrastruttura lo permette; nel frattempo il cascade è sequenziale: se l&#39;app crashasse tra la Fase 2 e la Fase 4, il DB resterebbe in uno stato intermedio (ruolo rimosso dagli utenti ma ancora esistente). Stesso pattern in <code>DeleteGroupHandler</code> e <code>DeletePermissionHandler</code>. ⚠️ Non scommentare quelle righe senza prima verificare che il MongoDB di destinazione sia un replica set.</p>
+<h2>Counter pattern (progressivi senza IDENTITY)</h2>
+<p>Il numero preventivo (<code>1001-A00-2026</code>) contiene un progressivo per anno (<code>Sequence</code>). MongoDB non ha <code>IDENTITY</code>/<code>SEQUENCE</code> nativi, quindi il progetto usa il counter pattern canonico — <code>Features/_Shared/Repositories/DraftRepository.cs</code>:</p>
+<pre><code class="language-csharp">public async Task&lt;int&gt; NextAsync(string key, CancellationToken ct)
+{
+    var update = Builders&lt;CounterDocument&gt;.Update
+        .Inc(x =&gt; x.Value, 1)
+        .SetOnInsert(x =&gt; x.Key, key);
+    var opts = new FindOneAndUpdateOptions&lt;CounterDocument&gt;
+    {
+        IsUpsert = true,
+        ReturnDocument = ReturnDocument.After
+    };
+    var result = await _col.FindOneAndUpdateAsync&lt;CounterDocument&gt;(...);
+}
+</code></pre>
+<p><code>FindOneAndUpdate</code> con <code>$inc</code> è <strong>atomico a livello di singolo documento</strong> (garanzia che MongoDB dà sempre, anche senza transazioni): due richieste concorrenti non otterranno mai lo stesso numero. <code>IsUpsert = true</code> crea il contatore al primo uso (es. al primo preventivo di un nuovo anno), <code>ReturnDocument.After</code> restituisce il valore già incrementato. È l&#39;equivalente Mongo di <code>SELECT NEXT VALUE FOR sequence</code> in SQL Server.</p>
+<h2>DI lifetimes: la trappola singleton→scoped, risolta</h2>
+<p><code>Features/_Shared/Middleware/ExceptionHandlingMiddleware.cs</code> è l&#39;ancoraggio perfetto per il vincolo di captive dependency spiegato in <a href="backend-02-confronto.html">backend-02</a>: il middleware è istanziato una volta sola (di fatto singleton), ma per salvare un <code>ErrorLogDocument</code> gli serve <code>IErrorLogRepository</code>, che è scoped. Non può riceverlo nel costruttore — riceve invece <code>IServiceScopeFactory</code> e crea uno scope usa-e-getta al momento del bisogno:</p>
+<pre><code class="language-csharp">private async Task SaveErrorLogAsync(HttpContext context, Exception exception)
+{
+    // Crea uno scope per risolvere il repository scoped dal middleware singleton
+    using var scope = scopeFactory.CreateScope();
+    var repo = scope.ServiceProvider.GetRequiredService&lt;IErrorLogRepository&gt;();
+    await repo.InsertAsync(new ErrorLogDocument { ... }, CancellationToken.None);
+}
+</code></pre>
+<p>Se ti capita di dover usare un repository da un contesto a vita lunga (middleware, background service, seed), questo è il pattern da copiare — iniettare il repository direttamente nel costruttore produrrebbe un errore di validazione DI all&#39;avvio in sviluppo.</p>
+<h2>Claims-based authorization</h2>
+<pre><code class="language-csharp">.RequireAuthorization(p =&gt; p.RequireClaim(&quot;permissions&quot;, &quot;customers.write&quot;))
+</code></pre>
+<p><code>&quot;permissions&quot;</code> è il nome del claim, <code>&quot;customers.write&quot;</code> è il valore atteso — popolato nel JWT al login risolvendo i permessi di ruoli e gruppi dell&#39;utente (vedi <code>Features/Auth/</code>). Non esiste, nel codice, alcun <code>[Authorize(Roles = &quot;Admin&quot;)]</code>: cerca <code>RequireClaim(&quot;permissions&quot;, ...)</code> per trovare dove un endpoint è protetto e con quale permesso.</p>
+
+  </main>
+</div>

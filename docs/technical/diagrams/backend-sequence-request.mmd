@@ -1,0 +1,36 @@
+sequenceDiagram
+    actor U as Utente (Browser)
+    participant CORS as CORS Middleware
+    participant EX as ExceptionHandlingMiddleware
+    participant RL as RateLimiter
+    participant AuthMw as Authentication/Authorization
+    participant EP as Endpoint (es. POST /api/customers)
+    participant MED as MediatR Pipeline
+    participant LOG as LoggingBehavior
+    participant VAL as ValidationBehavior
+    participant H as Handler (es. CreateCustomerHandler)
+    participant REPO as ICustomerRepository
+    participant DB as MongoDB
+    participant AUDIT as AuditLogRepository
+
+    U->>CORS: HTTP request + Bearer JWT
+    CORS->>EX: next()
+    EX->>RL: next() (try/catch attorno a tutta la pipeline)
+    RL->>AuthMw: next() (se sotto soglia policy)
+    AuthMw->>EP: next() (JWT valido + RequireClaim permessi soddisfatto)
+    EP->>MED: mediator.Send(command)
+    MED->>LOG: invoke()
+    LOG->>VAL: invoke() (logga inizio/fine + durata)
+    VAL->>VAL: esegue IValidator<TRequest>
+    alt validazione fallita
+        VAL-->>EX: throw ValidationException
+        EX-->>U: 400 ProblemDetails (errors per campo)
+    else validazione ok
+        VAL->>H: invoke()
+        H->>REPO: InsertAsync(doc)
+        REPO->>DB: insert
+        H->>AUDIT: InsertAsync(AuditLogDocument)
+        AUDIT->>DB: insert
+        H-->>EP: Response
+        EP-->>U: 200/201 OK
+    end

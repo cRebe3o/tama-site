@@ -1,0 +1,17 @@
+flowchart TB
+    App["App.vue"]
+    Shell["components/layout/AppShell.vue\n(navbar, sidebar, breadcrumb)"]
+    Router["router-view"]
+    Page["pages/data/CustomersPage.vue\n(lista CRUD)"]
+    Table["v-data-table-server (desktop)\nv-list paginata (mobile)"]
+    Dialog["ConfirmDialog.vue\n(conferma eliminazione)"]
+    Detail["pages/users/UserDetailPage.vue\n(create/edit full-page)"]
+    Form["v-form + regole di validazione\n+ useApiErrors()"]
+
+    App --> Shell --> Router --> Page
+    Page --> Table
+    Page --> Dialog
+    Router --> Detail --> Form
+
+    style App fill:#2b6cb0,color:#fff
+    style Shell fill:#2b6cb0,color:#fff

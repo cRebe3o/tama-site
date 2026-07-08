@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Deploy su Render da GitHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .main {
+            display: flex;
+            min-height: calc(100vh - 300px);
+        }
+
+        .toc-sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 300px);
+            position: sticky;
+            top: 0;
+        }
+
+        .toc-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .toc-sidebar nav ul {
+            list-style: none;
+        }
+
+        .toc-sidebar nav ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .toc-sidebar nav ul li a {
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+            padding: 0.4rem 0;
+            display: block;
+            border-left: 3px solid transparent;
+            padding-left: 0.8rem;
+        }
+
+        .toc-sidebar nav ul li a:hover {
+            color: #667eea;
+            border-left-color: #667eea;
+        }
+
+        .toc-sidebar nav ul li ul {
+            list-style: none;
+            margin-left: 1rem;
+            margin-top: 0.4rem;
+        }
+
+        .toc-sidebar nav ul li ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        .toc-sidebar nav ul li ul li a {
+            font-size: 0.88rem;
+            color: #888;
+        }
+
+        .content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 300px);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 2.5rem 0 1.5rem 0;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+            color: #764ba2;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem 0;
+            color: #555;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #d63384;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.6rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        footer {
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            padding: 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .summary-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: #fafafa;
+        }
+
+        .summary-card h4 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge.success {
+            background: #28a745;
+        }
+
+        .badge.warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .badge.danger {
+            background: #dc3545;
+        }
+
+        @media (max-width: 1024px) {
+            .main {
+                flex-direction: column;
+            }
+
+            .toc-sidebar {
+                width: 100%;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 1.5rem;
+            }
+
+            .content {
+                padding: 2rem;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Deploy su Render da GitHub</h1>
+            <p>Guida per pubblicare backend (.NET) e frontend (Vue/Vite) su Render collegando il repository GitHub</p>
+            <div style="margin-top: 1rem; opacity: 0.9;">
+                <strong>Ultimo aggiornamento:</strong> 2026-03-29 | <strong>Versione:</strong> 1.0
+            </div>
+        </header>
+
+        <div class="main">
+            <aside class="toc-sidebar">
+                <div class="toc-title">📑 Indice</div>
+                <nav>
+                    <ul>
+                        <li><a href="#prerequisiti">Prerequisiti</a></li>
+                        <li>
+                            <a href="#backend">1. Backend — Web Service</a>
+                            <ul>
+                                <li><a href="#backend-creazione">Creazione servizio</a></li>
+                                <li><a href="#backend-env">Variabili d'ambiente</a></li>
+                                <li><a href="#backend-porta">Porta</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#frontend">2. Frontend — Static Site</a>
+                            <ul>
+                                <li><a href="#frontend-creazione">Creazione servizio</a></li>
+                                <li><a href="#frontend-pnpm">Abilitare pnpm</a></li>
+                                <li><a href="#frontend-env">Variabili d'ambiente</a></li>
+                                <li><a href="#frontend-rewrite">Rewrite rule SPA</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#cors">3. CORS</a></li>
+                        <li><a href="#sicurezza">4. Sicurezza</a></li>
+                        <li><a href="#deploy-auto">5. Deploy automatico</a></li>
+                        <li><a href="#troubleshooting">6. Troubleshooting</a></li>
+                        <li><a href="#riepilogo">Riepilogo</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <div class="content">
+
+                <!-- Prerequisiti -->
+                <section class="section" id="prerequisiti">
+                    <h2>Prerequisiti</h2>
+                    <ul>
+                        <li>Repository GitHub pushato e aggiornato</li>
+                        <li>Account <a href="https://render.com" target="_blank">Render</a> collegato a GitHub</li>
+                        <li>Accesso alla dashboard MongoDB Atlas (per aggiornare credenziali)</li>
+                    </ul>
+                </section>
+
+                <!-- Backend -->
+                <section class="section" id="backend">
+                    <h2>1. Backend — Web Service (Docker)</h2>
+
+                    <h3 id="backend-creazione">Creazione servizio</h3>
+                    <ol>
+                        <li>Dalla dashboard Render: <strong>New → Web Service</strong></li>
+                        <li>Connetti il repository GitHub <code>tama</code></li>
+                        <li>Configura i parametri:</li>
+                    </ol>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Valore</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Name</strong></td>
+                                <td><code>tama-backend</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Root Directory</strong></td>
+                                <td><code>apps/backend/Tama.Api</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Environment</strong></td>
+                                <td><code>Docker</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box">
+                        Render rileverà automaticamente il <code>Dockerfile</code> presente nella root directory.
+                    </div>
+
+                    <h3 id="backend-env">Variabili d'ambiente</h3>
+                    <p>Nella sezione <strong>Environment</strong> del servizio, aggiungi:</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Variabile</th>
+                                <th>Valore</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>ASPNETCORE_ENVIRONMENT</code></td>
+                                <td><code>Production</code></td>
+                                <td>Carica <code>appsettings.Production.json</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>ConnectionStrings__MongoDB</code></td>
+                                <td><code>mongodb+srv://user:pass@cluster...</code></td>
+                                <td>Stringa di connessione MongoDB di produzione</td>
+                            </tr>
+                            <tr>
+                                <td><code>Auth__Jwt__Secret</code></td>
+                                <td><em>(secret robusto, min 32 caratteri)</em></td>
+                                <td>Chiave firma JWT</td>
+                            </tr>
+                            <tr>
+                                <td><code>Seed__AdminPassword</code></td>
+                                <td><em>(password admin iniziale)</em></td>
+                                <td>Usata al primo seed del DB</td>
+                            </tr>
+                            <tr>
+                                <td><code>Cors__AllowedOrigins__0</code></td>
+                                <td><code>https://tama-frontend.onrender.com</code></td>
+                                <td>URL del frontend su Render</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box">
+                        <strong>Nota:</strong> In .NET le variabili d'ambiente usano <code>__</code> (doppio underscore) al posto di <code>:</code> per la navigazione gerarchica.
+                        Ad esempio <code>ConnectionStrings__MongoDB</code> corrisponde a <code>ConnectionStrings:MongoDB</code> in <code>appsettings.json</code>.
+                    </div>
+
+                    <h3 id="backend-porta">Porta</h3>
+                    <p>
+                        Il <code>Dockerfile</code> espone la porta <strong>8080</strong> (<code>EXPOSE 8080</code>).
+                        Render la rileva automaticamente; se richiesto, impostala manualmente nella configurazione del servizio.
+                    </p>
+                </section>
+
+                <!-- Frontend -->
+                <section class="section" id="frontend">
+                    <h2>2. Frontend — Static Site</h2>
+
+                    <h3 id="frontend-creazione">Creazione servizio</h3>
+                    <ol>
+                        <li>Dalla dashboard Render: <strong>New → Static Site</strong></li>
+                        <li>Connetti lo stesso repository GitHub</li>
+                        <li>Configura i parametri:</li>
+                    </ol>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Valore</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Name</strong></td>
+                                <td><code>tama-frontend</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Root Directory</strong></td>
+                                <td><code>apps/frontend</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Build Command</strong></td>
+                                <td><code>pnpm install &amp;&amp; pnpm run build</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Publish Directory</strong></td>
+                                <td><code>dist</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 id="frontend-pnpm">Abilitare pnpm</h3>
+                    <p>Il progetto utilizza pnpm. Aggiungi la variabile d'ambiente:</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Variabile</th>
+                                <th>Valore</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>ENABLE_PNPM</code></td>
+                                <td><code>true</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>In alternativa, se vuoi usare npm:</p>
+                    <ul>
+                        <li><strong>Build Command</strong>: <code>npm install &amp;&amp; npm run build</code></li>
+                    </ul>
+
+                    <h3 id="frontend-env">Variabili d'ambiente</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Variabile</th>
+                                <th>Valore</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>VITE_API_BASE_URL</code></td>
+                                <td><code>https://tama-backend.onrender.com</code></td>
+                                <td>URL del backend API</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="warning-box">
+                        <strong>Importante:</strong> Le variabili <code>VITE_*</code> vengono iniettate a <strong>build time</strong> da Vite, non a runtime. Ogni modifica richiede un nuovo build.
+                    </div>
+
+                    <h3 id="frontend-rewrite">Rewrite rule per SPA</h3>
+                    <p>Vue Router usa la history mode: tutti i percorsi devono essere reindirizzati a <code>index.html</code>.</p>
+                    <p>Nella sezione <strong>Redirects/Rewrites</strong> del static site, aggiungi:</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/*</code></td>
+                                <td><code>/index.html</code></td>
+                                <td><code>Rewrite</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- CORS -->
+                <section class="section" id="cors">
+                    <h2>3. CORS</h2>
+                    <p>Il file <code>appsettings.Production.json</code> contiene già una configurazione CORS:</p>
+
+                    <pre><code>{
+  "Cors": {
+    "AllowedOrigins": ["https://tama-dev-frontend.onrender.com"]
+  }
+}</code></pre>
+
+                    <p>Puoi gestire le origini consentite in due modi:</p>
+                    <ul>
+                        <li><strong>Via file</strong>: modifica <code>appsettings.Production.json</code> con l'URL corretto del frontend</li>
+                        <li><strong>Via env var</strong>: imposta <code>Cors__AllowedOrigins__0</code> nelle variabili d'ambiente di Render (sovrascrive il file)</li>
+                    </ul>
+                </section>
+
+                <!-- Sicurezza -->
+                <section class="section" id="sicurezza">
+                    <h2>4. Sicurezza — Credenziali nel repository</h2>
+
+                    <div class="error-box">
+                        <strong>⚠️ Attenzione:</strong> Il file <code>appsettings.json</code> contiene la connection string MongoDB con username e password <strong>in chiaro</strong>.
+                    </div>
+
+                    <p>Azioni necessarie:</p>
+                    <ol>
+                        <li>
+                            <strong>Rimuovi la connection string</strong> da <code>appsettings.json</code> — lascia un valore vuoto o placeholder:
+                            <pre><code>"ConnectionStrings": {
+  "MongoDB": ""
+}</code></pre>
+                        </li>
+                        <li><strong>Cambia la password</strong> dell'utente MongoDB su Atlas</li>
+                        <li><strong>Usa solo variabili d'ambiente</strong> su Render per i segreti (<code>ConnectionStrings__MongoDB</code>, <code>Auth__Jwt__Secret</code>, <code>Seed__AdminPassword</code>)</li>
+                        <li><em>(Opzionale)</em> Pulisci la history Git con <code>git filter-repo</code> o <code>BFG Repo-Cleaner</code> per rimuovere le credenziali dai commit precedenti</li>
+                    </ol>
+                </section>
+
+                <!-- Deploy automatico -->
+                <section class="section" id="deploy-auto">
+                    <h2>5. Deploy automatico</h2>
+                    <p>Una volta collegato il repo, Render effettua il deploy automatico ad ogni push sul branch configurato (di default <code>main</code>).</p>
+                    <p>Per disabilitare l'auto-deploy:</p>
+                    <ul>
+                        <li>Dashboard → Servizio → <strong>Settings → Build &amp; Deploy → Auto-Deploy</strong> → <code>No</code></li>
+                    </ul>
+                </section>
+
+                <!-- Troubleshooting -->
+                <section class="section" id="troubleshooting">
+                    <h2>6. Troubleshooting</h2>
+
+                    <h3>Il backend non si avvia</h3>
+                    <ul>
+                        <li>Controlla i log nella dashboard Render (sezione <strong>Logs</strong>)</li>
+                        <li>Verifica che tutte le variabili d'ambiente siano impostate</li>
+                        <li>Assicurati che MongoDB Atlas accetti connessioni da qualsiasi IP (<code>0.0.0.0/0</code>) nella Network Access</li>
+                    </ul>
+
+                    <h3>Il frontend mostra pagina bianca</h3>
+                    <ul>
+                        <li>Verifica che <code>VITE_API_BASE_URL</code> sia impostata correttamente <strong>prima</strong> del build</li>
+                        <li>Controlla che la rewrite rule <code>/* → /index.html</code> sia attiva</li>
+                    </ul>
+
+                    <h3>Errori CORS</h3>
+                    <ul>
+                        <li>Verifica che <code>Cors__AllowedOrigins__0</code> corrisponda <strong>esattamente</strong> all'URL del frontend (protocollo incluso, senza trailing slash)</li>
+                        <li>Esempio corretto: <code>https://tama-frontend.onrender.com</code></li>
+                        <li>Esempio errato: <code>https://tama-frontend.onrender.com/</code></li>
+                    </ul>
+
+                    <h3>Spin-down su free tier</h3>
+                    <div class="warning-box">
+                        I servizi gratuiti su Render vanno in sleep dopo 15 minuti di inattività. La prima richiesta dopo lo sleep richiede ~30-60 secondi.
+                    </div>
+                    <p>Per evitarlo:</p>
+                    <ul>
+                        <li>Passa a un piano a pagamento</li>
+                        <li>Oppure usa un servizio di ping periodico (es. <a href="https://uptimerobot.com" target="_blank">UptimeRobot</a>)</li>
+                    </ul>
+                </section>
+
+                <!-- Riepilogo -->
+                <section class="section" id="riepilogo">
+                    <h2>Riepilogo</h2>
+
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <h4>🖥️ Backend</h4>
+                            <p>
+                                <span class="badge">Web Service</span>
+                                <span class="badge success">Docker</span>
+                            </p>
+                            <table class="comparison-table" style="box-shadow: none;">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Root Directory</strong></td>
+                                        <td><code>apps/backend/Tama.Api</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Build</strong></td>
+                                        <td>Docker (automatico)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Porta</strong></td>
+                                        <td><code>8080</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="summary-card">
+                            <h4>🌐 Frontend</h4>
+                            <p>
+                                <span class="badge">Static Site</span>
+                                <span class="badge success">Vite</span>
+                            </p>
+                            <table class="comparison-table" style="box-shadow: none;">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Root Directory</strong></td>
+                                        <td><code>apps/frontend</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Build Command</strong></td>
+                                        <td><code>pnpm install &amp;&amp; pnpm run build</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Output</strong></td>
+                                        <td><code>dist</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <footer>
+            <p>Tama — Deploy Guide | Ultimo aggiornamento: 2026-03-29</p>
+        </footer>
+    </div>
+</body>
+</html>

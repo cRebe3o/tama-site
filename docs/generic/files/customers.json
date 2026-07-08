@@ -1,0 +1,37 @@
+[
+  {
+    "_id": { "$oid": "665a000000000000000002c1" },
+    "name": "Mario Rossi",
+    "email": "mario.rossi@example.com",
+    "phone": "+39 335 1234567",
+    "address": "Via Garibaldi 12, 20121 Milano MI"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000002c2" },
+    "name": "Costruzioni Bianchi Srl",
+    "email": "info@costruzioni-bianchi.example.com",
+    "phone": "+39 02 98765432",
+    "address": "Via della Industria 45, 20060 Cassina de' Pecchi MI"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000002c3" },
+    "name": "Giulia Ferretti",
+    "email": "giulia.ferretti@example.com",
+    "phone": "+39 347 9876543",
+    "address": "Corso Vittorio Emanuele 8, 10121 Torino TO"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000002c4" },
+    "name": "Immobiliare Verde Srl",
+    "email": "acquisti@immobiliare-verde.example.com",
+    "phone": "+39 055 4321098",
+    "address": "Viale Europa 33, 50126 Firenze FI"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000002c5" },
+    "name": "Roberto Conti",
+    "email": "r.conti@example.com",
+    "phone": "+39 339 5554433",
+    "address": "Via Roma 77, 40121 Bologna BO"
+  }
+]

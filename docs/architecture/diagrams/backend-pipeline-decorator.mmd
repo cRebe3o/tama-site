@@ -1,0 +1,9 @@
+flowchart LR
+    Req["Request"] --> B1["Behavior 1\n(es. Logging)\nfa qualcosa PRIMA"]
+    B1 --> B2["Behavior 2\n(es. Validation)\nfa qualcosa PRIMA"]
+    B2 --> H["Handler\n(logica vera)"]
+    H --> B2b["Behavior 2\nfa qualcosa DOPO"]
+    B2b --> B1b["Behavior 1\nfa qualcosa DOPO"]
+    B1b --> Res["Response"]
+
+    style H fill:#2f855a,color:#fff

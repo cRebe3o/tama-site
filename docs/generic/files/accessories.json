@@ -1,0 +1,72 @@
+[
+  {
+    "_id": { "$oid": "665a000000000000000000a1" },
+    "code": "HANDLE_ALU_STD",
+    "label": "Maniglia in alluminio standard",
+    "category": "Handle",
+    "notes": "Compatibile con profili AWS 70 e AWS 75"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a2" },
+    "code": "HANDLE_ALU_PREM",
+    "label": "Maniglia in alluminio premium",
+    "category": "Handle",
+    "notes": "Finitura satinata, design Schüco"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a3" },
+    "code": "HANDLE_INOX",
+    "label": "Maniglia in acciaio inox",
+    "category": "Handle",
+    "notes": "Alta resistenza alla corrosione, adatta per esterno"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a4" },
+    "code": "HW_CASEMENT_STD",
+    "label": "Ferramenta battente standard",
+    "category": "Hardware",
+    "notes": "Kit completo cerniere + chiusura per anta battente"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a5" },
+    "code": "HW_TILT_STD",
+    "label": "Ferramenta ribalta standard",
+    "category": "Hardware",
+    "notes": "Kit completo per anta vasistas/ribalta"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a6" },
+    "code": "HW_TILTURN",
+    "label": "Ferramenta ribalta-battente",
+    "category": "Hardware",
+    "notes": "Apertura combinata ribalta e battente"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a7" },
+    "code": "HW_SLIDING_STD",
+    "label": "Ferramenta scorrevole standard",
+    "category": "Hardware",
+    "notes": "Binario + carrelli per ASE 80, portata max 200 kg"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a8" },
+    "code": "HW_SLIDING_LIFT",
+    "label": "Ferramenta alzante scorrevole",
+    "category": "Hardware",
+    "notes": "Sistema alzante per ASE 80 HI, portata max 400 kg"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000a9" },
+    "code": "EXTRA_INSECT_NET",
+    "label": "Zanzariera a rullo",
+    "category": "Extra",
+    "notes": "Zanzariera verticale a rullo, telaio alluminio"
+  },
+  {
+    "_id": { "$oid": "665a000000000000000000aa" },
+    "code": "EXTRA_BLIND_INT",
+    "label": "Veneziana interna integrata",
+    "category": "Extra",
+    "notes": "Veneziana in alluminio integrata nel vetrocamera"
+  }
+]

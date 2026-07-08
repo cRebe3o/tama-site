@@ -1,0 +1,34 @@
+sequenceDiagram
+    actor U as Utente
+    participant Page as CustomersPage.vue
+    participant Store as customers.store.ts
+    participant Svc as customers.service.ts
+    participant Ax as axios interceptor
+    participant BE as Backend /api/customers
+    participant Toast as toast.store.ts
+
+    U->>Page: click "Elimina"
+    Page->>Page: apre ConfirmDialog
+    U->>Page: conferma
+    Page->>Store: store.remove(id)
+    Store->>Svc: customersService.delete(id)
+    Svc->>Ax: api.delete(/api/customers/:id)
+    Ax->>Ax: aggiunge Authorization: Bearer JWT
+    Ax->>BE: DELETE /api/customers/:id
+    alt successo
+        BE-->>Ax: 204 No Content
+        Ax-->>Svc: risposta
+        Svc-->>Store: risolto
+        Store->>Store: items.value = items.value.filter(...)
+        Store-->>Page: loading=false
+        Page->>Toast: toast.success(...)
+    else errore 401
+        BE-->>Ax: 401 Unauthorized
+        Ax->>Ax: logout automatico (guardia anti-ricorsione)
+    else errore 5xx
+        BE-->>Ax: 500
+        Ax->>BE: POST /api/error-logs (fire-and-forget)
+        Ax-->>Store: reject
+        Store->>Store: error.value = messaggio
+        Page->>Toast: mostra errore
+    end

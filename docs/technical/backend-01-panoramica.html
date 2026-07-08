@@ -1,0 +1,206 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Backend — Panoramica tecnologie</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="00-indice.html">Tama — Indice documentazione</a>
+      <a href="backend-01-panoramica.html" class="active">Backend — Panoramica tecnologie</a>
+      <a href="backend-02-funzionamento.html">Backend — Come funziona</a>
+      <a href="backend-03-dettaglio.html">Backend — Dettaglio con codice</a>
+      <a href="frontend-01-panoramica.html">Frontend — Panoramica tecnologie</a>
+      <a href="frontend-02-funzionamento.html">Frontend — Come funziona</a>
+      <a href="frontend-03-dettaglio.html">Frontend — Dettaglio con codice</a>
+  </nav>
+  <main>
+    <h1>Backend — Livello 1: Panoramica tecnologie</h1>
+<blockquote>
+<p>Progetto: <code>apps/backend/Tama.Api</code> — .NET <strong>10.0</strong> (Minimal API), verificato in <code>Tama.Api.csproj</code> (<code>&lt;TargetFramework&gt;net10.0&lt;/TargetFramework&gt;</code>).</p>
+</blockquote>
+<p>Questo documento elenca le tecnologie usate nel backend e il ruolo di ciascuna, senza entrare nei dettagli implementativi (per quelli vedi <a href="backend-02-funzionamento.html">backend-02-funzionamento</a> e <a href="backend-03-dettaglio.html">backend-03-dettaglio</a>).</p>
+<h2>Framework e runtime</h2>
+<table>
+<thead>
+<tr>
+<th>Tecnologia</th>
+<th>Ruolo nel progetto</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>.NET 10 / ASP.NET Core Minimal API</strong></td>
+<td>Runtime e modello di hosting. Non ci sono Controller MVC: ogni endpoint è definito come funzione registrata su un <code>IEndpointRouteBuilder</code>.</td>
+</tr>
+<tr>
+<td><strong>Nullable reference types abilitati</strong></td>
+<td><code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> nel csproj: il compilatore segnala riferimenti potenzialmente null.</td>
+</tr>
+</tbody></table>
+<h2>Librerie applicative (NuGet)</h2>
+<table>
+<thead>
+<tr>
+<th>Pacchetto</th>
+<th>Versione</th>
+<th>Ruolo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>MediatR</strong></td>
+<td>12.4.0</td>
+<td>Implementa il pattern CQRS: ogni operazione (Command o Query) è una classe inviata a un mediatore, che la instrada all&#39;Handler corrispondente. Disaccoppia gli endpoint dalla logica di business.</td>
+</tr>
+<tr>
+<td><strong>FluentValidation</strong> + <strong>FluentValidation.DependencyInjectionExtensions</strong></td>
+<td>11.9.2</td>
+<td>Validazione dichiarativa degli input (Command/Query) tramite classi <code>Validator</code> separate, eseguite automaticamente prima dell&#39;Handler.</td>
+</tr>
+<tr>
+<td><strong>MongoDB.Driver</strong></td>
+<td>2.29.0</td>
+<td>Driver ufficiale per MongoDB. Non è usato alcun ORM relazionale (niente Entity Framework): l&#39;accesso ai dati è diretto tramite <code>IMongoCollection&lt;T&gt;</code>.</td>
+</tr>
+<tr>
+<td><strong>Microsoft.AspNetCore.Authentication.JwtBearer</strong></td>
+<td>10.0.0</td>
+<td>Autenticazione basata su token JWT firmati (HMAC-SHA256), usata per <strong>tutte</strong> le richieste autenticate all&#39;API.</td>
+</tr>
+<tr>
+<td><strong>Microsoft.Identity.Web</strong></td>
+<td>4.6.0</td>
+<td>Utilità Microsoft per l&#39;integrazione con Azure AD, usata nel flusso di login alternativo &quot;MSAL&quot; (vedi sezione Auth in <a href="backend-02-funzionamento.html">backend-02</a>).</td>
+</tr>
+<tr>
+<td><strong>BCrypt.Net-Next</strong></td>
+<td>4.0.3</td>
+<td>Hashing one-way delle password per il login locale (email + password).</td>
+</tr>
+<tr>
+<td><strong>Microsoft.AspNetCore.OpenApi</strong></td>
+<td>10.0.0</td>
+<td>Generazione dello schema OpenAPI (<code>/openapi/v1.json</code>) a partire dagli endpoint Minimal API.</td>
+</tr>
+<tr>
+<td><strong>Scalar.AspNetCore</strong></td>
+<td>2.5.5</td>
+<td>UI di documentazione API interattiva moderna, esposta oltre alla classica Swagger UI.</td>
+</tr>
+<tr>
+<td><strong>Swashbuckle.AspNetCore.SwaggerUI</strong></td>
+<td>7.2.0</td>
+<td>UI Swagger classica, montata su <code>/swagger</code>, che consuma lo schema generato da <code>Microsoft.AspNetCore.OpenApi</code>.</td>
+</tr>
+<tr>
+<td><strong>SkiaSharp</strong></td>
+<td>3.116.1</td>
+<td>Libreria di grafica 2D. <strong>Dichiarata nel csproj ma nessun utilizzo trovato nel codice</strong> (<code>grep</code> su <code>SkiaSharp|SKBitmap|SKImage</code> non produce risultati). ⚠️ TODO: verificare con il team se è dipendenza residua/non ancora usata o se va rimossa.</td>
+</tr>
+</tbody></table>
+<h2>Persistenza</h2>
+<ul>
+<li><strong>MongoDB</strong> come unico datastore, con collection tipizzate tramite POCO (<code>*Document</code>) in <code>Features/_Shared/Documents/</code>.</li>
+<li>Nessuna migration nel senso EF Core: la struttura dei documenti è implicita nel codice C#; gli indici vengono creati programmaticamente all&#39;avvio (<code>EnsureIndexesAsync</code>, vedi livello 2).</li>
+<li>Contenuti binari (template <code>.docx</code>, immagini tipologie serramento <code>.png</code>) sono <strong>embedded resource</strong> nell&#39;assembly, non file su disco a runtime.</li>
+</ul>
+<h2>Autenticazione e autorizzazione</h2>
+<ul>
+<li><strong>Doppia strategia di login</strong>: email+password locale (BCrypt) oppure Azure AD via MSAL — ma in entrambi i casi il backend emette sempre un proprio <strong>JWT interno</strong>, usato per tutte le chiamate successive. Dettagli in <a href="backend-02-funzionamento.html">backend-02</a> e nel documento pre-esistente <code>docs/Authentication-Strategy.md</code>.</li>
+<li><strong>Autorizzazione basata su permessi</strong>: ogni endpoint richiede un claim <code>permissions</code> con uno specifico valore (es. <code>customers.read</code>), non ruoli fissi a livello di policy centralizzata.</li>
+</ul>
+<h2>Cross-cutting</h2>
+<table>
+<thead>
+<tr>
+<th>Aspetto</th>
+<th>Come è gestito</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Logging delle richieste MediatR</strong></td>
+<td><code>LoggingBehavior&lt;TRequest,TResponse&gt;</code>, pipeline behavior custom.</td>
+</tr>
+<tr>
+<td><strong>Validazione automatica</strong></td>
+<td><code>ValidationBehavior&lt;TRequest,TResponse&gt;</code>, pipeline behavior custom che esegue i validator FluentValidation registrati.</td>
+</tr>
+<tr>
+<td><strong>Gestione errori centralizzata</strong></td>
+<td><code>ExceptionHandlingMiddleware</code>, mappa le eccezioni a risposte <code>ProblemDetails</code> (RFC 7807).</td>
+</tr>
+<tr>
+<td><strong>Audit trail</strong></td>
+<td>Scrittura manuale (non automatica) di record <code>AuditLogDocument</code> dentro ogni Handler Create/Update/Delete.</td>
+</tr>
+<tr>
+<td><strong>Rate limiting</strong></td>
+<td><code>Microsoft.AspNetCore.RateLimiting</code> (built-in .NET), due policy: <code>error-log-policy</code> e <code>auth-policy</code> (anti brute-force).</td>
+</tr>
+<tr>
+<td><strong>CORS</strong></td>
+<td>Policy permissiva su <code>localhost</code> in sviluppo, whitelist esplicita in produzione.</td>
+</tr>
+<tr>
+<td><strong>Localizzazione</strong></td>
+<td><code>RequestLocalization</code> su header <code>Accept-Language</code>, culture supportate <code>it</code>/<code>en</code>.</td>
+</tr>
+</tbody></table>
+<h2>Cosa NON c&#39;è</h2>
+<p>Per evitare assunzioni errate leggendo altri progetti .NET:</p>
+<ul>
+<li>Nessun <strong>Controller</strong> (<code>ControllerBase</code>) — solo Minimal API.</li>
+<li>Nessun <strong>Entity Framework Core</strong> — solo <code>MongoDB.Driver</code>.</li>
+<li>Nessun <strong>AutoMapper</strong> — la mappatura tra <code>Document</code> (Mongo) e <code>Response</code> (DTO) è scritta a mano dentro gli Handler.</li>
+<li>Nessuna <strong>Clean Architecture a progetti separati</strong> (Domain/Application/Infrastructure) — tutto vive in un solo progetto <code>Tama.Api</code>, organizzato per feature verticale (vedi livello 2).</li>
+</ul>
+
+  </main>
+</div>

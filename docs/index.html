@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tama — Documentazione</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --accent: #2b6cb0; --card: #f8f9fc;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --accent: #6fa8dc; --card: #1a1a28; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --accent: #6fa8dc; --card: #1a1a28; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --accent: #2b6cb0; --card: #f8f9fc; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; padding: 48px 24px; }
+.wrap { max-width: 760px; margin: 0 auto; }
+h1 { font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 12px; }
+p.lead { color: var(--muted); }
+.cards { display: grid; gap: 16px; margin-top: 28px; }
+a.card { display: block; padding: 20px 22px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card); text-decoration: none; color: var(--fg); }
+a.card:hover { border-color: var(--accent); }
+a.card strong { display: block; font-size: 1.1rem; color: var(--accent); margin-bottom: 4px; }
+a.card span { color: var(--muted); font-size: 0.92rem; }
+</style>
+<div class="wrap">
+  <h1>Tama — Documentazione</h1>
+  <p class="lead">Documentazione tecnica e architetturale del progetto.</p>
+  <div class="cards">
+    <a class="card" href="technical/00-indice.html">
+      <strong>Documentazione tecnica</strong>
+      <span>Guida per sviluppatori: tecnologie, struttura del progetto, codice reale, come aggiungere una feature.</span>
+    </a>
+    <a class="card" href="architecture/00-indice.html">
+      <strong>Documentazione architetturale</strong>
+      <span>Perché il progetto ha scelto queste architetture (Minimal API, Vertical Slice, Composition API) e confronto con le alternative.</span>
+    </a>
+    <a class="card" href="generic/">
+      <strong>Documenti vari</strong>
+      <span>Autenticazione, deploy, configurazione Azure, mockup, template preventivi.</span>
+    </a>
+  </div>
+</div>

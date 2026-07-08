@@ -1,0 +1,151 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Backend — Panoramica pattern</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #a97ee8; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #6b46c1; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 260px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--accent); background: var(--card);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Concetti architetturali</div>
+    <a href="00-indice.html">Concetti architetturali — Indice</a>
+      <a href="backend-01-pattern.html" class="active">Backend — Panoramica pattern</a>
+      <a href="backend-02-confronto.html">Backend — Confronto con le alternative</a>
+      <a href="backend-03-nel-progetto.html">Backend — Dove si vedono nel codice</a>
+      <a href="frontend-01-pattern.html">Frontend — Panoramica pattern</a>
+      <a href="frontend-02-confronto.html">Frontend — Confronto con le alternative</a>
+      <a href="frontend-03-nel-progetto.html">Frontend — Dove si vedono nel codice</a>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+      <a href="../technical/00-indice.html">→ Documentazione tecnica Tama</a>
+    </div>
+  </nav>
+  <main>
+    <h1>Concetti architetturali — Backend — Livello 1: Panoramica dei pattern</h1>
+<blockquote>
+<p>Questo documento è <strong>tecnologia-agnostico</strong>: spiega i concetti generali. Per come sono applicati concretamente in Tama, vedi <a href="backend-03-nel-progetto.html">backend-03-nel-progetto</a>. Per il confronto approfondito con le alternative, vedi <a href="backend-02-confronto.html">backend-02-confronto</a>.</p>
+</blockquote>
+<p>Elenco dei pattern/paradigmi architetturali rilevanti per il backend, con una definizione minima ciascuno.</p>
+<table>
+<thead>
+<tr>
+<th>Pattern / concetto</th>
+<th>Definizione in una frase</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Minimal API</strong></td>
+<td>Stile di ASP.NET Core in cui gli endpoint HTTP sono funzioni registrate direttamente su route (<code>app.MapGet(...)</code>), senza classi Controller né attributi di routing.</td>
+</tr>
+<tr>
+<td><strong>Vertical Slice Architecture</strong></td>
+<td>Organizzazione del codice per <em>funzionalità</em> (una cartella = un&#39;operazione completa, dall&#39;input all&#39;accesso dati) invece che per <em>layer tecnico</em> (una cartella = un tipo di responsabilità condivisa da tutta l&#39;app).</td>
+</tr>
+<tr>
+<td><strong>Layered Architecture (N-Tier)</strong></td>
+<td>Organizzazione classica a strati orizzontali: Controller → Service → Repository → Database, ognuno usato da tutte le feature dell&#39;app.</td>
+</tr>
+<tr>
+<td><strong>Clean Architecture / Onion Architecture</strong></td>
+<td>Variante della Layered Architecture con una regola di dipendenza esplicita: gli strati interni (Domain) non conoscono gli strati esterni (Infrastructure), invertita tramite interfacce (Dependency Inversion).</td>
+</tr>
+<tr>
+<td><strong>CQRS (Command Query Responsibility Segregation)</strong></td>
+<td>Separazione esplicita tra operazioni che <em>modificano</em> stato (Command) e operazioni che <em>leggono</em> stato (Query), spesso con modelli/percorsi di codice diversi per le due cose.</td>
+</tr>
+<tr>
+<td><strong>Mediator pattern</strong></td>
+<td>Un oggetto centrale (il mediatore) a cui i chiamanti inviano una richiesta, senza conoscere direttamente chi la gestirà — disaccoppia mittente e destinatario.</td>
+</tr>
+<tr>
+<td><strong>Pipeline / Decorator pattern</strong></td>
+<td>Una richiesta attraversa una catena di &quot;involucri&quot; (behavior) che possono eseguire codice prima/dopo l&#39;elaborazione vera, senza che l&#39;elaborazione stessa ne sappia nulla.</td>
+</tr>
+<tr>
+<td><strong>Repository pattern</strong></td>
+<td>Astrazione che nasconde i dettagli di accesso ai dati dietro un&#39;interfaccia orientata al dominio (es. <code>GetByEmailAsync</code>), invece di esporre query grezze ovunque serva.</td>
+</tr>
+<tr>
+<td><strong>Dependency Injection (DI)</strong></td>
+<td>Le dipendenze di una classe (es. un repository) le vengono &quot;iniettate&quot; dall&#39;esterno (di solito dal framework) invece di essere create internamente — abilita testabilità e disaccoppiamento.</td>
+</tr>
+<tr>
+<td><strong>Middleware pipeline</strong></td>
+<td>Catena di componenti che processano ogni richiesta HTTP in sequenza (autenticazione, CORS, gestione errori, ecc.) prima che arrivi all&#39;endpoint applicativo.</td>
+</tr>
+<tr>
+<td><strong>Document-oriented database</strong></td>
+<td>Modello dati dove ogni record è un documento semi-strutturato (tipicamente JSON/BSON) invece di righe in tabelle relazionali con foreign key rigide.</td>
+</tr>
+<tr>
+<td><strong>Embedding e denormalizzazione</strong></td>
+<td>Tecniche di modellazione tipiche dei Document DB: salvare i dati figli <em>dentro</em> il documento padre (embedding) e copiare snapshot di campi correlati (denormalizzazione) per leggere tutto con una query sola.</td>
+</tr>
+<tr>
+<td><strong>Counter pattern</strong></td>
+<td>Tecnica per generare numeri progressivi in un DB privo di <code>IDENTITY</code>/<code>SEQUENCE</code>: una collection di contatori aggiornata con un incremento atomico.</td>
+</tr>
+<tr>
+<td><strong>DTO (Data Transfer Object)</strong></td>
+<td>Oggetto usato solo per trasportare dati tra livelli/confini (es. tra API e client), distinto dal modello di dominio o dal modello di persistenza.</td>
+</tr>
+<tr>
+<td><strong>Service lifetime (DI)</strong></td>
+<td>Durata di vita di un servizio registrato nella DI: Singleton (uno per app), Scoped (uno per richiesta), Transient (uno per risoluzione) — con la regola che un servizio a vita lunga non può catturare uno a vita corta.</td>
+</tr>
+<tr>
+<td><strong>Claims-based authorization</strong></td>
+<td>Autorizzazione basata su &quot;affermazioni&quot; (claim) contenute nel token dell&#39;utente (es. <code>permissions: customers.read</code>), verificate a runtime, invece di ruoli fissi codificati negli attributi.</td>
+</tr>
+</tbody></table>
+<h2>Come si combinano in un backend moderno</h2>
+<p>Questi pattern non sono alternative mutuamente esclusive: si combinano. Ad esempio, un&#39;app può usare <strong>Clean Architecture</strong> (organizzazione a strati con regola di dipendenza) <strong>e</strong> <strong>CQRS</strong> al suo interno (nell&#39;Application layer, separando Command e Query) <strong>e</strong> <strong>Mediator</strong> (per instradare Command/Query agli handler) <strong>e</strong> <strong>Repository pattern</strong> (nell&#39;Infrastructure layer). Sono scelte ortogonali che si sommano.</p>
+<p>Quello che distingue davvero un&#39;architettura dall&#39;altra, in pratica, è <strong>come è organizzato il filesystem del codice</strong> — ovvero se aprendo la cartella dei sorgenti la prima suddivisione che vedi è per <em>tipo tecnico</em> (Controllers/, Services/, Repositories/) o per <em>funzionalità</em> (Customers/, Orders/, Users/). Questo è il tema centrale del prossimo documento.</p>
+
+  </main>
+</div>

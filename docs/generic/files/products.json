@@ -1,0 +1,317 @@
+[
+  {
+    "_id": { "$oid": "665a000000000000000001b1" },
+    "code": "AWS70-W1",
+    "name": "Schüco AWS 70 – Finestra 1 anta",
+    "type": "window",
+    "notes": "Sistema base, trasmittanza telaio Uf = 1.3 W/m²K",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 1,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b2" },
+    "code": "AWS70-W2",
+    "name": "Schüco AWS 70 – Finestra 2 ante",
+    "type": "window",
+    "notes": "Con montante centrale, trasmittanza telaio Uf = 1.3 W/m²K",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 2,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b3" },
+    "code": "AWS70-W3",
+    "name": "Schüco AWS 70 – Finestra 3 ante",
+    "type": "window",
+    "notes": "Con 2 montanti centrali, trasmittanza telaio Uf = 1.3 W/m²K",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 3,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b4" },
+    "code": "AWS75-W1",
+    "name": "Schüco AWS 75.SI – Finestra 1 anta",
+    "type": "window",
+    "notes": "Alta efficienza energetica, Uf = 0.87 W/m²K, classe A",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 1,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b5" },
+    "code": "AWS75-W2",
+    "name": "Schüco AWS 75.SI – Finestra 2 ante",
+    "type": "window",
+    "notes": "Alta efficienza energetica, Uf = 0.87 W/m²K, classe A",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 2,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b6" },
+    "code": "AWS75-W3",
+    "name": "Schüco AWS 75.SI – Finestra 3 ante",
+    "type": "window",
+    "notes": "Alta efficienza energetica, Uf = 0.87 W/m²K, classe A",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 3,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b7" },
+    "code": "AWS90-W1",
+    "name": "Schüco AWS 90.SI+ – Finestra 1 anta",
+    "type": "window",
+    "notes": "Passive House, Uf = 0.59 W/m²K, solo triplo vetro",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 1,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b8" },
+    "code": "AWS90-W2",
+    "name": "Schüco AWS 90.SI+ – Finestra 2 ante",
+    "type": "window",
+    "notes": "Passive House, Uf = 0.59 W/m²K, solo triplo vetro",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 2,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001b9" },
+    "code": "ADS80-D1",
+    "name": "Schüco ADS 80 – Porta 1 anta",
+    "type": "door",
+    "notes": "Porta d'ingresso, RC2 optional, Uf = 1.2 W/m²K",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 1,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001ba" },
+    "code": "ADS80-D1T",
+    "name": "Schüco ADS 80 – Porta 1 anta con soglia",
+    "type": "door",
+    "notes": "Con soglia a filo pavimento, adatta per accessi disabili",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 1,
+      "openingType": "casement",
+      "hasThreshold": true
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001bb" },
+    "code": "ADS80-D2",
+    "name": "Schüco ADS 80 – Porta 2 ante",
+    "type": "door",
+    "notes": "Porta doppia battente, anta principale + anta secondaria",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 2,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001bc" },
+    "code": "ADS90-D1",
+    "name": "Schüco ADS 90.SI – Porta 1 anta",
+    "type": "door",
+    "notes": "Alta efficienza, Uf = 0.79 W/m²K, Passive House",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 1,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001bd" },
+    "code": "ASE80-S2FM",
+    "name": "Schüco ASE 80 – Scorrevole 2 ante (1 fissa + 1 mobile)",
+    "type": "sliding",
+    "notes": "Sistema scorrevole standard, portata max 200kg per anta",
+    "typeConfig": {
+      "_t": "sliding",
+      "fixedLeafs": 1,
+      "mobileLeafs": 1,
+      "multiplier": 1.20
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001be" },
+    "code": "ASE80-S2MM",
+    "name": "Schüco ASE 80 – Scorrevole 2 ante (entrambe mobili)",
+    "type": "sliding",
+    "notes": "Entrambe le ante scorrono, apertura massima",
+    "typeConfig": {
+      "_t": "sliding",
+      "fixedLeafs": 0,
+      "mobileLeafs": 2,
+      "multiplier": 1.25
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001bf" },
+    "code": "ASE80-S3FM",
+    "name": "Schüco ASE 80 – Scorrevole 3 ante (2 fisse + 1 mobile)",
+    "type": "sliding",
+    "notes": "Grande luce, anta mobile centrale",
+    "typeConfig": {
+      "_t": "sliding",
+      "fixedLeafs": 2,
+      "mobileLeafs": 1,
+      "multiplier": 1.20
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c0" },
+    "code": "ASE80HI-S2FM",
+    "name": "Schüco ASE 80 HI – Scorrevole alzante 2 ante (1 fissa + 1 mobile)",
+    "type": "sliding",
+    "notes": "Sistema alzante scorrevole, portata max 400kg, Uf = 1.1 W/m²K",
+    "typeConfig": {
+      "_t": "sliding",
+      "fixedLeafs": 1,
+      "mobileLeafs": 1,
+      "multiplier": 1.35
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c1" },
+    "code": "ASE80HI-S2MM",
+    "name": "Schüco ASE 80 HI – Scorrevole alzante 2 ante (entrambe mobili)",
+    "type": "sliding",
+    "notes": "Sistema alzante scorrevole, massima apertura, portata 400kg",
+    "typeConfig": {
+      "_t": "sliding",
+      "fixedLeafs": 0,
+      "mobileLeafs": 2,
+      "multiplier": 1.40
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c2" },
+    "code": "AWS70-PF1",
+    "name": "Schüco AWS 70 – Porta finestra 1 anta",
+    "type": "door",
+    "notes": "Porta finestra a tutt'altezza, fino a H=2800mm",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 1,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c3" },
+    "code": "AWS70-PF2",
+    "name": "Schüco AWS 70 – Porta finestra 2 ante",
+    "type": "door",
+    "notes": "Porta finestra doppia battente, fino a H=2800mm",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 2,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c4" },
+    "code": "AWS75-PF1",
+    "name": "Schüco AWS 75.SI – Porta finestra 1 anta",
+    "type": "door",
+    "notes": "Porta finestra alta efficienza, Uf = 0.87 W/m²K",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 1,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c5" },
+    "code": "AWS75-PF2",
+    "name": "Schüco AWS 75.SI – Porta finestra 2 ante",
+    "type": "door",
+    "notes": "Porta finestra doppia alta efficienza, Uf = 0.87 W/m²K",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 2,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c6" },
+    "code": "AWS70-W1-FIX",
+    "name": "Schüco AWS 70 – Finestra fissa 1 luce",
+    "type": "window",
+    "notes": "Luce fissa non apribile, solo telaio e vetro",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 0,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c7" },
+    "code": "AWS75-W1-FIX",
+    "name": "Schüco AWS 75.SI – Finestra fissa 1 luce",
+    "type": "window",
+    "notes": "Luce fissa alta efficienza, Uf = 0.87 W/m²K",
+    "typeConfig": {
+      "_t": "window",
+      "leafCounts": 0,
+      "openingType": "casement"
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c8" },
+    "code": "ASE60-S2FM",
+    "name": "Schüco ASE 60 – Scorrevole 2 ante (1 fissa + 1 mobile)",
+    "type": "sliding",
+    "notes": "Sistema scorrevole entry level, portata max 120kg per anta",
+    "typeConfig": {
+      "_t": "sliding",
+      "fixedLeafs": 1,
+      "mobileLeafs": 1,
+      "multiplier": 1.15
+    }
+  },
+  {
+    "_id": { "$oid": "665a000000000000000001c9" },
+    "code": "ADS75-D1",
+    "name": "Schüco ADS 75 – Porta 1 anta",
+    "type": "door",
+    "notes": "Porta residenziale standard, Uf = 1.4 W/m²K",
+    "typeConfig": {
+      "_t": "door",
+      "leafCounts": 1,
+      "openingType": "casement",
+      "hasThreshold": false
+    }
+  }
+]

@@ -1,0 +1,2787 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementazione Feature: Prenotazione Tavolo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            page-break-after: avoid;
+        }
+        
+        h1:first-child {
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 2em;
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #ecf0f1;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            color: #7f8c8d;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 1.2em;
+            color: #95a5a6;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+        
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+        
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+            page-break-inside: avoid;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #ecf0f1;
+            font-size: 1em;
+        }
+        
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #7f8c8d;
+            font-style: italic;
+            background: #ecf0f1;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            page-break-inside: avoid;
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            border-bottom: 1px solid #ecf0f1;
+            padding: 12px;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 40px 0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+                padding: 40px;
+            }
+            h1, h2 {
+                page-break-after: avoid;
+            }
+            pre, table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="implementazione-feature-prenotazione-tavolo">📋 Implementazione Feature: Prenotazione Tavolo</h1>
+<h2 id="panoramica">🎯 Panoramica</h2>
+<p>Questa documentazione guida l'implementazione <strong>step-by-step</strong> della feature "Prenotazione Tavolo" seguendo l'architettura <strong>Slice Vertical</strong> del progetto.</p>
+<p><strong>Cosa crea l'utente:</strong>
+- Una sezione di gestione prenotazioni tavoli
+- Una tabella con 2 campi principali: <code>utente</code> e <code>numero tavolo</code>
+- Gestione completa: lista, creazione, modifica, eliminazione
+- Integrazione backend + frontend</p>
+<p><strong>Numero di passaggi:</strong> 13 passaggi</p>
+<hr />
+<h2 id="architettura-slice-vertical-panoramica">📊 Architettura Slice Vertical — Panoramica</h2>
+<p>La <strong>Slice Vertical</strong> isola per dominio, non per layer:</p>
+<pre class="codehilite"><code>┌─────────────────────────────────────────┐
+│     SLICE: RESERVATIONS                 │
+│                                         │
+│  Backend:                               │
+│  ├─ Domain Models (IReservation)        │ ← Pass. 1
+│  ├─ Database (Migration + Seed)         │ ← Pass. 2
+│  ├─ Data Layer (Repository)             │ ← Pass. 3
+│  ├─ Query Handlers (GET)                │ ← Pass. 3
+│  ├─ Command Handlers (CREATE/UPD/DEL)   │ ← Pass. 4-6
+│  └─ Endpoints API                       │ ← Pass. 7
+│                                         │
+│  Frontend:                              │
+│  ├─ Types (Reservation.ts)              │ ← Pass. 8
+│  ├─ Service (reservations.service.ts)   │ ← Pass. 9
+│  ├─ Store (reservations.store.ts)       │ ← Pass. 10
+│  ├─ Page List (ReservationsPage.vue)    │ ← Pass. 11
+│  ├─ Page Detail (ReservationDetailPage) │ ← Pass. 12
+│  ├─ Dialogs (Create/Edit)               │ ← Pass. 13
+│  └─ i18n + Router                       │ ← Pass. 14
+└─────────────────────────────────────────┘
+</code></pre>
+
+<p><strong>Flow di dipendenze:</strong></p>
+<pre class="codehilite"><code>IReservation (Pass. 1)
+    ↓
+Reservations Table (Pass. 2)
+    ↓
+Repository (Pass. 3)
+    ↓
+Query/Command Handlers (Pass. 3-6)
+    ↓
+Endpoints API (Pass. 7)
+    ↓
+Frontend Types (Pass. 8) → Service (Pass. 9) → Store (Pass. 10) → Pages (Pass. 11-14)
+</code></pre>
+
+<hr />
+<h1 id="backend-7-passaggi">🔧 BACKEND — 7 Passaggi</h1>
+<h2 id="passaggio-1-aggiungere-linterfaccia-e-il-domain-model">Passaggio 1: Aggiungere l'Interfaccia e il Domain Model</h2>
+<h3 id="cosa-fare">Cosa fare</h3>
+<p>Creare i file che definiscono il <strong>modello di dominio</strong> per una prenotazione:</p>
+<ol>
+<li><strong>File: <code>IReservation.cs</code></strong> — Interfaccia del dominio</li>
+<li>Proprietà: <code>Id</code>, <code>UserId</code>, <code>TableNumber</code>, <code>ReservationDate</code>, <code>Status</code>, <code>CreatedAt</code>, <code>UpdatedAt</code></li>
+<li>
+<p>Nessuna logica, solo proprietà pubbliche</p>
+</li>
+<li>
+<p><strong>File: <code>ReservationRecord.cs</code></strong> — Implementazione concreta</p>
+</li>
+<li>
+<p>È un <code>record</code> (immutable) che implementa <code>IReservation</code></p>
+</li>
+<li>
+<p><strong>File: <code>ReservationStatus.cs</code></strong> — Enum per lo stato</p>
+</li>
+<li>
+<p>Valori: <code>Pending</code>, <code>Confirmed</code>, <code>Cancelled</code></p>
+</li>
+<li>
+<p><strong>File: <code>ReservationValidator.cs</code></strong> — Validatore FluentValidation</p>
+</li>
+<li>Tavolo deve essere tra 1-20</li>
+<li>Data non nel passato</li>
+<li>UserId non vuoto</li>
+</ol>
+<h3 id="file-coinvolti">File coinvolti</h3>
+<pre class="codehilite"><code>Backend/Slices/Reservations/
+├── Domain/
+│   ├── IReservation.cs              ← NEW
+│   ├── ReservationRecord.cs         ← NEW
+│   └── ReservationStatus.cs         ← NEW (enum)
+└── Validators/
+    └── ReservationValidator.cs      ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-csharp">// 📄 Domain/IReservation.cs
+public interface IReservation
+{
+    string Id { get; }
+    string UserId { get; }
+    int TableNumber { get; }
+    DateTime ReservationDate { get; }
+    ReservationStatus Status { get; }
+    DateTime CreatedAt { get; }
+    DateTime UpdatedAt { get; }
+}
+
+// 📄 Domain/ReservationStatus.cs
+public enum ReservationStatus
+{
+    Pending = 0,
+    Confirmed = 1,
+    Cancelled = 2
+}
+
+// 📄 Domain/ReservationRecord.cs
+public record ReservationRecord(
+    string Id,
+    string UserId,
+    int TableNumber,
+    DateTime ReservationDate,
+    ReservationStatus Status,
+    DateTime CreatedAt,
+    DateTime UpdatedAt
+) : IReservation;
+
+// 📄 Validators/ReservationValidator.cs
+using FluentValidation;
+
+public class ReservationValidator : AbstractValidator&lt;IReservation&gt;
+{
+    public ReservationValidator()
+    {
+        RuleFor(r =&gt; r.TableNumber)
+            .InclusiveBetween(1, 20)
+            .WithMessage(&quot;Il numero del tavolo deve essere tra 1 e 20&quot;);
+
+        RuleFor(r =&gt; r.ReservationDate)
+            .GreaterThan(DateTime.Now)
+            .WithMessage(&quot;Non puoi prenotare una data nel passato&quot;);
+
+        RuleFor(r =&gt; r.UserId)
+            .NotEmpty()
+            .WithMessage(&quot;L'utente è obbligatorio&quot;);
+    }
+}
+</code></pre>
+
+<h3 id="approfondimento">📚 APPROFONDIMENTO</h3>
+<h4 id="perche-ireservation-e-non-creare-direttamente-lentity"><strong>Perché <code>IReservation</code> e non creare direttamente l'Entity?</strong></h4>
+<p>In un'architettura <strong>Slice Vertical</strong>, il domain model è il <strong>contratto di business</strong> — quello che rimane stabile mentre il resto cambia.</p>
+<p><strong>Senza IReservation</strong> → Code duplication:</p>
+<pre class="codehilite"><code class="language-csharp">// Nel Repository
+public async Task&lt;ReservationEntity&gt; GetById(string id) { ... }
+
+// Nel Command Handler
+public async Task&lt;ReservationEntity&gt; Create(CreateReservationCommand cmd) { ... }
+
+// Nel Mapper
+public ReservationDto ToDto(ReservationEntity entity) { ... }
+
+// Nel frontend Type
+export interface Reservation {
+  id: string
+  userId: string
+  // ... ripeti le stesse proprietà ovunque!
+}
+</code></pre>
+
+<p><strong>Con IReservation</strong> → Una sola fonte di verità:</p>
+<pre class="codehilite"><code class="language-csharp">// Tutti implementano/usano IReservation
+public ReservationEntity : IReservation { }      // Implementa l'interfaccia
+public ReservationRecord : IReservation { }      // Implementa l'interfaccia
+public ReservationDto : IReservation { }         // Implementa l'interfaccia
+
+// Il frontend usa la stessa struttura
+export interface Reservation { ... }  // Corrisponde a IReservation
+</code></pre>
+
+<p>Se cambi <code>IReservation</code> (aggiungi una proprietà), <strong>tutti</strong> gli altri oggetti sanno subito che devono cambiare (strong typing).</p>
+<h4 id="perche-un-record-e-non-una-class"><strong>Perché un <code>record</code> e non una <code>class</code>?</strong></h4>
+<pre class="codehilite"><code class="language-csharp">// ❌ class — mutabile, potrebbe cambiare
+public class ReservationRecord
+{
+    public string Id { get; set; }  // Qualcuno potrebbe fare .Id = &quot;altro&quot; — non voluto
+}
+
+// ✅ record — immutabile (di default)
+public record ReservationRecord(string Id, string UserId, ...)
+{
+    // Non puoi fare: r.Id = &quot;altro&quot;
+    // È garantito che non cambi
+}
+</code></pre>
+
+<h4 id="perche-il-validator-qui-e-non-nel-command-handler"><strong>Perché il Validator qui e non nel Command Handler?</strong></h4>
+<p>Le <strong>regole di business</strong> (tavolo 1-20, data nel futuro) appartengono al dominio, non alla logica di input. Se decidi di creare una prenotazione da un'API diversa, da un batch job, o da un webhook, le stesse regole devono valere. Il validator nel dominio garantisce coerenza.</p>
+<h4 id="come-si-collega-al-resto"><strong>Come si collega al resto:</strong></h4>
+<pre class="codehilite"><code>IReservation (definito qui)
+    ↓
+    Usato da: Repository, Query/Command Handlers, Mapper
+    ↓
+    Il frontend riceve uno DTO che rispecchia IReservation
+    ↓
+    Frontend crea la sua interfaccia Reservation (TypeScript)
+</code></pre>
+
+<hr />
+<h2 id="passaggio-2-creare-la-migration-e-il-seed-del-database">Passaggio 2: Creare la Migration e il Seed del Database</h2>
+<h3 id="cosa-fare_1">Cosa fare</h3>
+<p>Creare lo <strong>schema del database</strong> e popolare dati di test:</p>
+<ol>
+<li><strong>File: <code>20260329_AddReservationsTable.cs</code></strong> — Migration EF Core</li>
+<li>Tabella <code>Reservations</code> con colonne secondo <code>IReservation</code></li>
+<li>Foreign Key: <code>UserId</code> → Tabella <code>Users</code></li>
+<li>Constraint: <code>UNIQUE(UserId, TableNumber, ReservationDate)</code> per evitare doppioni</li>
+<li>
+<p>Indici su: <code>UserId</code>, <code>ReservationDate</code>, <code>Status</code></p>
+</li>
+<li>
+<p><strong>File: <code>SeedReservations.cs</code></strong> — Seed data</p>
+</li>
+<li>Creare 3-4 prenotazioni di test per diversi utenti</li>
+<li>Mix di stati: <code>Pending</code>, <code>Confirmed</code>, <code>Cancelled</code></li>
+</ol>
+<h3 id="file-coinvolti_1">File coinvolti</h3>
+<pre class="codehilite"><code>Backend/
+├── Migrations/
+│   └── 20260329_AddReservationsTable.cs  ← NEW
+├── Seed/
+│   └── SeedReservations.cs               ← NEW
+└── Slices/Reservations/
+    └── Persistence/
+        └── ReservationConfiguration.cs   ← NEW (EF Core mapping)
+</code></pre>
+
+<h3 id="codice-di-esempio_1">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-csharp">// 📄 Migrations/20260329_AddReservationsTable.cs
+public partial class AddReservationsTable : Migration
+{
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.CreateTable(
+            name: &quot;Reservations&quot;,
+            columns: table =&gt; new
+            {
+                Id = table.Column&lt;string&gt;(type: &quot;nvarchar(36)&quot;, nullable: false),
+                UserId = table.Column&lt;string&gt;(type: &quot;nvarchar(36)&quot;, nullable: false),
+                TableNumber = table.Column&lt;int&gt;(type: &quot;int&quot;, nullable: false),
+                ReservationDate = table.Column&lt;DateTime&gt;(type: &quot;datetime2&quot;, nullable: false),
+                Status = table.Column&lt;int&gt;(type: &quot;int&quot;, nullable: false), // enum as int
+                CreatedAt = table.Column&lt;DateTime&gt;(type: &quot;datetime2&quot;, nullable: false),
+                UpdatedAt = table.Column&lt;DateTime&gt;(type: &quot;datetime2&quot;, nullable: false),
+            },
+            constraints: table =&gt;
+            {
+                table.PrimaryKey(&quot;PK_Reservations&quot;, x =&gt; x.Id);
+                table.ForeignKey(
+                    name: &quot;FK_Reservations_Users_UserId&quot;,
+                    column: x =&gt; x.UserId,
+                    principalTable: &quot;Users&quot;,
+                    principalColumn: &quot;Id&quot;,
+                    onDelete: ReferentialAction.Cascade);
+                // Evita prenotazioni doppie per lo stesso utente/tavolo/data
+                table.UniqueConstraint(
+                    name: &quot;UX_Reservations_UserIdTableNumberDate&quot;,
+                    columns: new[] { &quot;UserId&quot;, &quot;TableNumber&quot;, &quot;ReservationDate&quot; });
+            });
+
+        migrationBuilder.CreateIndex(
+            name: &quot;IX_Reservations_UserId&quot;,
+            table: &quot;Reservations&quot;,
+            column: &quot;UserId&quot;);
+
+        migrationBuilder.CreateIndex(
+            name: &quot;IX_Reservations_ReservationDate&quot;,
+            table: &quot;Reservations&quot;,
+            column: &quot;ReservationDate&quot;);
+    }
+
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(name: &quot;Reservations&quot;);
+    }
+}
+
+// 📄 Seed/SeedReservations.cs
+public static class ReservationSeeds
+{
+    public static void SeedReservations(this ModelBuilder modelBuilder)
+    {
+        var tomorrow = DateTime.UtcNow.AddDays(1).Date.AddHours(19);
+        var nextWeek = DateTime.UtcNow.AddDays(7).Date.AddHours(20);
+
+        modelBuilder.Entity&lt;ReservationEntity&gt;().HasData(
+            new ReservationEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserId = &quot;user-1&quot;, // Assumi che user-1 esista
+                TableNumber = 5,
+                ReservationDate = tomorrow,
+                Status = ReservationStatus.Confirmed,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            },
+            new ReservationEntity
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserId = &quot;user-2&quot;,
+                TableNumber = 10,
+                ReservationDate = nextWeek,
+                Status = ReservationStatus.Pending,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            }
+        );
+    }
+}
+
+// 📄 Persistence/ReservationConfiguration.cs
+public class ReservationConfiguration : IEntityTypeConfiguration&lt;ReservationEntity&gt;
+{
+    public void Configure(EntityTypeBuilder&lt;ReservationEntity&gt; builder)
+    {
+        builder.HasKey(r =&gt; r.Id);
+
+        builder.Property(r =&gt; r.Status)
+            .HasConversion&lt;int&gt;()  // Salva enum come numero
+            .HasDefaultValue(ReservationStatus.Pending);
+
+        builder.HasOne&lt;UserEntity&gt;()
+            .WithMany()
+            .HasForeignKey(r =&gt; r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(r =&gt; r.UserId);
+        builder.HasIndex(r =&gt; r.ReservationDate);
+
+        builder.HasAlternateKey(r =&gt; new { r.UserId, r.TableNumber, r.ReservationDate });
+    }
+}
+</code></pre>
+
+<h3 id="approfondimento_1">📚 APPROFONDIMENTO</h3>
+<h4 id="perche-una-migration-separata-e-non-creare-direttamente-lentity"><strong>Perché una Migration separata e non creare direttamente l'Entity?</strong></h4>
+<p>In un progetto production:
+- <strong>Storico delle modifiche</strong>: ogni migration è tracciata e reversibile
+- <strong>Collaborazione</strong>: se due developer modificano il DB, le migration si mergeano
+- <strong>CI/CD</strong>: le migration vengono applicate automaticamente sui vari ambienti (dev, staging, prod)</p>
+<pre class="codehilite"><code>Migration = &quot;Versione controllata del schema&quot;
+          = Git per il database
+</code></pre>
+
+<h4 id="perche-uniqueuserid-tablenumber-reservationdate"><strong>Perché <code>UNIQUE(UserId, TableNumber, ReservationDate)</code>?</strong></h4>
+<p>Impedisce che lo stesso utente prenoti lo stesso tavolo nella stessa data:</p>
+<pre class="codehilite"><code>❌ Non con questo constraint:
+User &quot;Mario&quot; → Table 5 → 2026-04-15 → ✓ (prima prenotazione)
+User &quot;Mario&quot; → Table 5 → 2026-04-15 → ✓ (doppione! No, non dovrebbe)
+
+✅ Con constraint:
+User &quot;Mario&quot; → Table 5 → 2026-04-15 → ✓ (prima prenotazione)
+User &quot;Mario&quot; → Table 5 → 2026-04-15 → ❌ Errore: violato unique constraint
+</code></pre>
+
+<h4 id="perche-gli-indici-su-userid-reservationdate-status"><strong>Perché gli indici su UserId, ReservationDate, Status?</strong></h4>
+<p>Le query che farai spesso:
+- "Tutte le prenotazioni di User X" → indice su <code>UserId</code> → veloce ✓
+- "Prenotazioni da domani in poi" → indice su <code>ReservationDate</code> → veloce ✓
+- "Quante prenotazioni sono Pending?" → indice su <code>Status</code> → veloce ✓</p>
+<p>Senza indici, il DB farebbe una scansione completa (slow).</p>
+<h4 id="reservationentity-vs-reservationrecord"><strong>ReservationEntity vs ReservationRecord?</strong></h4>
+<pre class="codehilite"><code class="language-csharp">// ReservationRecord (Pass. 1) — Domain Model
+// Immutabile, usato nella logica di business
+public record ReservationRecord(...) : IReservation
+
+// ReservationEntity (Pass. 2) — EF Core Entity
+// Traccia le modifiche per il DB, ha proprietà extra (shadow keys, ecc.)
+public class ReservationEntity : IReservation
+{
+    // EF Core le traccia automaticamente
+    public DbSet&lt;ReservationEntity&gt; Reservations { get; set; }
+}
+</code></pre>
+
+<p>Sono due cose diverse:
+- <code>Record</code> = ciò che passi nella logica
+- <code>Entity</code> = ciò che EF Core persiste</p>
+<hr />
+<h2 id="passaggio-3-creare-repository-e-query-handler-get">Passaggio 3: Creare Repository e Query Handler (GET)</h2>
+<h3 id="cosa-fare_2">Cosa fare</h3>
+<p>Implementare il <strong>livello data access</strong> e la logica di lettura:</p>
+<ol>
+<li><strong>File: <code>IReservationRepository.cs</code></strong> — Interfaccia del repository</li>
+<li>
+<p>Metodi: <code>GetAllAsync()</code>, <code>GetByIdAsync()</code>, <code>CreateAsync()</code>, <code>UpdateAsync()</code>, <code>DeleteAsync()</code></p>
+</li>
+<li>
+<p><strong>File: <code>ReservationRepository.cs</code></strong> — Implementazione EF Core</p>
+</li>
+<li>Usa <code>DbContext</code> per interrogare/modificare il DB</li>
+<li>
+<p>Nessuna logica di business qui, solo accesso dati</p>
+</li>
+<li>
+<p><strong>File: <code>GetAllReservationsQuery.cs</code></strong> — Query MEDIATR</p>
+</li>
+<li>Request: eventualmente con filtri (UserId, Status, DateRange)</li>
+<li>
+<p>Response: List di <code>ReservationDto</code></p>
+</li>
+<li>
+<p><strong>File: <code>GetAllReservationsQueryHandler.cs</code></strong> — Handler MEDIATR</p>
+</li>
+<li>
+<p>Chiama repository, mappa a DTO, ritorna</p>
+</li>
+<li>
+<p><strong>File: <code>ReservationDto.cs</code></strong> — Data Transfer Object</p>
+</li>
+<li>Stesse proprietà di <code>IReservation</code> ma un DTO separato</li>
+</ol>
+<h3 id="file-coinvolti_2">File coinvolti</h3>
+<pre class="codehilite"><code>Backend/Slices/Reservations/
+├── Repository/
+│   ├── IReservationRepository.cs        ← NEW
+│   └── ReservationRepository.cs         ← NEW
+├── Queries/
+│   ├── GetAllReservationsQuery.cs       ← NEW
+│   └── GetAllReservationsQueryHandler.cs ← NEW
+├── Dtos/
+│   └── ReservationDto.cs                ← NEW
+└── Persistence/
+    └── Mapper/
+        └── ReservationMapper.cs         ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_2">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-csharp">// 📄 Repository/IReservationRepository.cs
+public interface IReservationRepository
+{
+    Task&lt;IEnumerable&lt;IReservation&gt;&gt; GetAllAsync(string? userId = null);
+    Task&lt;IReservation?&gt; GetByIdAsync(string id);
+    Task&lt;IReservation&gt; CreateAsync(IReservation reservation);
+    Task&lt;IReservation&gt; UpdateAsync(IReservation reservation);
+    Task DeleteAsync(string id);
+}
+
+// 📄 Repository/ReservationRepository.cs
+public class ReservationRepository : IReservationRepository
+{
+    private readonly AppDbContext _context;
+
+    public ReservationRepository(AppDbContext context) =&gt; _context = context;
+
+    public async Task&lt;IEnumerable&lt;IReservation&gt;&gt; GetAllAsync(string? userId = null)
+    {
+        var query = _context.Reservations.AsQueryable();
+
+        if (!string.IsNullOrEmpty(userId))
+            query = query.Where(r =&gt; r.UserId == userId);
+
+        var entities = await query.OrderBy(r =&gt; r.ReservationDate).ToListAsync();
+        return entities.Cast&lt;IReservation&gt;().ToList();
+    }
+
+    public async Task&lt;IReservation?&gt; GetByIdAsync(string id)
+    {
+        var entity = await _context.Reservations.FindAsync(id);
+        return entity as IReservation;
+    }
+
+    public async Task&lt;IReservation&gt; CreateAsync(IReservation reservation)
+    {
+        var entity = reservation as ReservationEntity ?? throw new InvalidOperationException();
+        _context.Reservations.Add(entity);
+        await _context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task&lt;IReservation&gt; UpdateAsync(IReservation reservation)
+    {
+        var entity = reservation as ReservationEntity ?? throw new InvalidOperationException();
+        _context.Reservations.Update(entity);
+        await _context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task DeleteAsync(string id)
+    {
+        var entity = await _context.Reservations.FindAsync(id);
+        if (entity == null)
+            throw new KeyNotFoundException($&quot;Prenotazione {id} non trovata&quot;);
+
+        _context.Reservations.Remove(entity);
+        await _context.SaveChangesAsync();
+    }
+}
+
+// 📄 Queries/GetAllReservationsQuery.cs
+public class GetAllReservationsQuery : IRequest&lt;List&lt;ReservationDto&gt;&gt;
+{
+    public string? UserId { get; set; }
+    public ReservationStatus? Status { get; set; }
+}
+
+// 📄 Queries/GetAllReservationsQueryHandler.cs
+public class GetAllReservationsQueryHandler : IRequestHandler&lt;GetAllReservationsQuery, List&lt;ReservationDto&gt;&gt;
+{
+    private readonly IReservationRepository _repository;
+    private readonly IMapper _mapper;
+
+    public GetAllReservationsQueryHandler(IReservationRepository repository, IMapper mapper)
+    {
+        _repository = repository;
+        _mapper = mapper;
+    }
+
+    public async Task&lt;List&lt;ReservationDto&gt;&gt; Handle(GetAllReservationsQuery request, CancellationToken cancellationToken)
+    {
+        var reservations = await _repository.GetAllAsync(request.UserId);
+
+        var filtered = reservations
+            .Where(r =&gt; request.Status == null || r.Status == request.Status)
+            .ToList();
+
+        return _mapper.Map&lt;List&lt;ReservationDto&gt;&gt;(filtered);
+    }
+}
+
+// 📄 Dtos/ReservationDto.cs
+public class ReservationDto
+{
+    public string Id { get; set; }
+    public string UserId { get; set; }
+    public int TableNumber { get; set; }
+    public DateTime ReservationDate { get; set; }
+    public ReservationStatus Status { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+// 📄 Persistence/Mapper/ReservationMapper.cs
+public class ReservationProfile : Profile
+{
+    public ReservationProfile()
+    {
+        CreateMap&lt;IReservation, ReservationDto&gt;();
+        CreateMap&lt;ReservationEntity, ReservationDto&gt;();
+    }
+}
+</code></pre>
+
+<h3 id="approfondimento_2">📚 APPROFONDIMENTO</h3>
+<p><strong>Fare riferimento al Passaggio 1</strong> per comprendere perché <code>IReservation</code> è il contratto.</p>
+<h4 id="perche-il-repository-pattern"><strong>Perché il Repository pattern?</strong></h4>
+<p>Repository <strong>nasconde</strong> i dettagli di come accedi ai dati:</p>
+<pre class="codehilite"><code>Senza Repository:
+┌──────────────────────────────────────┐
+│ Query Handler                        │
+│ {                                    │
+│   var data = _context.Reservations   │ ← Conosce EF Core
+│     .Where(r =&gt; r.UserId == userId)  │ ← Conosce la struttura DB
+│     .ToList();                       │
+│ }                                    │
+└──────────────────────────────────────┘
+      ↓ Problema: Se cambi da EF Core a Dapper,
+        devi cambiare il Query Handler
+
+Con Repository:
+┌──────────────────────────────────────┐
+│ Query Handler                        │
+│ {                                    │
+│   var data = _repository             │ ← Chiama il repository
+│     .GetAllAsync(userId);            │ ← Non sa come funziona
+│ }                                    │
+└──────────────────────────────────────┘
+      ↓
+┌──────────────────────────────────────┐
+│ Repository                           │
+│ {                                    │
+│   // EF Core? Dapper? SQL raw?       │ ← Dettagli qui
+│   var data = _context.Reservations...│
+│ }                                    │
+└──────────────────────────────────────┘
+      ↓ Vantaggio: cambi l'implementazione,
+        il Query Handler non sa nulla
+</code></pre>
+
+<h4 id="perche-dto-separato-da-domain-model"><strong>Perché DTO separato da Domain Model?</strong></h4>
+<pre class="codehilite"><code>Domain Model (IReservation):
+├─ Proprietà di business: UserId, TableNumber, ReservationDate
+└─ Regole di validazione: tavolo 1-20, data nel futuro
+
+DTO (ReservationDto):
+├─ Stesse proprietà di sopra
+└─ + CreatedAt, UpdatedAt (metadati tecnici)
+</code></pre>
+
+<p>Il DTO separa ciò che è <strong>dominio</strong> (IReservation) da ciò che è <strong>implementazione tecnica</strong> (createdAt, updatedAt).</p>
+<p>Se domani decidi di non esporre <code>Status</code> nel frontend, cambi il DTO, non l'IReservation.</p>
+<h4 id="perche-getallreservationsquery-con-mediatr"><strong>Perché GetAllReservationsQuery con MEDIATR?</strong></h4>
+<p>MEDIATR è un <strong>message dispatcher</strong>:</p>
+<pre class="codehilite"><code>Senza MEDIATR:
+// Nel controller
+public async Task&lt;List&lt;ReservationDto&gt;&gt; GetAll(string? userId)
+{
+    return await _repository.GetAllAsync(userId);
+}
+
+Con MEDIATR:
+// Nel handler
+public async Task&lt;List&lt;ReservationDto&gt;&gt; Handle(GetAllReservationsQuery query, ...)
+{
+    return await _repository.GetAllAsync(query.UserId);
+}
+
+// Nel controller
+public async Task&lt;List&lt;ReservationDto&gt;&gt; GetAll(string? userId)
+{
+    var query = new GetAllReservationsQuery { UserId = userId };
+    return await _mediator.Send(query);
+}
+
+Vantaggio:
+┌──────────────────────────────────────┐
+│ Logica di filtro/validazione         │
+│ è nel Handler, non nel Controller    │
+│ → facile da testare                  │
+│ → facile da riutilizzare             │
+└──────────────────────────────────────┘
+</code></pre>
+
+<hr />
+<h2 id="passaggio-4-creare-command-handler-per-create">Passaggio 4: Creare Command Handler per CREATE</h2>
+<h3 id="cosa-fare_3">Cosa fare</h3>
+<p>Implementare la logica di <strong>creazione</strong> di una nuova prenotazione:</p>
+<ol>
+<li><strong>File: <code>CreateReservationCommand.cs</code></strong> — Comando MEDIATR</li>
+<li>Proprietà: <code>UserId</code>, <code>TableNumber</code>, <code>ReservationDate</code></li>
+<li>
+<p>Nessuna validazione qui, solo dati</p>
+</li>
+<li>
+<p><strong>File: <code>CreateReservationCommandHandler.cs</code></strong> — Handler MEDIATR</p>
+</li>
+<li>Valida il comando (usa <code>ReservationValidator</code>)</li>
+<li>Crea la nuova prenotazione</li>
+<li>Salva via repository</li>
+<li>
+<p>Ritorna il DTO</p>
+</li>
+<li>
+<p><strong>File: <code>CreateReservationCommandValidator.cs</code></strong> — FluentValidation</p>
+</li>
+<li>Valida gli input (UserId non vuoto, TableNumber range, etc.)</li>
+</ol>
+<h3 id="file-coinvolti_3">File coinvolti</h3>
+<pre class="codehilite"><code>Backend/Slices/Reservations/
+├── Commands/
+│   ├── CreateReservationCommand.cs           ← NEW
+│   ├── CreateReservationCommandValidator.cs  ← NEW
+│   └── CreateReservationCommandHandler.cs    ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_3">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-csharp">// 📄 Commands/CreateReservationCommand.cs
+public class CreateReservationCommand : IRequest&lt;ReservationDto&gt;
+{
+    public string UserId { get; set; }
+    public int TableNumber { get; set; }
+    public DateTime ReservationDate { get; set; }
+}
+
+// 📄 Commands/CreateReservationCommandValidator.cs
+public class CreateReservationCommandValidator : AbstractValidator&lt;CreateReservationCommand&gt;
+{
+    public CreateReservationCommandValidator()
+    {
+        RuleFor(c =&gt; c.UserId)
+            .NotEmpty()
+            .WithMessage(&quot;L'utente è obbligatorio&quot;);
+
+        RuleFor(c =&gt; c.TableNumber)
+            .InclusiveBetween(1, 20)
+            .WithMessage(&quot;Il numero del tavolo deve essere tra 1 e 20&quot;);
+
+        RuleFor(c =&gt; c.ReservationDate)
+            .GreaterThan(DateTime.Now)
+            .WithMessage(&quot;Non puoi prenotare una data nel passato&quot;);
+    }
+}
+
+// 📄 Commands/CreateReservationCommandHandler.cs
+public class CreateReservationCommandHandler : IRequestHandler&lt;CreateReservationCommand, ReservationDto&gt;
+{
+    private readonly IReservationRepository _repository;
+    private readonly IValidator&lt;CreateReservationCommand&gt; _validator;
+    private readonly IMapper _mapper;
+
+    public CreateReservationCommandHandler(
+        IReservationRepository repository,
+        IValidator&lt;CreateReservationCommand&gt; validator,
+        IMapper mapper)
+    {
+        _repository = repository;
+        _validator = validator;
+        _mapper = mapper;
+    }
+
+    public async Task&lt;ReservationDto&gt; Handle(CreateReservationCommand request, CancellationToken cancellationToken)
+    {
+        // Valida il comando
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+
+        // Crea il domain model
+        var reservation = new ReservationRecord(
+            Id: Guid.NewGuid().ToString(),
+            UserId: request.UserId,
+            TableNumber: request.TableNumber,
+            ReservationDate: request.ReservationDate,
+            Status: ReservationStatus.Pending,
+            CreatedAt: DateTime.UtcNow,
+            UpdatedAt: DateTime.UtcNow
+        );
+
+        // Salva
+        var created = await _repository.CreateAsync(reservation);
+
+        // Ritorna DTO
+        return _mapper.Map&lt;ReservationDto&gt;(created);
+    }
+}
+</code></pre>
+
+<h3 id="approfondimento_3">📚 APPROFONDIMENTO</h3>
+<p><strong>Fare riferimento al Passaggio 3</strong> per comprendere il pattern Repository e MEDIATR.</p>
+<h4 id="perche-command-separato-da-query"><strong>Perché Command separato da Query?</strong></h4>
+<pre class="codehilite"><code>Query (GetAllReservationsQuery):
+├─ &quot;Dammi i dati&quot;
+├─ Non cambia lo stato
+└─ Può essere cacheata, è idempotente
+
+Command (CreateReservationCommand):
+├─ &quot;Crea una cosa nuova&quot;
+├─ Cambia lo stato del DB
+└─ Non è idempotente (ogni volta crea una nuova)
+
+Pattern: CQRS = Command Query Responsibility Segregation
+         Leggi e scritte sono completamente separate
+</code></pre>
+
+<h4 id="perche-validator-sul-command-se-gia-ce-su-ireservation"><strong>Perché Validator sul Command, se già c'è su IReservation?</strong></h4>
+<pre class="codehilite"><code>ReservationValidator (Passaggio 1):
+└─ Valida la struttura del dominio
+   &quot;Un IReservation DEVE avere tavolo 1-20&quot;
+
+CreateReservationCommandValidator (Passaggio 4):
+└─ Valida l'input dall'utente/API
+   &quot;Un CreateReservationCommand DEVE avere UserId non vuoto&quot;
+
+Il secondo è più specifico: non tutte le proprietà di una richiesta
+sono obbligatorie in un ReservationRecord (ad es., Id viene generato).
+</code></pre>
+
+<h4 id="flow-di-unoperazione-create"><strong>Flow di un'operazione CREATE:</strong></h4>
+<pre class="codehilite"><code>Frontend invia POST /api/reservations
+                     ↓
+         CreateReservationCommand
+                     ↓
+         CreateReservationCommandValidator
+                     ↓
+            Valida? No → ProblemDetails 400
+                     ↓
+            Valida? Sì
+                     ↓
+    ReservationValidator (su domain model)
+                     ↓
+       Valida? No → ProblemDetails 400
+                     ↓
+       Valida? Sì → _repository.CreateAsync()
+                     ↓
+            INSERT in database
+                     ↓
+         Mappa a ReservationDto
+                     ↓
+     Ritorna 201 Created + DTO
+                     ↓
+    Frontend riceve il nuovo oggetto
+</code></pre>
+
+<hr />
+<h2 id="passaggio-5-creare-command-handler-per-update">Passaggio 5: Creare Command Handler per UPDATE</h2>
+<h3 id="cosa-fare_4">Cosa fare</h3>
+<p>Implementare la logica di <strong>modifica</strong> di una prenotazione esistente:</p>
+<ol>
+<li><strong>File: <code>UpdateReservationCommand.cs</code></strong> — Comando MEDIATR</li>
+<li>Proprietà: <code>Id</code>, <code>TableNumber</code>, <code>ReservationDate</code>, <code>Status</code></li>
+<li>
+<p>Nota: <code>UserId</code> non è modificabile (stabilito alla creazione)</p>
+</li>
+<li>
+<p><strong>File: <code>UpdateReservationCommandValidator.cs</code></strong> — FluentValidation</p>
+</li>
+<li>
+<p>Valida gli input come CREATE ma con <code>Id</code> obbligatorio</p>
+</li>
+<li>
+<p><strong>File: <code>UpdateReservationCommandHandler.cs</code></strong> — Handler MEDIATR</p>
+</li>
+<li>Recupera la prenotazione esistente</li>
+<li>Verifica che l'utente loggato sia il proprietario (TODO: verifica permessi)</li>
+<li>Aggiorna le proprietà</li>
+<li>Salva</li>
+</ol>
+<h3 id="file-coinvolti_4">File coinvolti</h3>
+<pre class="codehilite"><code>Backend/Slices/Reservations/
+├── Commands/
+│   ├── UpdateReservationCommand.cs           ← NEW
+│   ├── UpdateReservationCommandValidator.cs  ← NEW
+│   └── UpdateReservationCommandHandler.cs    ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_4">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-csharp">// 📄 Commands/UpdateReservationCommand.cs
+public class UpdateReservationCommand : IRequest&lt;ReservationDto&gt;
+{
+    public string Id { get; set; }
+    public int TableNumber { get; set; }
+    public DateTime ReservationDate { get; set; }
+    public ReservationStatus Status { get; set; }
+}
+
+// 📄 Commands/UpdateReservationCommandValidator.cs
+public class UpdateReservationCommandValidator : AbstractValidator&lt;UpdateReservationCommand&gt;
+{
+    public UpdateReservationCommandValidator()
+    {
+        RuleFor(c =&gt; c.Id)
+            .NotEmpty()
+            .WithMessage(&quot;L'ID è obbligatorio&quot;);
+
+        RuleFor(c =&gt; c.TableNumber)
+            .InclusiveBetween(1, 20)
+            .WithMessage(&quot;Il numero del tavolo deve essere tra 1 e 20&quot;);
+
+        RuleFor(c =&gt; c.ReservationDate)
+            .GreaterThan(DateTime.Now)
+            .WithMessage(&quot;Non puoi prenotare una data nel passato&quot;);
+
+        RuleFor(c =&gt; c.Status)
+            .IsInEnum()
+            .WithMessage(&quot;Lo stato della prenotazione non è valido&quot;);
+    }
+}
+
+// 📄 Commands/UpdateReservationCommandHandler.cs
+public class UpdateReservationCommandHandler : IRequestHandler&lt;UpdateReservationCommand, ReservationDto&gt;
+{
+    private readonly IReservationRepository _repository;
+    private readonly IValidator&lt;UpdateReservationCommand&gt; _validator;
+    private readonly IMapper _mapper;
+
+    public UpdateReservationCommandHandler(
+        IReservationRepository repository,
+        IValidator&lt;UpdateReservationCommand&gt; validator,
+        IMapper mapper)
+    {
+        _repository = repository;
+        _validator = validator;
+        _mapper = mapper;
+    }
+
+    public async Task&lt;ReservationDto&gt; Handle(UpdateReservationCommand request, CancellationToken cancellationToken)
+    {
+        // Valida il comando
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+
+        // Recupera la prenotazione esistente
+        var existing = await _repository.GetByIdAsync(request.Id);
+        if (existing == null)
+            throw new KeyNotFoundException($&quot;Prenotazione {request.Id} non trovata&quot;);
+
+        // TODO: Verifica che l'utente loggato sia il proprietario
+        // var currentUser = _httpContextAccessor.HttpContext?.User.FindFirst(&quot;sub&quot;)?.Value;
+        // if (existing.UserId != currentUser)
+        //     throw new UnauthorizedAccessException(&quot;Non puoi modificare questa prenotazione&quot;);
+
+        // Crea il domain model aggiornato
+        var updated = new ReservationRecord(
+            Id: existing.Id,
+            UserId: existing.UserId,  // Non modificabile
+            TableNumber: request.TableNumber,
+            ReservationDate: request.ReservationDate,
+            Status: request.Status,
+            CreatedAt: existing.CreatedAt,
+            UpdatedAt: DateTime.UtcNow
+        );
+
+        // Salva
+        var result = await _repository.UpdateAsync(updated);
+
+        // Ritorna DTO
+        return _mapper.Map&lt;ReservationDto&gt;(result);
+    }
+}
+</code></pre>
+
+<h3 id="approfondimento_4">📚 APPROFONDIMENTO</h3>
+<p><strong>Fare riferimento ai Passaggi 3 e 4</strong> per comprendere Repository, MEDIATR, e il pattern Command.</p>
+<h4 id="aggiunta-rispetto-a-create"><strong>Aggiunta rispetto a CREATE:</strong></h4>
+<ol>
+<li><strong>Recupero della risorsa esistente</strong> → <code>GetByIdAsync()</code></li>
+<li><strong>Verifica di ownership</strong> → solo il proprietario può modificare</li>
+<li><strong>Id immutabile</strong> → non puoi cambiare a chi appartiene</li>
+</ol>
+<hr />
+<h2 id="passaggio-6-creare-command-handler-per-delete">Passaggio 6: Creare Command Handler per DELETE</h2>
+<h3 id="cosa-fare_5">Cosa fare</h3>
+<p>Implementare la logica di <strong>eliminazione</strong> di una prenotazione:</p>
+<ol>
+<li><strong>File: <code>DeleteReservationCommand.cs</code></strong> — Comando MEDIATR</li>
+<li>
+<p>Proprietà: <code>Id</code> della prenotazione da eliminare</p>
+</li>
+<li>
+<p><strong>File: <code>DeleteReservationCommandValidator.cs</code></strong> — FluentValidation</p>
+</li>
+<li>
+<p>Valida che <code>Id</code> non sia vuoto</p>
+</li>
+<li>
+<p><strong>File: <code>DeleteReservationCommandHandler.cs</code></strong> — Handler MEDIATR</p>
+</li>
+<li>Recupera la prenotazione</li>
+<li>Verifica ownership</li>
+<li>Elimina dal repository</li>
+</ol>
+<h3 id="file-coinvolti_5">File coinvolti</h3>
+<pre class="codehilite"><code>Backend/Slices/Reservations/
+├── Commands/
+│   ├── DeleteReservationCommand.cs           ← NEW
+│   ├── DeleteReservationCommandValidator.cs  ← NEW
+│   └── DeleteReservationCommandHandler.cs    ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_5">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-csharp">// 📄 Commands/DeleteReservationCommand.cs
+public class DeleteReservationCommand : IRequest&lt;Unit&gt;
+{
+    public string Id { get; set; }
+}
+
+// 📄 Commands/DeleteReservationCommandValidator.cs
+public class DeleteReservationCommandValidator : AbstractValidator&lt;DeleteReservationCommand&gt;
+{
+    public DeleteReservationCommandValidator()
+    {
+        RuleFor(c =&gt; c.Id)
+            .NotEmpty()
+            .WithMessage(&quot;L'ID è obbligatorio&quot;);
+    }
+}
+
+// 📄 Commands/DeleteReservationCommandHandler.cs
+public class DeleteReservationCommandHandler : IRequestHandler&lt;DeleteReservationCommand, Unit&gt;
+{
+    private readonly IReservationRepository _repository;
+    private readonly IValidator&lt;DeleteReservationCommand&gt; _validator;
+
+    public DeleteReservationCommandHandler(
+        IReservationRepository repository,
+        IValidator&lt;DeleteReservationCommand&gt; validator)
+    {
+        _repository = repository;
+        _validator = validator;
+    }
+
+    public async Task&lt;Unit&gt; Handle(DeleteReservationCommand request, CancellationToken cancellationToken)
+    {
+        // Valida il comando
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+
+        // Recupera la prenotazione
+        var existing = await _repository.GetByIdAsync(request.Id);
+        if (existing == null)
+            throw new KeyNotFoundException($&quot;Prenotazione {request.Id} non trovata&quot;);
+
+        // TODO: Verifica ownership (come in UPDATE)
+
+        // Elimina
+        await _repository.DeleteAsync(request.Id);
+
+        return Unit.Value;
+    }
+}
+</code></pre>
+
+<h3 id="approfondimento_5">📚 APPROFONDIMENTO</h3>
+<p><strong>Fare riferimento al Passaggio 5</strong> per comprendere il pattern UPDATE. DELETE è analogo ma senza aggiornamenti.</p>
+<h4 id="differenza-tra-delete-e-update"><strong>Differenza tra DELETE e UPDATE:</strong></h4>
+<pre class="codehilite"><code>UPDATE: Leggi → Modifica → Salva
+        Necessita di nuovi valori
+
+DELETE: Leggi → Elimina
+        Non ha nuovi valori, solo conferma
+        Ritorna Unit (nessun dato), non ReservationDto
+</code></pre>
+
+<hr />
+<h2 id="passaggio-7-creare-endpoints-api">Passaggio 7: Creare Endpoints API</h2>
+<h3 id="cosa-fare_6">Cosa fare</h3>
+<p>Esporre gli <strong>endpoint HTTP</strong> che il frontend chiamerà:</p>
+<ol>
+<li><strong>File: <code>ReservationsController.cs</code></strong> — Controller ASP.NET Core</li>
+<li>Route: <code>/api/reservations</code></li>
+<li>
+<p>Endpoint:</p>
+<ul>
+<li><code>GET /api/reservations</code> → GetAllReservationsQuery</li>
+<li><code>GET /api/reservations/{id}</code> → GetReservationByIdQuery (NEW)</li>
+<li><code>POST /api/reservations</code> → CreateReservationCommand</li>
+<li><code>PUT /api/reservations/{id}</code> → UpdateReservationCommand</li>
+<li><code>DELETE /api/reservations/{id}</code> → DeleteReservationCommand</li>
+</ul>
+</li>
+<li>
+<p><strong>File: <code>GetReservationByIdQuery.cs</code> e handler</strong> — NEW</p>
+</li>
+<li>Query per ottenere una singola prenotazione</li>
+</ol>
+<h3 id="file-coinvolti_6">File coinvolti</h3>
+<pre class="codehilite"><code>Backend/Slices/Reservations/
+├── Queries/
+│   ├── GetReservationByIdQuery.cs       ← NEW
+│   └── GetReservationByIdQueryHandler.cs ← NEW
+├── Endpoints/
+│   └── ReservationsController.cs        ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_6">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-csharp">// 📄 Queries/GetReservationByIdQuery.cs
+public class GetReservationByIdQuery : IRequest&lt;ReservationDto&gt;
+{
+    public string Id { get; set; }
+}
+
+// 📄 Queries/GetReservationByIdQueryHandler.cs
+public class GetReservationByIdQueryHandler : IRequestHandler&lt;GetReservationByIdQuery, ReservationDto&gt;
+{
+    private readonly IReservationRepository _repository;
+    private readonly IMapper _mapper;
+
+    public GetReservationByIdQueryHandler(IReservationRepository repository, IMapper mapper)
+    {
+        _repository = repository;
+        _mapper = mapper;
+    }
+
+    public async Task&lt;ReservationDto&gt; Handle(GetReservationByIdQuery request, CancellationToken cancellationToken)
+    {
+        var reservation = await _repository.GetByIdAsync(request.Id);
+        if (reservation == null)
+            throw new KeyNotFoundException($&quot;Prenotazione {request.Id} non trovata&quot;);
+
+        return _mapper.Map&lt;ReservationDto&gt;(reservation);
+    }
+}
+
+// 📄 Endpoints/ReservationsController.cs
+[ApiController]
+[Route(&quot;api/[controller]&quot;)]
+[Authorize]  // Tutte le route richiedono autenticazione
+public class ReservationsController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public ReservationsController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    /// &lt;summary&gt;
+    /// GET /api/reservations
+    /// Ottiene tutte le prenotazioni, opzionalmente filtrate per utente
+    /// &lt;/summary&gt;
+    [HttpGet]
+    [ProducesResponseType(typeof(List&lt;ReservationDto&gt;), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task&lt;ActionResult&lt;List&lt;ReservationDto&gt;&gt;&gt; GetAll(
+        [FromQuery] string? userId,
+        [FromQuery] ReservationStatus? status)
+    {
+        var query = new GetAllReservationsQuery { UserId = userId, Status = status };
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    /// &lt;summary&gt;
+    /// GET /api/reservations/{id}
+    /// Ottiene una prenotazione per ID
+    /// &lt;/summary&gt;
+    [HttpGet(&quot;{id}&quot;)]
+    [ProducesResponseType(typeof(ReservationDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task&lt;ActionResult&lt;ReservationDto&gt;&gt; GetById(string id)
+    {
+        var query = new GetReservationByIdQuery { Id = id };
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    /// &lt;summary&gt;
+    /// POST /api/reservations
+    /// Crea una nuova prenotazione
+    /// &lt;/summary&gt;
+    [HttpPost]
+    [ProducesResponseType(typeof(ReservationDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task&lt;ActionResult&lt;ReservationDto&gt;&gt; Create([FromBody] CreateReservationCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
+    /// &lt;summary&gt;
+    /// PUT /api/reservations/{id}
+    /// Aggiorna una prenotazione
+    /// &lt;/summary&gt;
+    [HttpPut(&quot;{id}&quot;)]
+    [ProducesResponseType(typeof(ReservationDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task&lt;ActionResult&lt;ReservationDto&gt;&gt; Update(string id, [FromBody] UpdateReservationCommand command)
+    {
+        if (command.Id != id)
+            return BadRequest(&quot;L'ID nel body non corrisponde all'ID nella URL&quot;);
+
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    /// &lt;summary&gt;
+    /// DELETE /api/reservations/{id}
+    /// Elimina una prenotazione
+    /// &lt;/summary&gt;
+    [HttpDelete(&quot;{id}&quot;)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task&lt;IActionResult&gt; Delete(string id)
+    {
+        var command = new DeleteReservationCommand { Id = id };
+        await _mediator.Send(command);
+        return NoContent();
+    }
+}
+</code></pre>
+
+<h3 id="approfondimento_6">📚 APPROFONDIMENTO</h3>
+<h4 id="struttura-http-vs-mediatr"><strong>Struttura HTTP vs MEDIATR:</strong></h4>
+<pre class="codehilite"><code>HTTP Layer (ReservationsController):
+└─ Riceve la richiesta HTTP
+└─ Parsing della URL e body
+└─ Response HTTP (200, 201, 404, etc.)
+
+MEDIATR Layer (Handlers):
+└─ Logica di business
+└─ Validazione
+└─ Accesso ai dati
+
+Separazione netta: Controller non fa logica, Handler non sa dell'HTTP
+</code></pre>
+
+<h4 id="codici-http"><strong>Codici HTTP:</strong></h4>
+<pre class="codehilite"><code>GET /api/reservations          → 200 OK (con lista)
+GET /api/reservations/{id}     → 200 OK (con oggetto) o 404 Not Found
+
+POST /api/reservations         → 201 Created (con Location header)
+PUT /api/reservations/{id}     → 200 OK (con oggetto aggiornato)
+DELETE /api/reservations/{id}  → 204 No Content
+</code></pre>
+
+<h4 id="authorize-vs-logica-di-ownership"><strong>[Authorize] vs logica di ownership:</strong></h4>
+<pre class="codehilite"><code>[Authorize] nel Controller:
+└─ &quot;Devi essere loggato per accedere&quot;
+
+Verifica ownership nel Handler (TODO nei passaggi precedenti):
+└─ &quot;Devi essere il proprietario di questa risorsa per modificarla&quot;
+
+Entrambi necessari:
+1. [Authorize] protegge l'accesso alle API
+2. Ownership protegge da accessi incrociati (Mario non vede le prenotazioni di Luigi)
+</code></pre>
+
+<hr />
+<h1 id="frontend-7-passaggi">🎨 FRONTEND — 7 Passaggi</h1>
+<h2 id="passaggio-8-creare-types-api-reservationts">Passaggio 8: Creare Types API (Reservation.ts)</h2>
+<h3 id="cosa-fare_7">Cosa fare</h3>
+<p>Aggiungere le <strong>interfacce TypeScript</strong> che corrispondono ai DTO backend:</p>
+<ol>
+<li><strong>File: <code>api.types.ts</code></strong> — Aggiungere al file esistente</li>
+<li>Interfaccia <code>Reservation</code> (corrisponde a <code>ReservationDto</code> backend)</li>
+<li>Enum <code>ReservationStatus</code></li>
+<li>Interfacce per le request: <code>CreateReservationRequest</code>, <code>UpdateReservationRequest</code></li>
+</ol>
+<h3 id="file-coinvolti_7">File coinvolti</h3>
+<pre class="codehilite"><code>apps/frontend/src/types/
+└── api.types.ts  ← MODIFICA (aggiungi al file esistente)
+</code></pre>
+
+<h3 id="codice-di-esempio_7">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-typescript">// 📄 types/api.types.ts — Aggiungi queste interfacce
+
+// === RESERVATIONS ===
+
+export enum ReservationStatus {
+  Pending = 0,
+  Confirmed = 1,
+  Cancelled = 2,
+}
+
+export interface Reservation {
+  id: string
+  userId: string
+  tableNumber: number
+  reservationDate: string  // ISO 8601 datetime
+  status: ReservationStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateReservationRequest {
+  userId: string
+  tableNumber: number
+  reservationDate: string
+}
+
+export interface UpdateReservationRequest {
+  tableNumber: number
+  reservationDate: string
+  status: ReservationStatus
+}
+</code></pre>
+
+<h3 id="approfondimento_7">📚 APPROFONDIMENTO</h3>
+<h4 id="types-typescript-vs-backend-dto"><strong>Types TypeScript vs Backend DTO:</strong></h4>
+<p>Il backend invia <code>ReservationDto</code>, il frontend lo riceve come <code>Reservation</code>:</p>
+<pre class="codehilite"><code>Backend                Frontend
+ReservationDto  ====→  Reservation
+├─ id                  ├─ id
+├─ userId             ├─ userId
+├─ tableNumber        ├─ tableNumber
+├─ reservationDate    ├─ reservationDate
+├─ status             ├─ status
+├─ createdAt          ├─ createdAt
+└─ updatedAt          └─ updatedAt
+
+Sono identici strutturalmente, ma in due linguaggi diversi.
+TypeScript non ha accesso al backend, quindi li definisce qui.
+</code></pre>
+
+<h4 id="enum-reservationstatus"><strong>Enum ReservationStatus:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">// Nel backend è un enum C#:
+public enum ReservationStatus { Pending = 0, Confirmed = 1, ... }
+
+// Viene serializzato come numero (0, 1, 2) quando percorre HTTP
+// Nel frontend lo ricevi come numero, quindi definiamo lo stesso enum
+
+// Quando mandi al backend:
+await api.post('/api/reservations', {
+  userId: 'user-1',
+  tableNumber: 5,
+  reservationDate: '2026-04-15T19:00:00Z',
+  status: ReservationStatus.Pending  // ← numero 0
+})
+
+// Il backend sa che 0 = Pending perché ha lo stesso enum
+</code></pre>
+
+<hr />
+<h2 id="passaggio-9-creare-service-reservationsservicets">Passaggio 9: Creare Service (reservations.service.ts)</h2>
+<h3 id="cosa-fare_8">Cosa fare</h3>
+<p>Creare il <strong>service</strong> che fa le chiamate HTTP:</p>
+<ol>
+<li><strong>File: <code>services/reservations.service.ts</code></strong> — NEW</li>
+<li>Metodi: <code>getAll()</code>, <code>getById()</code>, <code>create()</code>, <code>update()</code>, <code>delete()</code></li>
+<li>Usa l'istanza <code>api</code> (axios configurato)</li>
+</ol>
+<h3 id="file-coinvolti_8">File coinvolti</h3>
+<pre class="codehilite"><code>apps/frontend/src/services/
+└── reservations.service.ts  ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_8">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-typescript">// 📄 services/reservations.service.ts
+import { api } from '@/plugins/axios'
+import type {
+  Reservation,
+  CreateReservationRequest,
+  UpdateReservationRequest,
+  PagedResponse,
+} from '@/types/api.types'
+
+export const reservationsService = {
+  getAll: (params?: { userId?: string }) =&gt;
+    api.get&lt;PagedResponse&lt;Reservation&gt;&gt;('/api/reservations', { params }).then(r =&gt; r.data),
+
+  getById: (id: string) =&gt;
+    api.get&lt;Reservation&gt;(`/api/reservations/${id}`).then(r =&gt; r.data),
+
+  create: (data: CreateReservationRequest) =&gt;
+    api.post&lt;Reservation&gt;('/api/reservations', data).then(r =&gt; r.data),
+
+  update: (id: string, data: UpdateReservationRequest) =&gt;
+    api.put&lt;Reservation&gt;(`/api/reservations/${id}`, data).then(r =&gt; r.data),
+
+  delete: (id: string) =&gt;
+    api.delete(`/api/reservations/${id}`),
+}
+</code></pre>
+
+<h3 id="approfondimento_8">📚 APPROFONDIMENTO</h3>
+<p><strong>Fare riferimento al Passaggio 8</strong> — il Service usa i tipi definiti lì.</p>
+<h4 id="perche-un-service-separato"><strong>Perché un Service separato?</strong></h4>
+<pre class="codehilite"><code>Senza Service (❌):
+┌─────────────────────┐
+│ Store               │
+│ {                   │
+│   async fetchAll() {│
+│     const res =     │
+│       await axios   │ ← Conosce axios
+│         .get(...)   │ ← Conosce l'URL
+│   }                 │
+│ }                   │
+└─────────────────────┘
+    Problema: il Store sa come fare HTTP
+
+Con Service (✅):
+┌──────────────────────────┐
+│ Store                    │
+│ {                        │
+│   async fetchAll() {     │
+│     const res =          │
+│       await service      │ ← Usa il service
+│         .getAll()        │ ← Service sa come fare HTTP
+│   }                      │
+│ }                        │
+└──────────────────────────┘
+    │
+    ↓
+┌──────────────────────────┐
+│ Service                  │
+│ {                        │
+│   getAll: () =&gt;          │
+│     api.get(...)         │ ← Dettagli HTTP qui
+│ }                        │
+└──────────────────────────┘
+
+Vantaggio: cambi l'API base URL, cambi solo il Service.
+          Lo store non sa nulla dell'HTTP.
+</code></pre>
+
+<h4 id="parametri-opzionali"><strong>Parametri opzionali:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">// Nel service:
+getAll: (params?: { userId?: string }) =&gt;
+  api.get&lt;PagedResponse&lt;Reservation&gt;&gt;('/api/reservations', { params })
+
+// Nel store:
+reservations.value = await reservationsService.getAll({ userId: 'user-1' })
+
+// Si trasforma in:
+GET /api/reservations?userId=user-1
+</code></pre>
+
+<hr />
+<h2 id="passaggio-10-creare-store-pinia-reservationsstorets">Passaggio 10: Creare Store Pinia (reservations.store.ts)</h2>
+<h3 id="cosa-fare_9">Cosa fare</h3>
+<p>Creare lo <strong>state management</strong> con Pinia:</p>
+<ol>
+<li><strong>File: <code>stores/reservations.store.ts</code></strong> — NEW</li>
+<li>Stato: <code>reservations[]</code>, <code>selectedReservation</code>, <code>loading</code>, <code>error</code>, <code>totalCount</code></li>
+<li>Azioni: <code>fetchAll()</code>, <code>fetchById()</code>, <code>create()</code>, <code>update()</code>, <code>delete()</code></li>
+<li>Computati: eventualmente <code>myReservations</code> (solo dell'utente loggato)</li>
+</ol>
+<h3 id="file-coinvolti_9">File coinvolti</h3>
+<pre class="codehilite"><code>apps/frontend/src/stores/
+└── reservations.store.ts  ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_9">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-typescript">// 📄 stores/reservations.store.ts
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import { reservationsService } from '@/services/reservations.service'
+import type { Reservation, CreateReservationRequest, UpdateReservationRequest } from '@/types/api.types'
+import { useAuthStore } from './auth.store'
+import i18n from '@/plugins/i18n'
+
+export const useReservationsStore = defineStore('reservations', () =&gt; {
+  // --- Stato ---
+  const reservations = ref&lt;Reservation[]&gt;([])
+  const selectedReservation = ref&lt;Reservation | null&gt;(null)
+  const loading = ref(false)
+  const error = ref&lt;string | null&gt;(null)
+  const totalCount = ref(0)
+
+  // --- Computati ---
+  const myReservations = computed(() =&gt; {
+    const authStore = useAuthStore()
+    if (!authStore.user) return []
+    return reservations.value.filter(r =&gt; r.userId === authStore.user?.id)
+  })
+
+  // --- Azioni ---
+  async function fetchAll(userId?: string) {
+    loading.value = true
+    error.value = null
+    try {
+      const res = await reservationsService.getAll({ userId })
+      reservations.value = res.items
+      totalCount.value = res.totalCount
+    } catch {
+      error.value = i18n.global.t('errors.loadReservations')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchById(id: string) {
+    loading.value = true
+    error.value = null
+    try {
+      selectedReservation.value = await reservationsService.getById(id)
+    } catch {
+      error.value = i18n.global.t('errors.loadReservation')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function create(data: CreateReservationRequest) {
+    loading.value = true
+    error.value = null
+    try {
+      const newReservation = await reservationsService.create(data)
+      reservations.value.push(newReservation)
+      return newReservation
+    } catch (e) {
+      error.value = i18n.global.t('errors.createReservation')
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function update(id: string, data: UpdateReservationRequest) {
+    loading.value = true
+    error.value = null
+    try {
+      const updated = await reservationsService.update(id, data)
+      const index = reservations.value.findIndex(r =&gt; r.id === id)
+      if (index &gt;= 0) {
+        reservations.value[index] = updated
+      }
+      if (selectedReservation.value?.id === id) {
+        selectedReservation.value = updated
+      }
+      return updated
+    } catch (e) {
+      error.value = i18n.global.t('errors.updateReservation')
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function deleteReservation(id: string) {
+    loading.value = true
+    error.value = null
+    try {
+      await reservationsService.delete(id)
+      reservations.value = reservations.value.filter(r =&gt; r.id !== id)
+      if (selectedReservation.value?.id === id) {
+        selectedReservation.value = null
+      }
+    } catch (e) {
+      error.value = i18n.global.t('errors.deleteReservation')
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    // Stato
+    reservations,
+    selectedReservation,
+    loading,
+    error,
+    totalCount,
+    // Computati
+    myReservations,
+    // Azioni
+    fetchAll,
+    fetchById,
+    create,
+    update,
+    deleteReservation,
+  }
+})
+</code></pre>
+
+<h3 id="approfondimento_9">📚 APPROFONDIMENTO</h3>
+<p><strong>Fare riferimento al Passaggio 9</strong> — lo Store usa il Service.</p>
+<h4 id="pinia-store-state-management"><strong>Pinia Store = State Management:</strong></h4>
+<pre class="codehilite"><code>Componente Vue:
+└─ &quot;Ho bisogno dei dati&quot;
+└─ Non chiama axios direttamente
+└─ Chiama lo Store
+
+Store (Pinia):
+└─ Tiene i dati in memoria
+└─ Quando chiedi dati, li ritorna
+└─ Quando chiedi di creare/modificare, chiama il Service
+└─ Aggiorna lo stato locale in base alla risposta
+
+Schema:
+┌──────────────┐
+│ Component    │
+└──────────────┘
+       ↓ chiede dati
+┌──────────────┐
+│ Store        │ ← Una sola istanza per tutta l'app
+└──────────────┘
+       ↓ chiama
+┌──────────────┐
+│ Service      │
+└──────────────┘
+       ↓ fa HTTP
+    API
+</code></pre>
+
+<h4 id="azioni-actions-vs-computed"><strong>Azioni (actions) vs Computed:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">// Computed: derivato dallo stato, NON fa operazioni async
+const myReservations = computed(() =&gt; {
+  // Filtra lo stato locale
+  return reservations.value.filter(r =&gt; r.userId === authStore.user?.id)
+})
+
+// Action: operazione, può essere async
+async function fetchAll(userId?: string) {
+  // Chiama il service, che fa HTTP
+  // Aggiorna lo stato
+}
+</code></pre>
+
+<h4 id="gestione-errori"><strong>Gestione errori:</strong></h4>
+<p>Ogni azione ha try/catch:</p>
+<pre class="codehilite"><code class="language-typescript">try {
+  // Fai l'operazione
+} catch (e) {
+  error.value = i18n.global.t('errors.xxx')  // Messaggio tradotto
+  throw e  // Rilancia per il componente che la chiama
+} finally {
+  loading.value = false  // Sempre, anche se errore
+}
+</code></pre>
+
+<hr />
+<h2 id="passaggio-11-creare-page-lista-reservationspagevue">Passaggio 11: Creare Page Lista (ReservationsPage.vue)</h2>
+<h3 id="cosa-fare_10">Cosa fare</h3>
+<p>Creare la <strong>pagina principale</strong> che mostra la lista delle prenotazioni:</p>
+<ol>
+<li><strong>File: <code>pages/reservations/ReservationsPage.vue</code></strong> — NEW</li>
+<li>Usa Vuetify <code>v-data-table</code> per la lista</li>
+<li>Colonne: <code>id</code>, <code>tableNumber</code>, <code>reservationDate</code>, <code>status</code>, <code>azioni</code></li>
+<li>Azioni: click sulla riga → apri detail, bottone "Nuovo" → apri create dialog</li>
+<li>Filtri: filtro per UserId (opzionale), search</li>
+</ol>
+<h3 id="file-coinvolti_10">File coinvolti</h3>
+<pre class="codehilite"><code>apps/frontend/src/pages/reservations/
+└── ReservationsPage.vue  ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_10">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-vue">&lt;!-- 📄 pages/reservations/ReservationsPage.vue --&gt;
+&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+import { useReservationsStore } from '@/stores/reservations.store'
+import { usePermission } from '@/composables/usePermission'
+import { useToastStore } from '@/stores/toast.store'
+import { useBreadcrumb } from '@/composables/useBreadcrumb'
+import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
+import CreateReservationDialog from '@/components/reservations/CreateReservationDialog.vue'
+
+const { t } = useI18n()
+const { mobile } = useDisplay()
+const router = useRouter()
+const store = useReservationsStore()
+const { can } = usePermission()
+const toast = useToastStore()
+const { setBreadcrumb } = useBreadcrumb()
+
+// --- Stato ---
+const search = ref('')
+const page = ref(1)
+const itemsPerPage = ref(25)
+const deleteDialog = ref(false)
+const deleteTarget = ref&lt;string | null&gt;(null)
+const deleteLoading = ref(false)
+const createDialog = ref(false)
+
+// --- Computati ---
+const filtered = computed(() =&gt; {
+  if (!search.value) return store.reservations
+  const s = search.value.toLowerCase()
+  return store.reservations.filter(r =&gt;
+    r.id.toLowerCase().includes(s) ||
+    r.tableNumber.toString().includes(s) ||
+    r.userId.toLowerCase().includes(s)
+  )
+})
+
+const columns = computed(() =&gt; [
+  { title: t('reservations.columnId'), key: 'id', sortable: true },
+  { title: t('reservations.columnUser'), key: 'userId', sortable: true },
+  { title: t('reservations.columnTable'), key: 'tableNumber', sortable: true },
+  { title: t('reservations.columnDate'), key: 'reservationDate', sortable: true },
+  { title: t('reservations.columnStatus'), key: 'status', sortable: true },
+  { title: t('common.actions'), key: 'actions', sortable: false },
+])
+
+// --- Funzioni ---
+function openCreateDialog() {
+  createDialog.value = true
+}
+
+function openDetail(id: string) {
+  router.push({ name: 'reservation-detail', params: { id } })
+}
+
+function openDeleteDialog(id: string) {
+  deleteTarget.value = id
+  deleteDialog.value = true
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+
+  deleteLoading.value = true
+  try {
+    await store.deleteReservation(deleteTarget.value)
+    toast.success(t('reservations.deleted'))
+    deleteDialog.value = false
+  } catch {
+    toast.error(store.error || t('errors.deleteReservation'))
+  } finally {
+    deleteLoading.value = false
+  }
+}
+
+async function onCreateSuccess() {
+  createDialog.value = false
+  toast.success(t('reservations.created'))
+  await store.fetchAll()
+}
+
+// --- Lifecycle ---
+onMounted(() =&gt; {
+  setBreadcrumb([
+    { text: t('common.home'), href: '/' },
+    { text: t('reservations.title'), disabled: true },
+  ])
+  store.fetchAll()
+})
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-container&gt;
+    &lt;v-row&gt;
+      &lt;v-col&gt;
+        &lt;div class=&quot;d-flex align-center justify-space-between mb-6&quot;&gt;
+          &lt;h1 class=&quot;text-h5&quot;&gt;{{ t('reservations.title') }}&lt;/h1&gt;
+
+          &lt;v-btn
+            v-if=&quot;can('reservations.create')&quot;
+            color=&quot;primary&quot;
+            prepend-icon=&quot;mdi-plus&quot;
+            @click=&quot;openCreateDialog&quot;
+          &gt;
+            {{ t('reservations.createButton') }}
+          &lt;/v-btn&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Search --&gt;
+        &lt;v-text-field
+          v-model=&quot;search&quot;
+          :label=&quot;t('common.search')&quot;
+          variant=&quot;outlined&quot;
+          density=&quot;compact&quot;
+          prepend-inner-icon=&quot;mdi-magnify&quot;
+          clearable
+          class=&quot;mb-4&quot;
+          :style=&quot;{ maxWidth: mobile ? '100%' : '400px' }&quot;
+        /&gt;
+
+        &lt;!-- Data Table --&gt;
+        &lt;v-data-table
+          :items=&quot;filtered&quot;
+          :columns=&quot;columns&quot;
+          :loading=&quot;store.loading&quot;
+          :page.sync=&quot;page&quot;
+          :items-per-page=&quot;itemsPerPage&quot;
+          hover
+        &gt;
+          &lt;template #item.reservationDate=&quot;{ item }&quot;&gt;
+            {{ new Date(item.reservationDate).toLocaleString() }}
+          &lt;/template&gt;
+
+          &lt;template #item.status=&quot;{ item }&quot;&gt;
+            &lt;v-chip
+              :color=&quot;
+                item.status === 0 ? 'warning' : item.status === 1 ? 'success' : 'error'
+              &quot;
+              text-color=&quot;white&quot;
+              size=&quot;small&quot;
+            &gt;
+              {{ t(`reservations.status.${item.status}`) }}
+            &lt;/v-chip&gt;
+          &lt;/template&gt;
+
+          &lt;template #item.actions=&quot;{ item }&quot;&gt;
+            &lt;v-btn
+              variant=&quot;text&quot;
+              size=&quot;x-small&quot;
+              icon=&quot;mdi-eye&quot;
+              @click=&quot;openDetail(item.id)&quot;
+            /&gt;
+            &lt;v-btn
+              v-if=&quot;can('reservations.delete')&quot;
+              variant=&quot;text&quot;
+              size=&quot;x-small&quot;
+              icon=&quot;mdi-delete&quot;
+              color=&quot;error&quot;
+              @click=&quot;openDeleteDialog(item.id)&quot;
+            /&gt;
+          &lt;/template&gt;
+
+          &lt;template #bottom&gt;
+            &lt;v-divider /&gt;
+            &lt;div class=&quot;text-center py-2&quot;&gt;
+              {{ t('common.total') }}: {{ store.totalCount }}
+            &lt;/div&gt;
+          &lt;/template&gt;
+        &lt;/v-data-table&gt;
+      &lt;/v-col&gt;
+    &lt;/v-row&gt;
+  &lt;/v-container&gt;
+
+  &lt;!-- Delete Dialog --&gt;
+  &lt;ConfirmDialog
+    v-model=&quot;deleteDialog&quot;
+    :title=&quot;t('reservations.deleteTitle')&quot;
+    :message=&quot;t('reservations.deleteConfirm')&quot;
+    :loading=&quot;deleteLoading&quot;
+    @confirm=&quot;confirmDelete&quot;
+  /&gt;
+
+  &lt;!-- Create Dialog --&gt;
+  &lt;CreateReservationDialog
+    v-model=&quot;createDialog&quot;
+    @success=&quot;onCreateSuccess&quot;
+  /&gt;
+&lt;/template&gt;
+</code></pre>
+
+<h3 id="approfondimento_10">📚 APPROFONDIMENTO</h3>
+<h4 id="v-data-table-vs-v-table"><strong>v-data-table vs v-table:</strong></h4>
+<pre class="codehilite"><code>v-table:
+└─ Tabella semplice, senza sort/paginate
+└─ Usa se hai pochi dati
+
+v-data-table:
+└─ Tabella con sort, paginate, filtri
+└─ Usa se hai molti dati o devi ordinare
+
+Nel nostro caso usiamo v-data-table perché le prenotazioni possono essere tante.
+</code></pre>
+
+<h4 id="colonne-computate"><strong>Colonne computate:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">const columns = computed(() =&gt; [
+  { title: t('reservations.columnId'), key: 'id', sortable: true },
+  // ...
+])
+
+// Perché computed? Perché se cambia la lingua (t()),
+// le colonne si aggiornano automaticamente
+</code></pre>
+
+<h4 id="template-scoped-slots"><strong>Template scoped slots:</strong></h4>
+<pre class="codehilite"><code class="language-vue">&lt;template #item.status=&quot;{ item }&quot;&gt;
+  &lt;v-chip :color=&quot;...&quot;&gt;
+    {{ t(`reservations.status.${item.status}`) }}
+  &lt;/v-chip&gt;
+&lt;/template&gt;
+
+&lt;!-- Personalizza il rendering della colonna &quot;status&quot;
+     Mostra un chip colorato al posto di un testo semplice --&gt;
+</code></pre>
+
+<h4 id="permessi-v-if-can"><strong>Permessi (v-if can()):</strong></h4>
+<pre class="codehilite"><code class="language-vue">&lt;v-btn v-if=&quot;can('reservations.create')&quot; ...&gt;
+  Nuovo
+&lt;/v-btn&gt;
+
+&lt;!-- Solo se l'utente loggato ha il permesso 'reservations.create'
+     il bottone è visibile --&gt;
+</code></pre>
+
+<hr />
+<h2 id="passaggio-12-creare-page-dettaglio-reservationdetailpagevue">Passaggio 12: Creare Page Dettaglio (ReservationDetailPage.vue)</h2>
+<h3 id="cosa-fare_11">Cosa fare</h3>
+<p>Creare la <strong>pagina di modifica</strong> di una prenotazione:</p>
+<ol>
+<li><strong>File: <code>pages/reservations/ReservationDetailPage.vue</code></strong> — NEW</li>
+<li>Recupera la prenotazione dal store per ID (dalla URL)</li>
+<li>Mostra i dati in forma di sola lettura o editable (dipende da te)</li>
+<li>Bottone "Modifica" → apri dialog di update</li>
+<li>Breadcrumb: Home &gt; Prenotazioni &gt; ID</li>
+</ol>
+<h3 id="file-coinvolti_11">File coinvolti</h3>
+<pre class="codehilite"><code>apps/frontend/src/pages/reservations/
+└── ReservationDetailPage.vue  ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_11">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-vue">&lt;!-- 📄 pages/reservations/ReservationDetailPage.vue --&gt;
+&lt;script setup lang=&quot;ts&quot;&gt;
+import { onMounted, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useReservationsStore } from '@/stores/reservations.store'
+import { usePermission } from '@/composables/usePermission'
+import { useBreadcrumb } from '@/composables/useBreadcrumb'
+import EditReservationDialog from '@/components/reservations/EditReservationDialog.vue'
+import { ref } from 'vue'
+
+const { t } = useI18n()
+const router = useRouter()
+const route = useRoute()
+const store = useReservationsStore()
+const { can } = usePermission()
+const { setBreadcrumb } = useBreadcrumb()
+
+const editDialog = ref(false)
+const reservation = computed(() =&gt; store.selectedReservation)
+
+onMounted(async () =&gt; {
+  const id = route.params.id as string
+  await store.fetchById(id)
+
+  setBreadcrumb([
+    { text: t('common.home'), href: '/' },
+    { text: t('reservations.title'), href: '/reservations' },
+    { text: id, disabled: true },
+  ])
+})
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-container&gt;
+    &lt;v-row v-if=&quot;store.loading&quot;&gt;
+      &lt;v-col&gt;
+        &lt;v-skeleton-loader type=&quot;article&quot; /&gt;
+      &lt;/v-col&gt;
+    &lt;/v-row&gt;
+
+    &lt;v-row v-else-if=&quot;!reservation&quot;&gt;
+      &lt;v-col&gt;
+        &lt;v-alert type=&quot;error&quot; :text=&quot;t('errors.notFound')&quot; /&gt;
+      &lt;/v-col&gt;
+    &lt;/v-row&gt;
+
+    &lt;v-row v-else&gt;
+      &lt;v-col&gt;
+        &lt;v-card&gt;
+          &lt;v-card-title&gt;
+            {{ t('reservations.detail') }} — {{ reservation.id }}
+          &lt;/v-card-title&gt;
+
+          &lt;v-card-text&gt;
+            &lt;v-list lines=&quot;two&quot;&gt;
+              &lt;v-list-item :title=&quot;t('reservations.columnId')&quot; :subtitle=&quot;reservation.id&quot; /&gt;
+              &lt;v-list-item :title=&quot;t('reservations.columnUser')&quot; :subtitle=&quot;reservation.userId&quot; /&gt;
+              &lt;v-list-item :title=&quot;t('reservations.columnTable')&quot; :subtitle=&quot;String(reservation.tableNumber)&quot; /&gt;
+              &lt;v-list-item
+                :title=&quot;t('reservations.columnDate')&quot;
+                :subtitle=&quot;new Date(reservation.reservationDate).toLocaleString()&quot;
+              /&gt;
+              &lt;v-list-item
+                :title=&quot;t('reservations.columnStatus')&quot;
+              &gt;
+                &lt;template #subtitle&gt;
+                  &lt;v-chip
+                    :color=&quot;reservation.status === 0 ? 'warning' : reservation.status === 1 ? 'success' : 'error'&quot;
+                    text-color=&quot;white&quot;
+                    size=&quot;small&quot;
+                  &gt;
+                    {{ t(`reservations.status.${reservation.status}`) }}
+                  &lt;/v-chip&gt;
+                &lt;/template&gt;
+              &lt;/v-list-item&gt;
+              &lt;v-list-item
+                :title=&quot;t('common.createdAt')&quot;
+                :subtitle=&quot;new Date(reservation.createdAt).toLocaleString()&quot;
+              /&gt;
+              &lt;v-list-item
+                :title=&quot;t('common.updatedAt')&quot;
+                :subtitle=&quot;new Date(reservation.updatedAt).toLocaleString()&quot;
+              /&gt;
+            &lt;/v-list&gt;
+          &lt;/v-card-text&gt;
+
+          &lt;v-card-actions&gt;
+            &lt;v-btn variant=&quot;tonal&quot; @click=&quot;$router.back()&quot;&gt;
+              {{ t('common.back') }}
+            &lt;/v-btn&gt;
+
+            &lt;v-spacer /&gt;
+
+            &lt;v-btn
+              v-if=&quot;can('reservations.update')&quot;
+              color=&quot;primary&quot;
+              variant=&quot;elevated&quot;
+              @click=&quot;editDialog = true&quot;
+            &gt;
+              {{ t('common.edit') }}
+            &lt;/v-btn&gt;
+          &lt;/v-card-actions&gt;
+        &lt;/v-card&gt;
+      &lt;/v-col&gt;
+    &lt;/v-row&gt;
+  &lt;/v-container&gt;
+
+  &lt;EditReservationDialog
+    v-model=&quot;editDialog&quot;
+    :reservation=&quot;reservation!&quot;
+    @success=&quot;() =&gt; editDialog = false&quot;
+  /&gt;
+&lt;/template&gt;
+</code></pre>
+
+<h3 id="approfondimento_11">📚 APPROFONDIMENTO</h3>
+<p><strong>Fare riferimento al Passaggio 11</strong> — dettaglio è simile a lista ma mostra un singolo elemento.</p>
+<h4 id="differenze-tra-list-e-detail"><strong>Differenze tra List e Detail:</strong></h4>
+<pre class="codehilite"><code>ReservationsPage (Lista):
+└─ v-data-table con N righe
+└─ Click → vai a detail
+
+ReservationDetailPage (Dettaglio):
+└─ Un solo elemento, proprietà per proprietà
+└─ Leggi da store (store.selectedReservation)
+└─ Bottone modifica → apri dialog
+</code></pre>
+
+<h4 id="breadcrumb"><strong>Breadcrumb:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">setBreadcrumb([
+  { text: 'Home', href: '/' },
+  { text: 'Prenotazioni', href: '/reservations' },
+  { text: id, disabled: true },  // Disable l'ultimo, non è un link
+])
+
+// Mostra: Home &gt; Prenotazioni &gt; ID
+</code></pre>
+
+<hr />
+<h2 id="passaggio-13-creare-dialog-componenti-create-e-edit">Passaggio 13: Creare Dialog Componenti (Create e Edit)</h2>
+<h3 id="cosa-fare_12">Cosa fare</h3>
+<p>Creare i <strong>componenti dialog</strong> per creazione e modifica:</p>
+<ol>
+<li><strong>File: <code>components/reservations/CreateReservationDialog.vue</code></strong> — NEW</li>
+<li>Form con campi: UserId, TableNumber, ReservationDate</li>
+<li>Validazione client con v-form</li>
+<li>Bottone Salva → chiama store.create()</li>
+<li>
+<p>Emette evento <code>@success</code> al completamento</p>
+</li>
+<li>
+<p><strong>File: <code>components/reservations/EditReservationDialog.vue</code></strong> — NEW</p>
+</li>
+<li>Come CreateReservationDialog ma per update</li>
+<li>Riempie i campi con i dati della prenotazione</li>
+<li>Chiama store.update()</li>
+</ol>
+<h3 id="file-coinvolti_12">File coinvolti</h3>
+<pre class="codehilite"><code>apps/frontend/src/components/reservations/
+├── CreateReservationDialog.vue  ← NEW
+└── EditReservationDialog.vue    ← NEW
+</code></pre>
+
+<h3 id="codice-di-esempio_12">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-vue">&lt;!-- 📄 components/reservations/CreateReservationDialog.vue --&gt;
+&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useReservationsStore } from '@/stores/reservations.store'
+import { useAuthStore } from '@/stores/auth.store'
+import { useToastStore } from '@/stores/toast.store'
+import type { CreateReservationRequest } from '@/types/api.types'
+
+const { t } = useI18n()
+const store = useReservationsStore()
+const authStore = useAuthStore()
+const toast = useToastStore()
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true,
+  },
+})
+
+const emit = defineEmits&lt;{
+  'update:modelValue': [boolean]
+  'success': []
+}&gt;()
+
+// --- Form ---
+const form = ref&lt;CreateReservationRequest&gt;({
+  userId: authStore.user?.id || '',
+  tableNumber: 1,
+  reservationDate: new Date().toISOString().split('T')[0],
+})
+
+const formRef = ref()
+const loading = ref(false)
+
+const isOpen = computed({
+  get: () =&gt; props.modelValue,
+  set: (value) =&gt; emit('update:modelValue', value),
+})
+
+const tableNumberRules = [
+  (v: number) =&gt; v &gt;= 1 &amp;&amp; v &lt;= 20 || t('reservations.tableNumberError'),
+]
+
+const dateRules = [
+  (v: string) =&gt; new Date(v) &gt; new Date() || t('reservations.dateError'),
+]
+
+// --- Funzioni ---
+async function handleSubmit() {
+  if (!formRef.value) return
+
+  const isValid = await formRef.value.validate()
+  if (!isValid.valid) return
+
+  loading.value = true
+  try {
+    await store.create({
+      ...form.value,
+      reservationDate: new Date(form.value.reservationDate).toISOString(),
+    })
+    toast.success(t('reservations.created'))
+    isOpen.value = false
+    emit('success')
+  } catch {
+    toast.error(store.error || t('errors.createReservation'))
+  } finally {
+    loading.value = false
+  }
+}
+
+function handleClose() {
+  isOpen.value = false
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-dialog v-model=&quot;isOpen&quot; width=&quot;500&quot;&gt;
+    &lt;v-card&gt;
+      &lt;v-card-title&gt;{{ t('reservations.createTitle') }}&lt;/v-card-title&gt;
+
+      &lt;v-card-text&gt;
+        &lt;v-form ref=&quot;formRef&quot; class=&quot;pt-4&quot;&gt;
+          &lt;!-- User (read-only, already set) --&gt;
+          &lt;v-text-field
+            :model-value=&quot;authStore.user?.email&quot;
+            :label=&quot;t('reservations.columnUser')&quot;
+            disabled
+            class=&quot;mb-4&quot;
+          /&gt;
+
+          &lt;!-- Table Number --&gt;
+          &lt;v-text-field
+            v-model.number=&quot;form.tableNumber&quot;
+            type=&quot;number&quot;
+            :label=&quot;t('reservations.columnTable')&quot;
+            :rules=&quot;tableNumberRules&quot;
+            min=&quot;1&quot;
+            max=&quot;20&quot;
+            required
+            class=&quot;mb-4&quot;
+          /&gt;
+
+          &lt;!-- Reservation Date --&gt;
+          &lt;v-text-field
+            v-model=&quot;form.reservationDate&quot;
+            type=&quot;date&quot;
+            :label=&quot;t('reservations.columnDate')&quot;
+            :rules=&quot;dateRules&quot;
+            required
+            class=&quot;mb-4&quot;
+          /&gt;
+        &lt;/v-form&gt;
+      &lt;/v-card-text&gt;
+
+      &lt;v-card-actions&gt;
+        &lt;v-spacer /&gt;
+        &lt;v-btn variant=&quot;tonal&quot; @click=&quot;handleClose&quot;&gt;
+          {{ t('common.cancel') }}
+        &lt;/v-btn&gt;
+        &lt;v-btn
+          color=&quot;primary&quot;
+          variant=&quot;elevated&quot;
+          :loading=&quot;loading&quot;
+          @click=&quot;handleSubmit&quot;
+        &gt;
+          {{ t('common.save') }}
+        &lt;/v-btn&gt;
+      &lt;/v-card-actions&gt;
+    &lt;/v-card&gt;
+  &lt;/v-dialog&gt;
+&lt;/template&gt;
+</code></pre>
+
+<pre class="codehilite"><code class="language-vue">&lt;!-- 📄 components/reservations/EditReservationDialog.vue --&gt;
+&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useReservationsStore } from '@/stores/reservations.store'
+import { useToastStore } from '@/stores/toast.store'
+import type { Reservation, UpdateReservationRequest, ReservationStatus } from '@/types/api.types'
+
+const { t } = useI18n()
+const store = useReservationsStore()
+const toast = useToastStore()
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true,
+  },
+  reservation: {
+    type: Object as () =&gt; Reservation,
+    required: true,
+  },
+})
+
+const emit = defineEmits&lt;{
+  'update:modelValue': [boolean]
+  'success': []
+}&gt;()
+
+// --- Form ---
+const form = ref&lt;UpdateReservationRequest&gt;({
+  tableNumber: 1,
+  reservationDate: '',
+  status: 0,
+})
+
+const formRef = ref()
+const loading = ref(false)
+
+const isOpen = computed({
+  get: () =&gt; props.modelValue,
+  set: (value) =&gt; emit('update:modelValue', value),
+})
+
+const tableNumberRules = [
+  (v: number) =&gt; v &gt;= 1 &amp;&amp; v &lt;= 20 || t('reservations.tableNumberError'),
+]
+
+const dateRules = [
+  (v: string) =&gt; new Date(v) &gt; new Date() || t('reservations.dateError'),
+]
+
+// --- Watchers ---
+watch(() =&gt; props.reservation, () =&gt; {
+  form.value = {
+    tableNumber: props.reservation.tableNumber,
+    reservationDate: new Date(props.reservation.reservationDate).toISOString().split('T')[0],
+    status: props.reservation.status as ReservationStatus,
+  }
+}, { immediate: true })
+
+// --- Funzioni ---
+async function handleSubmit() {
+  if (!formRef.value) return
+
+  const isValid = await formRef.value.validate()
+  if (!isValid.valid) return
+
+  loading.value = true
+  try {
+    await store.update(props.reservation.id, {
+      ...form.value,
+      reservationDate: new Date(form.value.reservationDate).toISOString(),
+    })
+    toast.success(t('reservations.updated'))
+    isOpen.value = false
+    emit('success')
+  } catch {
+    toast.error(store.error || t('errors.updateReservation'))
+  } finally {
+    loading.value = false
+  }
+}
+
+function handleClose() {
+  isOpen.value = false
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-dialog v-model=&quot;isOpen&quot; width=&quot;500&quot;&gt;
+    &lt;v-card&gt;
+      &lt;v-card-title&gt;{{ t('reservations.editTitle') }}&lt;/v-card-title&gt;
+
+      &lt;v-card-text&gt;
+        &lt;v-form ref=&quot;formRef&quot; class=&quot;pt-4&quot;&gt;
+          &lt;!-- ID (read-only) --&gt;
+          &lt;v-text-field
+            :model-value=&quot;reservation.id&quot;
+            :label=&quot;t('reservations.columnId')&quot;
+            disabled
+            class=&quot;mb-4&quot;
+          /&gt;
+
+          &lt;!-- Table Number --&gt;
+          &lt;v-text-field
+            v-model.number=&quot;form.tableNumber&quot;
+            type=&quot;number&quot;
+            :label=&quot;t('reservations.columnTable')&quot;
+            :rules=&quot;tableNumberRules&quot;
+            min=&quot;1&quot;
+            max=&quot;20&quot;
+            required
+            class=&quot;mb-4&quot;
+          /&gt;
+
+          &lt;!-- Reservation Date --&gt;
+          &lt;v-text-field
+            v-model=&quot;form.reservationDate&quot;
+            type=&quot;date&quot;
+            :label=&quot;t('reservations.columnDate')&quot;
+            :rules=&quot;dateRules&quot;
+            required
+            class=&quot;mb-4&quot;
+          /&gt;
+
+          &lt;!-- Status --&gt;
+          &lt;v-select
+            v-model=&quot;form.status&quot;
+            :label=&quot;t('reservations.columnStatus')&quot;
+            :items=&quot;[
+              { title: t('reservations.status.0'), value: 0 },
+              { title: t('reservations.status.1'), value: 1 },
+              { title: t('reservations.status.2'), value: 2 },
+            ]&quot;
+            required
+            class=&quot;mb-4&quot;
+          /&gt;
+        &lt;/v-form&gt;
+      &lt;/v-card-text&gt;
+
+      &lt;v-card-actions&gt;
+        &lt;v-spacer /&gt;
+        &lt;v-btn variant=&quot;tonal&quot; @click=&quot;handleClose&quot;&gt;
+          {{ t('common.cancel') }}
+        &lt;/v-btn&gt;
+        &lt;v-btn
+          color=&quot;primary&quot;
+          variant=&quot;elevated&quot;
+          :loading=&quot;loading&quot;
+          @click=&quot;handleSubmit&quot;
+        &gt;
+          {{ t('common.save') }}
+        &lt;/v-btn&gt;
+      &lt;/v-card-actions&gt;
+    &lt;/v-card&gt;
+  &lt;/v-dialog&gt;
+&lt;/template&gt;
+</code></pre>
+
+<h3 id="approfondimento_12">📚 APPROFONDIMENTO</h3>
+<h4 id="props-e-emit-per-il-dialogo"><strong>Props e Emit per il dialogo:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">// Props: Cosa il genitore passa al dialog
+props = {
+  modelValue: boolean,      // Controlla se il dialog è aperto
+  reservation: Reservation,  // (solo in Edit) la prenotazione da modificare
+}
+
+// Emit: Cosa il dialog comunica al genitore
+emit = {
+  'update:modelValue': [boolean],  // v-model two-way binding
+  'success': [],                   // Avvisa che l'operazione è riuscita
+}
+
+// Nel genitore (ReservationsPage.vue):
+&lt;CreateReservationDialog
+  v-model=&quot;createDialog&quot;  // ← Aggiorna createDialog quando dialog si chiude
+  @success=&quot;onCreateSuccess&quot;  // ← Ascolta l'evento di successo
+/&gt;
+</code></pre>
+
+<h4 id="validazione-client-vs-server"><strong>Validazione client vs server:</strong></h4>
+<pre class="codehilite"><code>Client (nel dialog):
+└─ Validazione veloce (regex, range)
+└─ UX immediato: l'utente vede l'errore subito
+
+Server (backend):
+└─ Validazione di business (UNIQUE, autorizzazioni, logica)
+└─ Sicurezza: non fidarti del client
+
+Flow:
+1. User compila form
+2. Dialog valida (client) → se errore, mostra messaggio
+3. User clicca Salva → Dialog invia POST
+4. Server valida (server) → se errore, ritorna 400
+5. Dialog cattura l'errore → mostra messaggio toast
+</code></pre>
+
+<h4 id="watch-per-aggiornare-il-form"><strong>Watch per aggiornare il form:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">watch(() =&gt; props.reservation, () =&gt; {
+  form.value = {
+    tableNumber: props.reservation.tableNumber,
+    // ... popola il form con i valori della prenotazione
+  }
+}, { immediate: true })
+
+// Quando il componente riceve una nuova prenotazione,
+// il form si aggiorna automaticamente
+</code></pre>
+
+<hr />
+<h2 id="passaggio-14-creare-i18n-e-router">Passaggio 14: Creare i18n e Router</h2>
+<h3 id="cosa-fare_13">Cosa fare</h3>
+<p>Integrare la nuova sezione nel sistema di <strong>traduzione e routing</strong>:</p>
+<ol>
+<li><strong>File: <code>locales/it.ts</code></strong> — MODIFICA</li>
+<li>
+<p>Aggiungere chiavi: <code>reservations.title</code>, <code>reservations.createButton</code>, <code>reservations.created</code>, <code>reservations.status.*</code>, etc.</p>
+</li>
+<li>
+<p><strong>File: <code>locales/en.ts</code></strong> — MODIFICA</p>
+</li>
+<li>
+<p>Stesse chiavi ma in inglese</p>
+</li>
+<li>
+<p><strong>File: <code>router/index.ts</code></strong> — MODIFICA</p>
+</li>
+<li>Aggiungere 2 route:<ul>
+<li><code>/reservations</code> → <code>ReservationsPage</code></li>
+<li><code>/reservations/:id</code> → <code>ReservationDetailPage</code></li>
+</ul>
+</li>
+<li>Aggiungere meta: <code>permission: 'reservations.read'</code></li>
+</ol>
+<h3 id="file-coinvolti_13">File coinvolti</h3>
+<pre class="codehilite"><code>apps/frontend/src/
+├── locales/
+│   ├── it.ts       ← MODIFICA
+│   └── en.ts       ← MODIFICA
+└── router/
+    └── index.ts    ← MODIFICA
+</code></pre>
+
+<h3 id="codice-di-esempio_13">Codice di Esempio</h3>
+<pre class="codehilite"><code class="language-typescript">// 📄 locales/it.ts — Aggiungi a questo file
+
+export default {
+  // ... resto del file ...
+
+  reservations: {
+    title: 'Prenotazioni Tavolo',
+    createButton: 'Nuova Prenotazione',
+    createTitle: 'Crea Prenotazione',
+    editTitle: 'Modifica Prenotazione',
+    detail: 'Dettaglio Prenotazione',
+    created: 'Prenotazione creata con successo',
+    updated: 'Prenotazione aggiornata con successo',
+    deleted: 'Prenotazione eliminata con successo',
+    columnId: 'ID',
+    columnUser: 'Utente',
+    columnTable: 'Numero Tavolo',
+    columnDate: 'Data Prenotazione',
+    columnStatus: 'Stato',
+    deleteTitle: 'Elimina Prenotazione',
+    deleteConfirm: 'Sei sicuro di voler eliminare questa prenotazione?',
+    tableNumberError: 'Il numero del tavolo deve essere tra 1 e 20',
+    dateError: 'La data deve essere nel futuro',
+    status: {
+      0: 'In Sospeso',
+      1: 'Confermata',
+      2: 'Annullata',
+    },
+  },
+
+  errors: {
+    loadReservations: 'Errore nel caricamento delle prenotazioni',
+    loadReservation: 'Errore nel caricamento della prenotazione',
+    createReservation: 'Errore nella creazione della prenotazione',
+    updateReservation: 'Errore nell\'aggiornamento della prenotazione',
+    deleteReservation: 'Errore nell\'eliminazione della prenotazione',
+  },
+}
+</code></pre>
+
+<pre class="codehilite"><code class="language-typescript">// 📄 locales/en.ts — Stesse chiavi in inglese
+
+export default {
+  // ... rest of file ...
+
+  reservations: {
+    title: 'Table Reservations',
+    createButton: 'New Reservation',
+    createTitle: 'Create Reservation',
+    editTitle: 'Edit Reservation',
+    detail: 'Reservation Details',
+    created: 'Reservation created successfully',
+    updated: 'Reservation updated successfully',
+    deleted: 'Reservation deleted successfully',
+    columnId: 'ID',
+    columnUser: 'User',
+    columnTable: 'Table Number',
+    columnDate: 'Reservation Date',
+    columnStatus: 'Status',
+    deleteTitle: 'Delete Reservation',
+    deleteConfirm: 'Are you sure you want to delete this reservation?',
+    tableNumberError: 'Table number must be between 1 and 20',
+    dateError: 'Date must be in the future',
+    status: {
+      0: 'Pending',
+      1: 'Confirmed',
+      2: 'Cancelled',
+    },
+  },
+
+  errors: {
+    loadReservations: 'Error loading reservations',
+    loadReservation: 'Error loading reservation',
+    createReservation: 'Error creating reservation',
+    updateReservation: 'Error updating reservation',
+    deleteReservation: 'Error deleting reservation',
+  },
+}
+</code></pre>
+
+<pre class="codehilite"><code class="language-typescript">// 📄 router/index.ts — Aggiungi le route
+
+const routes = [
+  // ... route esistenti ...
+
+  {
+    path: '/reservations',
+    name: 'reservations',
+    component: () =&gt; import('@/pages/reservations/ReservationsPage.vue'),
+    meta: {
+      requiresAuth: true,
+      permission: 'reservations.read',
+      title: 'Prenotazioni',
+    },
+  },
+  {
+    path: '/reservations/:id',
+    name: 'reservation-detail',
+    component: () =&gt; import('@/pages/reservations/ReservationDetailPage.vue'),
+    meta: {
+      requiresAuth: true,
+      permission: 'reservations.read',
+      title: 'Dettaglio Prenotazione',
+    },
+  },
+
+  // ... resto delle route ...
+]
+</code></pre>
+
+<h3 id="approfondimento_13">📚 APPROFONDIMENTO</h3>
+<h4 id="i18n-perche-separare-le-stringhe"><strong>i18n: Perché separare le stringhe?</strong></h4>
+<pre class="codehilite"><code>❌ Senza i18n (hardcoded):
+&lt;h1&gt;Prenotazioni Tavolo&lt;/h1&gt;  // Se l'utente cambia lingua, rimane &quot;Prenotazioni&quot;
+
+✅ Con i18n:
+&lt;h1&gt;{{ t('reservations.title') }}&lt;/h1&gt;  // Se l'utente cambia lingua, si aggiorna
+</code></pre>
+
+<p>Vue-i18n gestisce automaticamente la lingua in base alla preferenza dell'utente:</p>
+<pre class="codehilite"><code class="language-typescript">// Nel main.ts
+app.use(i18n)  // Inietta i18n in tutta l'app
+
+// Nel componente
+const { t } = useI18n()
+{{ t('reservations.title') }}  // Legge da locales/it.ts o en.ts
+</code></pre>
+
+<h4 id="meta-della-route"><strong>Meta della route:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">meta: {
+  requiresAuth: true,        // Richiede autenticazione
+  permission: 'reservations.read',  // Richiede questo permesso
+  title: 'Prenotazioni',     // Usato per il breadcrumb/tab
+}
+
+// Nel navigation guard globale (nel router/index.ts):
+router.beforeEach((to, from, next) =&gt; {
+  // Verifica che to.meta.requiresAuth sia true
+  // Verifica che l'utente loggato abbia to.meta.permission
+  // Se no, redirect a /login
+  next()
+})
+</code></pre>
+
+<h4 id="lazy-loading-delle-pagine"><strong>Lazy loading delle pagine:</strong></h4>
+<pre class="codehilite"><code class="language-typescript">// ✅ Preferito:
+component: () =&gt; import('@/pages/reservations/ReservationsPage.vue')
+
+// Le pagine non vengono caricate finché non le visiti
+// Il bundle iniziale è più piccolo
+// Solo quando vai a /reservations la pagina viene caricata
+</code></pre>
+
+<hr />
+<h1 id="checklist-finale">✅ Checklist Finale</h1>
+<p>Quando avrai completato tutti i 14 passaggi:</p>
+<p><strong>Backend:</strong>
+- [ ] <code>IReservation</code>, <code>ReservationRecord</code>, <code>ReservationStatus</code>, <code>ReservationValidator</code> creati
+- [ ] Migration database creata e applicata
+- [ ] Seed data inserito
+- [ ] <code>IReservationRepository</code> e <code>ReservationRepository</code> implementati
+- [ ] <code>GetAllReservationsQuery</code> e handler creati
+- [ ] <code>GetReservationByIdQuery</code> e handler creati
+- [ ] <code>CreateReservationCommand</code> e handler creati
+- [ ] <code>UpdateReservationCommand</code> e handler creati
+- [ ] <code>DeleteReservationCommand</code> e handler creati
+- [ ] <code>ReservationsController</code> con tutti gli endpoint creato
+- [ ] Validatori FluentValidation aggiunti
+- [ ] Test unitari per Repository, Handlers, Validators (opzionale ma consigliato)</p>
+<p><strong>Frontend:</strong>
+- [ ] Interfacce <code>Reservation</code>, <code>CreateReservationRequest</code>, <code>UpdateReservationRequest</code> aggiunte a <code>api.types.ts</code>
+- [ ] <code>ReservationStatus</code> enum creato
+- [ ] <code>reservationsService.ts</code> creato
+- [ ] <code>reservationsStore</code> (Pinia) creato
+- [ ] <code>ReservationsPage.vue</code> creato
+- [ ] <code>ReservationDetailPage.vue</code> creato
+- [ ] <code>CreateReservationDialog.vue</code> creato
+- [ ] <code>EditReservationDialog.vue</code> creato
+- [ ] i18n: stringhe aggiunte a <code>it.ts</code> e <code>en.ts</code>
+- [ ] Router: route aggiunte</p>
+<p><strong>Testing:</strong>
+- [ ] Test E2E: creare → modificare → eliminare prenotazione
+- [ ] Test validazione client (form dialog)
+- [ ] Test validazione server (API)</p>
+<hr />
+<h1 id="riassunto-architettura">📚 Riassunto Architettura</h1>
+<pre class="codehilite"><code>┌─────────────────────────────────────────────────────────────┐
+│                     SLICE VERTICAL                          │
+│                                                             │
+│  Backend (C#):                                              │
+│  ├─ Domain: IReservation, ReservationRecord, Validator     │
+│  ├─ Data: Repository, Migration, Seed                      │
+│  ├─ Logic: Query/Command Handlers (MEDIATR, CQRS)          │
+│  └─ API: Controller con Endpoints HTTP                     │
+│                                                             │
+│  Frontend (Vue 3 + TS):                                     │
+│  ├─ Types: Reservation, Request/Update DTOs                │
+│  ├─ Service: Chiamate API axios                            │
+│  ├─ Store: Pinia state management                          │
+│  ├─ UI: Pages (List, Detail) + Dialogs                     │
+│  └─ i18n + Router: Traduzione e navigazione                │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<p>La <strong>Slice Vertical</strong> garantisce che:
+- ✓ Tutto ciò che serve per "Prenotazioni" è in una slice
+- ✓ Se aggiungi un'altra slice (es. "Tavoli"), non si mischiano
+- ✓ Il dominio è il cuore (IReservation), tutto il resto dipende da lui
+- ✓ Backend e Frontend sono simmetrici (stesso concetto, linguaggi diversi)</p>
+    </div>
+</body>
+</html>

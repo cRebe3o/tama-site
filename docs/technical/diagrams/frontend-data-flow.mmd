@@ -1,0 +1,18 @@
+flowchart LR
+    Comp["Componente .vue\n(es. CustomersPage.vue)"]
+    Store["Pinia store\n(customers.store.ts)"]
+    Service["Service layer\n(customers.service.ts)"]
+    Axios["plugins/axios.ts\n(interceptor JWT + errori)"]
+    API["Backend API\n/api/customers"]
+
+    Comp -->|"store.fetchAll()"| Store
+    Store -->|"customersService.getAll()"| Service
+    Service -->|"api.get(...)"| Axios
+    Axios -->|"Authorization: Bearer JWT"| API
+    API -->|"200 OK JSON"| Axios
+    Axios -->|"r.data"| Service
+    Service -->|Promise| Store
+    Store -->|"items.value = ..."| Comp
+
+    style Store fill:#2f855a,color:#fff
+    style Axios fill:#975a16,color:#fff

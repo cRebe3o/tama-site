@@ -1,0 +1,19 @@
+flowchart LR
+    subgraph Features["Tama.Api/Features/"]
+        direction TB
+        Customers["Customers/\nCreateCustomer/\nUpdateCustomer/\nDeleteCustomer/\nGetCustomers/\nGetCustomerById/\nCustomerEndpoints.cs"]
+        Drafts["Drafts/\nPrintDraft/ (TemplateRenderer, WindowTypeAssets)\n..."]
+        Auth["Auth/\nLogin/, MsalLogin/,\nRefreshToken/, Logout/"]
+        Others["Users, Roles, Groups, Permissions,\nSeries, Accessories, Glazing,\nWindowTypes, WindowSystems, RalColors,\nTemplates, AuditLogs, ErrorLogs,\nSystemConfig, Monitoring"]
+        Shared["_Shared/\nDocuments/ (POCO Mongo)\nRepositories/\nBehaviors/ (Logging, Validation)\nExtensions/ (Mongo, MediatR, Auth, Endpoints, Repository)\nMiddleware/ (ExceptionHandling)\nExceptions/\nSeed/ (DataSeeder, Templates .docx)\nAssets/WindowTypes (.png)"]
+    end
+
+    Customers -->|usa| Shared
+    Drafts -->|usa| Shared
+    Auth -->|usa| Shared
+    Others -->|usa| Shared
+
+    style Shared fill:#975a16,color:#fff
+    style Customers fill:#2f855a,color:#fff
+    style Drafts fill:#2f855a,color:#fff
+    style Auth fill:#2f855a,color:#fff
