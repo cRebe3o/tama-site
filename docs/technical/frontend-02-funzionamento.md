@@ -129,7 +129,7 @@ Questo è il punto **unico** dove: il token viene allegato, un 401 causa logout 
 
 ## Vuetify: tema e defaults globali
 
-`plugins/vuetify.ts` definisce un tema custom (colori `primary` personalizzati, più colori custom come `navigation`/`breadcrumb-bg`) per light/dark, e un blocco `defaults` globale che impone `variant: 'outlined'` e `density: 'compact'` alla maggior parte dei componenti input/tabella/lista. Per questo nei singoli componenti raramente si vedono queste props esplicite — sono già il default dell'app.
+`plugins/vuetify.ts` definisce un tema custom (colori `primary` personalizzati, più colori custom come `navigation`/`breadcrumb-bg`/`brand`) per light/dark, e un blocco `defaults` globale che impone `variant: 'outlined'` e `density: 'compact'` alla maggior parte dei componenti input/tabella/lista. Per questo nei singoli componenti raramente si vedono queste props esplicite — sono già il default dell'app.
 
 ## i18n
 
