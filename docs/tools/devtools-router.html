@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>DevTools — Router</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html">Tama — Vue DevTools</a>
+    <a href="devtools-components.html">DevTools — Components</a>
+    <a href="devtools-pinia.html">DevTools — Pinia</a>
+    <a href="devtools-router.html" class="active">DevTools — Router</a>
+    <a href="devtools-timeline.html">DevTools — Timeline</a>
+  </nav>
+  <main>
+<h1>DevTools — Pannello Router</h1>
+<h2>Livello 1 — Base</h2>
+<p>Il pannello <strong>Routes</strong> (in alcune versioni chiamato &quot;Router&quot;) mostra:</p>
+<ul>
+<li>La <strong>rotta corrente</strong>: nome, path, parametri (<code>params</code>), query string, e l&#39;oggetto <code>meta</code> associato.</li>
+<li>L&#39;<strong>elenco completo delle rotte registrate</strong>, ricercabile per nome o path.</li>
+</ul>
+<p>Su Tama tutte le rotte sono definite in un unico file, <code>router/index.ts</code>, con <code>meta</code> che porta tre informazioni chiave usate dalle guardie: <code>requiresAuth</code> (booleano), <code>permission</code> (stringa, es. <code>&#39;customers.read&#39;</code>) e <code>section</code> (per evidenziare la voce di menu attiva). Il pannello Router permette di vedere questi valori senza aprire il file sorgente e cercare la rotta a mano tra le oltre 30 definite.</p>
+<p>Come aprirlo: tab <strong>Vue</strong> → sotto-tab <strong>Routes</strong>.</p>
+<div class="screenshot">
+<img src="images/devtools-router-panel.svg" alt="Mockup del pannello Routes: rotta corrente con meta in alto, elenco rotte registrate in basso">
+</div>
+<p class="caption">
+<strong>Come leggere il pannello</strong> (mockup illustrativo con dati di esempio Tama):<br>
+① <strong>Blocco rotta corrente</strong>, in alto: <code>name</code>, <code>path</code>, <code>params</code>, <code>query</code> — la rotta effettivamente risolta, non quella richiesta (utile quando i due non coincidono, vedi Livello 3).<br>
+② <strong>Blocco <code>meta</code></strong>: i campi custom definiti in <code>router/index.ts</code> (<code>requiresAuth</code>, <code>permission</code>, <code>section</code>) usati dalle guardie — è qui che si legge il permesso richiesto da una rotta senza aprire il file sorgente.<br>
+③ <strong>Filtro rotte</strong>: cerca per nome/path fra le oltre 30 rotte registrate in Tama.<br>
+④ <strong>Rotta evidenziata</strong> nell'elenco: quella che ha vinto il match per l'URL corrente. La riga di cronologia mostrata sotto nel mockup in realtà non vive in questo tab: la sequenza di navigazioni si legge nel layer <strong>Router Navigations</strong> del pannello Timeline (vedi <a href="devtools-timeline.html">devtools-timeline</a>) — è riportata qui solo per completezza didattica.
+</p><h2>Livello 2 — Intermedio</h2>
+<p>Workflow tipico: <strong>un utente segnala che, cliccando un link, finisce sulla dashboard invece che sulla pagina attesa, senza errori visibili</strong>.</p>
+<p>Le guardie di Tama (<code>router.beforeEach</code> in <code>router/index.ts</code>, righe 287-304) fanno redirect <strong>silenziosi</strong>: se <code>meta.requiresAuth</code> è vero e l&#39;utente non è autenticato, redirect a <code>login</code>; se manca il permesso richiesto in <code>meta.permission</code>, redirect a <code>dashboard</code> con un toast d&#39;avviso (<code>toastStore.warning(...)</code>). Nessuna delle due condizioni lancia un errore in console.</p>
+<p>Con il pannello Router aperto sulla rotta di destinazione desiderata (es. <code>data/customers</code>), si legge subito <code>meta.permission: &#39;customers.read&#39;</code> — a quel punto basta incrociare col pannello Pinia sullo store <code>auth</code>, campo <code>permissions</code>, per vedere se quella stringa è effettivamente presente nell&#39;array. Se manca, il redirect silenzioso è spiegato: non è un bug del router, è un permesso mancante sull&#39;utente/ruolo di test.</p>
+<p>Per ricostruire la <strong>sequenza di navigazioni</strong> che ha portato a uno stato inatteso (specialmente quando è coinvolto un <code>returnUrl</code> — vedi <code>auth.store.ts</code>, <code>login()</code>: dopo il login reindirizza a <code>router.currentRoute.value.query.returnUrl</code> se presente), il tab Routes non basta: mostra solo la rotta corrente. Serve il layer <strong>Router Navigations</strong> della Timeline, che registra ogni navigazione con timestamp, rotta di partenza e destinazione (vedi <a href="devtools-timeline.md">devtools-timeline</a>).</p>
+<h3>Esempio guidato: diagnosticare un redirect di permessi in 4 passi</h3>
+<p>Scenario riproducibile su Tama: un utente di test senza il permesso <code>customers.read</code> clicca su &quot;Clienti&quot; nel menu e si ritrova sulla dashboard con un toast di avviso.</p>
+<ol>
+<li><strong>Routes</strong> → cercare <code>customers</code> nel filtro → leggere <code>meta.permission: &#39;customers.read&#39;</code>. Ora si sa <em>cosa</em> serve per entrare.</li>
+<li><strong>Pinia</strong> → store <code>auth</code> → espandere <code>permissions</code>. Se <code>&#39;customers.read&#39;</code> non c&#39;è nell&#39;array, il redirect è spiegato.</li>
+<li>Controprova senza cambiare utente: nel pannello Pinia, aggiungere temporaneamente <code>&#39;customers.read&#39;</code> all&#39;array <code>permissions</code> (editing live) e ricliccare &quot;Clienti&quot; — ora la pagina si apre. Conferma definitiva che il problema è la configurazione dei permessi (ruolo/gruppo dell&#39;utente su MongoDB), non un bug del frontend.</li>
+<li>Ricordare che l&#39;editing live è volatile: al prossimo refresh l&#39;array torna quello reale (viene ricaricato da <code>localStorage</code>/login). Per la correzione vera bisogna agire su ruoli/gruppi dell&#39;utente (pagine <code>system/roles</code>, <code>system/groups</code>).</li>
+</ol>
+<h2>Livello 3 — Avanzato</h2>
+<p><strong>Debug delle rotte lazy-loaded</strong>: tutte le pagine di Tama sono importate con dynamic import (<code>component: () =&gt; import(&#39;@/pages/data/CustomersPage.vue&#39;)</code>). Se una rotta risulta &quot;vuota&quot; o mostra una pagina bianca senza redirect e senza errori di permessi, il problema è quasi sempre un errore nel chunk lazy-loaded (es. un import rotto dentro il componente) che il pannello Router da solo non mostra — va incrociato con la tab Console del browser per l&#39;errore di caricamento del modulo, il pannello Router serve solo a confermare che la <em>rotta</em> è stata risolta correttamente (nome/path/meta corretti) e quindi il problema è nel componente, non nel routing.</p>
+<p><strong>Rotte con path dinamici sovrapposti</strong>: Tama ha pattern ricorrenti come <code>data/customers/new</code> e <code>data/customers/:id</code> sullo stesso livello (<code>router/index.ts</code>, righe 231-242). vue-router 4 <strong>non</strong> valuta le rotte nell&#39;ordine di dichiarazione: assegna a ogni path un punteggio di specificità, e un segmento statico (<code>new</code>) vince sempre su un parametro (<code>:id</code>), a prescindere da dove compare nel file. Quindi <code>/data/customers/new</code> risolve sempre <code>customer-create</code>, non <code>customer-detail</code> con <code>params.id === &#39;new&#39;</code>. Il pannello Router resta comunque il modo più diretto per verificare quale rotta <em>ha effettivamente vinto</em> il match nei casi meno ovvi: un typo nel link (<code>/data/customer/64f0...</code> senza la &quot;s&quot;) non matcha nulla e cade nella catch-all <code>&#39;:pathMatch(.*)*&#39;</code> — nel pannello si vede subito <code>name: &#39;not-found&#39;</code>, che spiega la pagina 404 senza dover ricontrollare ogni <code>router-link</code> a mano.</p>
+<p><strong>Correlazione con <code>navigation.store.ts</code></strong>: l&#39;<code>afterEach</code> globale (<code>router/index.ts</code>, righe 307-312) sincronizza <code>meta.section</code> con <code>navigationStore.setSection(...)</code>, che pilota quale voce di menu risulta evidenziata in <code>AppShell.vue</code>. Se il menu evidenzia la sezione sbagliata dopo una navigazione, il pannello Router conferma se <code>meta.section</code> sulla rotta di destinazione è quello atteso; se lo è, il bug è nello store di navigazione o nel componente menu, non nel routing — di nuovo, la stessa logica di &quot;isolare il livello giusto&quot; vista per Pinia.</p>
+<p><strong>Timing delle guardie asincrone</strong>: il guard <code>beforeEach</code> di Tama è <code>async</code> (usa <code>await</code> implicitamente tramite lo store auth, anche se qui non fa fetch di rete). Se in futuro venisse aggiunta una chiamata di rete dentro il guard (es. per validare il token), il pannello Router da solo non mostra lo stato &quot;in attesa&quot; della guardia — per quello serve il pannello Timeline (vedi <a href="devtools-timeline.md">devtools-timeline</a>), che mostra la sequenza temporale reale di eventi router/network invece che solo lo stato finale.</p>
+  </main>
+</div>

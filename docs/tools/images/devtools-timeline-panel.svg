@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="Consolas, 'SF Mono', monospace">
+  <rect width="900" height="480" fill="#202124"/>
+  <rect x="0" y="0" width="900" height="34" fill="#292a2d"/>
+  <text x="14" y="22" font-size="12" fill="#9aa0a6">Timeline</text>
+
+  <!-- layer toggles -->
+  <circle cx="700" cy="17" r="9" fill="#31415e" stroke="#8ab4f8"/>
+  <text x="700" y="21" font-size="9" fill="#8ab4f8" text-anchor="middle">C</text>
+  <circle cx="730" cy="17" r="9" fill="#1e3327" stroke="#42b883"/>
+  <text x="730" y="21" font-size="9" fill="#42b883" text-anchor="middle">P</text>
+  <circle cx="760" cy="17" r="9" fill="#3a2b12" stroke="#ffb04c"/>
+  <text x="760" y="21" font-size="9" fill="#ffb04c" text-anchor="middle">R</text>
+
+  <!-- callout 1 -->
+  <circle cx="800" cy="17" r="9" fill="#42b883"/>
+  <text x="800" y="21" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">1</text>
+
+  <!-- time axis -->
+  <line x1="60" y1="440" x2="860" y2="440" stroke="#3c4043"/>
+  <text x="60" y="458" font-size="10" fill="#5f6368">14:02:40.800</text>
+  <text x="420" y="458" font-size="10" fill="#5f6368">14:02:41.000</text>
+  <text x="780" y="458" font-size="10" fill="#5f6368">14:02:41.200</text>
+
+  <!-- selected time window -->
+  <rect x="330" y="60" width="180" height="360" fill="#2a3348" opacity="0.5"/>
+  <!-- callout 4 -->
+  <circle cx="510" cy="70" r="9" fill="#42b883"/>
+  <text x="510" y="74" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">4</text>
+
+  <!-- lane labels -->
+  <text x="14" y="105" font-size="11" fill="#8ab4f8">Component</text>
+  <text x="14" y="215" font-size="11" fill="#42b883">Pinia</text>
+  <text x="14" y="325" font-size="11" fill="#ffb04c">Router</text>
+
+  <line x1="60" y1="130" x2="860" y2="130" stroke="#292a2d"/>
+  <line x1="60" y1="240" x2="860" y2="240" stroke="#292a2d"/>
+  <line x1="60" y1="350" x2="860" y2="350" stroke="#292a2d"/>
+
+  <!-- click event on component lane -->
+  <circle cx="360" cy="100" r="7" fill="#8ab4f8"/>
+  <text x="374" y="104" font-size="10" fill="#8ab4f8">click "Elimina" — CustomersPage</text>
+
+  <!-- callout 2 -->
+  <circle cx="360" cy="80" r="9" fill="#42b883"/>
+  <text x="360" y="84" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">2</text>
+
+  <!-- pinia mutation event -->
+  <circle cx="460" cy="210" r="7" fill="#42b883"/>
+  <text x="474" y="214" font-size="10" fill="#42b883">customers — remove: items, totalCount</text>
+
+  <!-- callout 3 -->
+  <circle cx="460" cy="190" r="9" fill="#42b883"/>
+  <text x="460" y="194" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">3</text>
+
+  <!-- dashed correlation line -->
+  <line x1="360" y1="100" x2="460" y2="210" stroke="#5f6368" stroke-dasharray="4 3"/>
+
+  <!-- unrelated router event further right -->
+  <circle cx="700" cy="320" r="7" fill="#ffb04c"/>
+  <text x="714" y="324" font-size="10" fill="#ffb04c">navigation → dashboard (non correlato)</text>
+</svg>

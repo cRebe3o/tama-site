@@ -1,0 +1,152 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Livello 2 — Dove si inserisce nel progetto esistente</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html">Tama — Guida sviluppo feature</a>
+    <a href="01-panoramica.html">Livello 1 — Panoramica</a>
+    <a href="02-nel-progetto.html" class="active">Livello 2 — Dove si inserisce</a>
+    <a href="03-dettaglio.html">Livello 3 — Dettaglio codice</a>
+  </nav>
+  <main>
+<h1>Livello 2 — Dove si inserisce nel progetto esistente</h1>
+<p>Il livello 1 ha elencato <em>cosa</em> creare. Questo documento spiega <em>dove</em> si aggancia a quello che in Tama esiste <strong>già</strong> e non va reinventato: struttura del menu, permessi, convenzioni di naming, e quale dominio esistente conviene usare come riferimento diretto da cui copiare (non "ispirarsi", proprio copiare la struttura e adattare i nomi).</p>
+<h2>Il dominio di riferimento: <code>accessories</code>, non <code>customers</code></h2>
+<p>La documentazione tecnica di Tama (<a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>, <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a>) usa <strong>Customers</strong> come esempio ricorrente perché è il dominio più ricco (validazioni, audit, relazioni con i preventivi). Per "PLUS"/"EXTRA" conviene invece guardare <strong><code>accessories</code></strong> — confermato nel codice come collection reale con indici propri (vedi <a href="../technical/00-indice.html">../technical/00-indice.md</a>, sezione "punti di attenzione") — perché è strutturalmente il caso più vicino: pochi campi semplici, nessuna relazione con altre entità, nessuna logica di business oltre al CRUD.</p>
+<p>Concretamente, per ogni file che si crea per <code>Extra</code>, il file equivalente già esistente per <code>Accessory</code> è la controparte da tenere aperta a fianco mentre si scrive:</p>
+<table>
+<thead>
+<tr>
+<th>Da creare per <code>Extra</code></th>
+<th>Controparte esistente da copiare</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Features/Extras/*</code></td>
+<td><code>Features/Accessories/*</code></td>
+</tr>
+<tr>
+<td><code>Features/_Shared/Documents/ExtraDocument.cs</code></td>
+<td><code>Features/_Shared/Documents/AccessoryDocument.cs</code></td>
+</tr>
+<tr>
+<td><code>Features/_Shared/Repositories/ExtraRepository.cs</code></td>
+<td><code>Features/_Shared/Repositories/AccessoryRepository.cs</code></td>
+</tr>
+<tr>
+<td><code>stores/extras.store.ts</code></td>
+<td><code>stores/accessories.store.ts</code></td>
+</tr>
+<tr>
+<td><code>services/extras.service.ts</code></td>
+<td><code>services/accessories.service.ts</code></td>
+</tr>
+<tr>
+<td><code>pages/plus/ExtrasPage.vue</code></td>
+<td>pagina lista di un dominio semplice sotto <code>pages/data/</code></td>
+</tr>
+</tbody></table>
+<p>Se in fase di implementazione reale un dettaglio di <code>accessories</code> risultasse diverso da quanto descritto qui (il codice è l'unica fonte di verità, questa guida è un punto di partenza — vedi l'avviso nell'<a href="00-indice.html">indice</a>), va seguito il codice reale, non questa guida.</p>
+<h2>Menu laterale: da "DATI" a "PLUS"</h2>
+<p>Il menu laterale di Tama non è hardcoded nel template di ogni pagina: è generato da una configurazione unica, <code>apps/frontend/src/config/sections.config.ts</code> (citata in <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a>, passo 8). Ogni voce del menu (sezione + sotto-voci) corrisponde a un blocco di questa configurazione, che associa:</p>
+<ul>
+<li>un'<strong>etichetta</strong> (chiave di traduzione, non stringa fissa),</li>
+<li>un'<strong>icona</strong> Material Design Icons (<code>mdi-*</code>),</li>
+<li>una lista di <strong>item</strong>, ciascuno con nome rotta e permesso richiesto.</li>
+</ul>
+<p>"DATI" è una sezione esistente con più voci (Clienti, Accessori, Serie, ecc.); "PLUS" è una <strong>sezione nuova</strong>, allo stesso livello di "DATI" nell'array di configurazione, inizialmente con una sola voce ("Extra"). Il livello 3 mostra il blocco di configurazione esatto da aggiungere.</p>
+<p>Il menu <strong>non</strong> ha una logica propria di visibilità: ogni voce compare solo se <code>authStore.permissions</code> (letta dal componente che itera <code>sections.config.ts</code>) contiene il permesso associato — stesso composable <code>usePermission</code> descritto in <a href="../architecture/frontend-03-nel-progetto.html">../architecture/frontend-03-nel-progetto.md</a>. Questo significa che <strong>finché il permesso <code>extras.read</code> non esiste ed è assegnato</strong>, la voce "PLUS → Extra" resta invisibile anche a codice completo — non è un bug da cercare, è il comportamento atteso.</p>
+<h2>Permessi: naming e propagazione</h2>
+<p>La convenzione, verificata nel codice reale (<a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>, "come intervenire in sicurezza"), è <code>&lt;entità_plurale&gt;.&lt;azione&gt;</code>, azione sempre una di <code>read</code>/<code>write</code>/<code>delete</code>. Per Extra:</p>
+<ul>
+<li><code>extras.read</code> — vedere l'elenco e i dettagli</li>
+<li><code>extras.write</code> — creare e modificare (un solo permesso per entrambe le operazioni, come per <code>customers.write</code>)</li>
+<li><code>extras.delete</code> — eliminare</li>
+</ul>
+<p>Questi tre permessi vanno <strong>seminati</strong> (creati come documenti nella collection <code>permissions</code>) e poi <strong>assegnati</strong> ad almeno un ruolo (tipicamente "Amministratore") perché qualcuno possa effettivamente usarli. In Tama questo passaggio è coperto dalla skill di progetto <code>permissions</code>, richiamata anche in <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a> punto 8: seed permesso → assegnazione a ruolo → claim nel JWT al login → guardia sia lato route (<code>meta.permission</code>) sia lato menu (<code>sections.config.ts</code>) sia lato bottoni della pagina (<code>v-if="can(...)"</code>). Sono <strong>quattro punti diversi</strong>, non uno solo: dimenticarne anche solo uno lascia la feature parzialmente inaccessibile o, peggio, un bottone visibile che poi fallisce con 403 alla chiamata.</p>
+<p>Operativamente, per creare e assegnare i permessi non serve scrivere codice: il modo più diretto è usare le pagine di amministrazione già esistenti — <strong>System → Permissions</strong> per creare <code>extras.read</code>, <code>extras.write</code>, <code>extras.delete</code>, e <strong>System → Roles</strong> per assegnarli al ruolo desiderato (sono le stesse pagine <code>system/permissions</code>/<code>system/roles</code> citate in <a href="../tools/devtools-pinia.html">../tools/devtools-pinia.md</a> a proposito degli store <code>permissions</code> e <code>auth</code>). In alternativa, per ambienti che partono da un database vuoto, si possono aggiungere al <code>DataSeeder</code> del backend.</p>
+<blockquote>
+<p>⚠️ <strong>Dopo l'assegnazione serve un nuovo login.</strong> I permessi viaggiano dentro il claim <code>permissions</code> del JWT, che viene costruito <strong>al momento del login</strong>: un token emesso prima dell'assegnazione non contiene i permessi nuovi, e l'utente continuerà a non vedere la sezione (e a ricevere 403 sulle chiamate) finché non esce e rientra. Quando "il permesso c'è ma non funziona", la prima cosa da controllare è l'array <code>permissions</code> nello store <code>auth</code> con il pannello Pinia di Vue DevTools (<a href="../tools/devtools-pinia.html">../tools/devtools-pinia.md</a>): se lì i permessi <code>extras.*</code> non compaiono, il problema è il token vecchio, non il codice.</p>
+</blockquote>
+<h2>Route e i18n: stesso schema di ogni altra entità</h2>
+<p>Nessuna variazione rispetto al passo 5 di <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a> ("Come aggiungere una nuova view/rotta"): la rotta <code>extras</code> va registrata con <code>component: () =&gt; import(...)</code> lazy e <code>meta: { requiresAuth: true, permission: 'extras.read', title: '...', section: 'plus' }</code> — l'unica novità rispetto a un'entità sotto "DATI" è il valore di <code>section</code>, che deve corrispondere alla chiave della nuova sezione "PLUS" in <code>sections.config.ts</code> (serve a evidenziare la sezione corretta nel menu quando si è su quella pagina, come già descritto in <code>devtools-router.md</code> per il debug di questo campo).</p>
+<p>Le chiavi di traduzione seguono lo stesso namespace-per-entità già in uso: tutto sotto <code>extras.*</code> in <code>it.ts</code>/<code>en.ts</code> (<code>extras.title</code>, <code>extras.columnDescription</code>, <code>extras.columnCost</code>, <code>extras.created</code>, <code>extras.deleted</code>, ecc.), più le nuove voci di errore sotto <code>errors.*</code> (<code>errors.loadExtras</code>, <code>errors.createExtra</code>, ...) — stesso pattern di <code>errors.loadCustomers</code> visto in <code>customers.store.ts</code>.</p>
+<h2>Cosa NON bisogna creare da zero</h2>
+<p>Riutilizzabili così come sono, senza toccarli:</p>
+<ul>
+<li><code>plugins/axios.ts</code> (client HTTP centralizzato — allega automaticamente il JWT).</li>
+<li><code>composables/usePermission.ts</code> (già generico, funziona con qualunque stringa di permesso).</li>
+<li>I pipeline behavior MediatR (<code>LoggingBehavior</code>, <code>ValidationBehavior</code>) — si agganciano automaticamente a qualunque nuovo Command/Query per assembly-scan, nessuna registrazione manuale per-feature.</li>
+<li><code>ExceptionHandlingMiddleware</code> — già gestisce <code>ValidationException</code>/<code>NotFoundException</code> generici; nessun errore custom serve per un CRUD semplice come Extra.</li>
+</ul>
+<p>L'unico registro <strong>manuale</strong> da non dimenticare, sul lato backend, è <code>Features/_Shared/Extensions/EndpointExtensions.cs::MapAllEndpoints()</code>: la riga <code>app.MapExtraEndpoints();</code> va aggiunta a mano, esattamente come per ogni altra feature — è il passaggio esplicitamente segnalato come "facile da dimenticare" in <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>.</p>
+<h2>Riepilogo: la checklist "non-file" da spuntare</h2>
+<p>Oltre ai 12 file/passaggi del livello 1, prima di considerare la feature completa vanno verificati questi punti che <strong>non sono un singolo file</strong> ma una modifica a qualcosa di condiviso:</p>
+<ul>
+<li>☐ <code>MapAllEndpoints()</code> aggiornato con <code>MapExtraEndpoints()</code></li>
+<li>☐ <code>sections.config.ts</code> aggiornato con la sezione "PLUS"</li>
+<li>☐ <code>router/index.ts</code> aggiornato con la rotta <code>extras</code> e <code>meta.permission</code></li>
+<li>☐ <code>it.ts</code> <strong>e</strong> <code>en.ts</code> aggiornati con il namespace <code>extras.*</code></li>
+<li>☐ Permessi <code>extras.read</code>/<code>write</code>/<code>delete</code> seminati e assegnati a un ruolo</li>
+<li>☐ Nuovo login effettuato dopo l'assegnazione dei permessi (il JWT emesso prima non li contiene)</li>
+<li>☐ (Opzionale, se serve tracciamento) <code>AuditLogDocument</code> scritto negli Handler Create/Update/Delete</li>
+</ul>
+<p>Il livello 3 mostra il codice esatto per ognuno di questi punti.</p>
+  </main>
+</div>

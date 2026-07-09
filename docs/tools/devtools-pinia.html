@@ -1,0 +1,118 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>DevTools — Pinia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html">Tama — Vue DevTools</a>
+    <a href="devtools-components.html">DevTools — Components</a>
+    <a href="devtools-pinia.html" class="active">DevTools — Pinia</a>
+    <a href="devtools-router.html">DevTools — Router</a>
+    <a href="devtools-timeline.html">DevTools — Timeline</a>
+  </nav>
+  <main>
+<h1>DevTools — Pannello Pinia</h1>
+<h2>Livello 1 — Base</h2>
+<p>Il pannello <strong>Pinia</strong> elenca tutti gli store attivi nell&#39;app (uno per riga, col nome passato a <code>defineStore(&#39;id&#39;, ...)</code>) e per ciascuno mostra lo <strong>state</strong> corrente in tempo reale, come un albero JSON navigabile.</p>
+<p>Su Tama ogni dominio dati ha il proprio store in <code>stores/*.store.ts</code>, tutti scritti in <strong>setup syntax</strong> (<code>defineStore(&#39;customers&#39;, () =&gt; { ... return {...} })</code>, vedi <code>stores/customers.store.ts</code>). Nel pannello Pinia questo significa che compaiono solo i valori effettivamente restituiti nel <code>return</code> finale dello store — non tutto ciò che è dichiarato dentro la funzione. Se un <code>ref</code> interno non viene esposto nel <code>return</code>, <strong>non sarà visibile in DevTools</strong>, anche se esiste nel codice.</p>
+<p>Come aprirlo: tab <strong>Vue</strong> → sotto-tab <strong>Pinia</strong>. Cliccando su uno store (es. <code>customers</code>) si vede il suo state: <code>items</code>, <code>selectedItem</code>, <code>loading</code>, <code>error</code>, <code>totalCount</code>, <code>page</code>, <code>pageSize</code>, <code>search</code>, <code>sortBy</code>, <code>sortDesc</code> (tutti i campi esposti da <code>customers.store.ts</code>).</p>
+<div class="screenshot">
+<img src="images/devtools-pinia-panel.svg" alt="Mockup del pannello Pinia: elenco store a sinistra, state di customers a destra, cronologia mutazioni in basso">
+</div>
+<p class="caption">
+<strong>Come leggere il pannello</strong> (mockup illustrativo con dati di esempio Tama):<br>
+① <strong>Elenco store attivi</strong>, a sinistra: uno per ogni <code>defineStore(...)</code> montato — su Tama ce ne sono oltre 15 (<code>customers</code>, <code>auth</code>, <code>permissions</code>, ecc.).<br>
+② <strong>Store selezionato</strong> (evidenziato): il suo state completo compare nel riquadro a destra.<br>
+③ <strong>Albero dello state</strong>: solo i valori restituiti nel <code>return {...}</code> dello store setup-syntax compaiono qui — un <code>ref</code> interno non esposto non sarà visibile, anche se esiste nel codice.<br>
+④ <strong>Cronologia mutazioni</strong> (time-travel): ogni riga è una mutazione con timestamp; cliccandola si può "tornare indietro" allo state di quel momento (vedi Livello 3). Nota: nell'estensione reale questa cronologia non è dentro il tab Pinia ma nel layer <strong>Pinia</strong> del tab Timeline — nel mockup è mostrata accorpata solo per compattezza.
+</p><h2>Livello 2 — Intermedio</h2>
+<p>Workflow tipico: <strong>una lista non si aggiorna dopo una create/update e non è chiaro se è un problema di store o di UI</strong>.</p>
+<p>Ogni store lista di Tama (<code>customers.store.ts</code>, <code>accessories.store.ts</code>, ecc.) segue lo stesso pattern CRUD: <code>fetchAll()</code> popola <code>items</code>/<code>totalCount</code>, <code>create()</code>/<code>update()</code> richiamano il servizio e poi ri-eseguono <code>fetchAll()</code>, mentre <code>remove()</code> filtra l&#39;array locale senza un nuovo fetch (<code>items.value = items.value.filter(x =&gt; x.id !== id)</code>, vedi <code>customers.store.ts</code> righe 61-65). Con il pannello Pinia aperto sullo store giusto durante l&#39;azione:</p>
+<ul>
+<li>Se <code>loading</code> resta <code>true</code> dopo l&#39;operazione → l&#39;errore è nel <code>try/finally</code> del metodo (es. un&#39;eccezione non gestita prima del <code>finally</code>).</li>
+<li>Se <code>items</code> non cambia affatto dopo una <code>create</code> → il problema è a monte, nella chiamata HTTP (verificare con il tab Network del browser, non DevTools Vue) o nel service layer, non nello store.</li>
+<li>Se <code>error</code> si popola con il messaggio i18n (<code>i18n.global.t(&#39;errors.loadCustomers&#39;)</code>) ma la UI non lo mostra → il problema è nel componente che legge <code>store.error</code>, non nello store stesso.</li>
+</ul>
+<p>Questa distinzione — <strong>stato dello store corretto ma UI che non lo riflette</strong> vs <strong>stato dello store già sbagliato</strong> — è la prima domanda da porsi in ogni bug di dati su Tama, e il pannello Pinia è il modo più rapido per rispondere.</p>
+<p><strong>Editing diretto dello state</strong>: come nel pannello Components, ogni valore è modificabile al volo con l&#39;icona matita. Esempio pratico: forzare <code>customersStore.error = &#39;test&#39;</code> per verificare che il componente lista mostri correttamente il banner d&#39;errore, senza dover disconnettere davvero il backend.</p>
+<h3>Esempio guidato: capire perché la lista clienti è vuota</h3>
+<p>Scenario: si apre <code>/data/customers</code> e la tabella è vuota, nessun errore visibile.</p>
+<ol>
+<li>Pannello <strong>Pinia</strong> → store <code>customers</code>. Guardare tre campi nell&#39;ordine:<ul>
+<li><code>loading</code> — se è ancora <code>true</code>, la richiesta non è mai terminata (backend lento o bloccato: su Render free tier il cold start può superare i 30s, vedi <code>server-wake.store.ts</code> che mostra il banner apposito).</li>
+<li><code>error</code> — se è valorizzato, la fetch è fallita ma la UI potrebbe non mostrare il messaggio: bug di visualizzazione, non di dati.</li>
+<li><code>items</code> + <code>totalCount</code> — se <code>items</code> è <code>[]</code> ma <code>totalCount</code> è <code>0</code>, il backend ha risposto correttamente &quot;nessun risultato&quot;.</li>
+</ul>
+</li>
+<li>Nel terzo caso, controllare <code>search</code>: un filtro di ricerca dimenticato (es. <code>&quot;mar&quot;</code> rimasto da una sessione precedente) restituisce legittimamente zero righe. È il classico bug &quot;non è un bug&quot;.</li>
+<li>Per confermare, svuotare <code>search</code> con l&#39;editing live (matita → stringa vuota): se <code>watchDebounced</code> in <code>CustomersPage.vue</code> è attivo, dopo ~300ms parte automaticamente <code>fetchAll()</code> e la tabella si ripopola — visibile in diretta nel pannello (<code>loading: true → false</code>, <code>items</code> che si riempie).</li>
+</ol>
+<h2>Livello 3 — Avanzato</h2>
+<p><strong>Time-travel debugging</strong>: ogni azione e mutazione Pinia viene registrata come evento nel layer <strong>Pinia</strong> del tab <strong>Timeline</strong> (vedi <a href="devtools-timeline.md">devtools-timeline</a>). Selezionando un evento passato, il riquadro laterale mostra lo state <em>in quel momento</em>; è possibile &quot;tornare indietro&quot; per ispezionare come si è arrivati a uno stato inconsistente, senza dover riprodurre da capo l&#39;intera sequenza di click.</p>
+<p>Utile in particolare per lo store <code>auth.store.ts</code>, che gestisce sia lo state reattivo sia una copia persistita in <code>localStorage</code> (<code>token</code>, <code>permissions</code>, ecc., vedi <code>_setSession</code>/<code>_clearSession</code>). Se dopo un refresh token (<code>refresh()</code> in <code>auth.store.ts</code>) i permessi in UI risultano disallineati, il time-travel permette di isolare esattamente la mutazione che ha aggiornato <code>permissions.value</code> e confrontarla con il payload ricevuto dal backend in quel momento (incrociando con il tab Network).</p>
+<p><strong>Store multipli con nomi simili</strong>: attenzione a non confondere store correlati ma distinti, es. <code>auth.store.ts</code> (sessione utente) e <code>permissions.store.ts</code> (anagrafica dei permessi disponibili nel sistema, usata nelle pagine <code>system/roles</code>/<code>system/permissions</code>) — nel pannello Pinia compaiono come voci separate (<code>auth</code>, <code>permissions</code>) e leggere l&#39;una pensando di leggere l&#39;altra è un errore comune quando si debugga l&#39;autorizzazione.</p>
+<p><strong>Store setup-syntax senza <code>defineStore</code> &quot;options&quot;</strong>: poiché nessuno store di Tama usa la sintassi a oggetto (<code>state</code>/<code>getters</code>/<code>actions</code>), non esistono &quot;getters&quot; nel senso classico Pinia da cercare in un riquadro separato — i valori computati (es. <code>isAuthenticated</code> in <code>auth.store.ts</code>, un <code>computed</code>) compaiono mescolati nello stesso albero dello state, contrassegnati come computed. Sapere questo evita di cercare una sezione &quot;Getters&quot; che nel pannello, per questi store, semplicemente non esiste.</p>
+<p><strong>Invocare le azioni di uno store dalla console</strong>: il pannello Pinia permette di <em>editare lo state</em>, ma non ha un bottone per eseguire le azioni. Per invocare <code>fetchAll</code>/<code>remove</code> senza passare dalla UI si usa la console del browser, recuperando lo store dall&#39;istanza Pinia dell&#39;app:</p>
+<pre><code class="language-js">// nella console del browser, con l&#39;app in dev
+const pinia = document.querySelector(&#39;#app&#39;).__vue_app__.config.globalProperties.$pinia
+const customers = pinia._s.get(&#39;customers&#39;)   // _s = Map id → store (API interna)
+await customers.remove(&#39;64f0a1c2...&#39;)          // testa l&#39;azione isolata dalla UI
+</code></pre>
+<p><code>_s</code> è un&#39;API interna non documentata (può cambiare tra versioni di Pinia), ma in una sessione di debug locale è il modo più rapido per testare un&#39;azione isolandola da eventuali problemi nel bottone/dialog che normalmente la richiama. L&#39;esecuzione comparirà regolarmente come evento nel layer Pinia della Timeline, come se fosse partita dalla UI.</p>
+  </main>
+</div>

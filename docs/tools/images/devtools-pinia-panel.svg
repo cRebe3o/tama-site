@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" font-family="Consolas, 'SF Mono', monospace">
+  <rect width="900" height="560" fill="#202124"/>
+  <rect x="0" y="0" width="900" height="34" fill="#292a2d"/>
+  <text x="14" y="22" font-size="12" fill="#9aa0a6">Pinia</text>
+
+  <!-- left store list -->
+  <rect x="0" y="34" width="240" height="526" fill="#202124" stroke="#3c4043"/>
+  <text x="14" y="56" font-size="11" fill="#5f6368">STORE ATTIVI</text>
+
+  <rect x="0" y="66" width="240" height="22" fill="#31415e"/>
+  <rect x="0" y="66" width="3" height="22" fill="#42b883"/>
+  <text x="14" y="81" font-size="12" fill="#8ab4f8" font-weight="bold">customers</text>
+
+  <text x="14" y="108" font-size="12" fill="#c58af9">auth</text>
+  <text x="14" y="132" font-size="12" fill="#c58af9">permissions</text>
+  <text x="14" y="156" font-size="12" fill="#c58af9">navigation</text>
+  <text x="14" y="180" font-size="12" fill="#c58af9">accessories</text>
+  <text x="14" y="204" font-size="12" fill="#c58af9">series</text>
+  <text x="14" y="228" font-size="12" fill="#c58af9">roles</text>
+  <text x="14" y="252" font-size="12" fill="#c58af9">toast</text>
+
+  <!-- callout 1 -->
+  <circle cx="222" cy="53" r="9" fill="#42b883"/>
+  <text x="222" y="57" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">1</text>
+  <!-- callout 2 -->
+  <circle cx="222" cy="76" r="9" fill="#42b883"/>
+  <text x="222" y="80" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">2</text>
+
+  <!-- right state tree -->
+  <rect x="240" y="34" width="660" height="380" fill="#232326" stroke="#3c4043"/>
+  <text x="256" y="58" font-size="13" fill="#e8eaed" font-weight="bold">customers — state</text>
+
+  <!-- callout 3 -->
+  <circle cx="860" cy="53" r="9" fill="#42b883"/>
+  <text x="860" y="57" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">3</text>
+
+  <g font-size="12">
+    <text x="256" y="86" fill="#8ab4f8">items</text>
+    <text x="330" y="86" fill="#9aa0a6">Array[25]</text>
+
+    <text x="256" y="110" fill="#8ab4f8">selectedItem</text>
+    <text x="360" y="110" fill="#5f6368">null</text>
+
+    <text x="256" y="134" fill="#8ab4f8">loading</text>
+    <text x="330" y="134" fill="#ffb04c">false</text>
+
+    <text x="256" y="158" fill="#8ab4f8">error</text>
+    <text x="330" y="158" fill="#5f6368">null</text>
+
+    <text x="256" y="182" fill="#8ab4f8">totalCount</text>
+    <text x="350" y="182" fill="#ffb04c">137</text>
+
+    <text x="256" y="206" fill="#8ab4f8">page</text>
+    <text x="330" y="206" fill="#ffb04c">1</text>
+
+    <text x="256" y="230" fill="#8ab4f8">pageSize</text>
+    <text x="350" y="230" fill="#ffb04c">25</text>
+
+    <text x="256" y="254" fill="#8ab4f8">search</text>
+    <text x="330" y="254" fill="#f28b82">"mar"</text>
+
+    <text x="256" y="278" fill="#8ab4f8">sortBy</text>
+    <text x="330" y="278" fill="#5f6368">undefined</text>
+
+    <text x="256" y="302" fill="#8ab4f8">sortDesc</text>
+    <text x="350" y="302" fill="#ffb04c">false</text>
+  </g>
+
+  <!-- history / time travel -->
+  <rect x="240" y="414" width="660" height="126" fill="#202124" stroke="#3c4043"/>
+  <text x="256" y="436" font-size="11" fill="#5f6368">CRONOLOGIA MUTAZIONI — nell'estensione reale: tab Timeline, layer Pinia (time-travel)</text>
+
+  <text x="256" y="460" font-size="11" fill="#9aa0a6">14:02:10.221  customers  fetchAll → loading:true</text>
+  <text x="256" y="482" font-size="11" fill="#9aa0a6">14:02:10.560  customers  fetchAll → items, totalCount, loading:false</text>
+
+  <rect x="248" y="494" width="644" height="20" fill="#31415e"/>
+  <rect x="248" y="494" width="3" height="20" fill="#42b883"/>
+  <text x="256" y="508" font-size="11" fill="#8ab4f8" font-weight="bold">14:02:41.038  customers  remove → items filtrato, totalCount:136</text>
+
+  <!-- callout 4 -->
+  <circle cx="880" cy="504" r="9" fill="#42b883"/>
+  <text x="880" y="508" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">4</text>
+</svg>

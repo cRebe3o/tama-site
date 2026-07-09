@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" font-family="Consolas, 'SF Mono', monospace">
+  <rect width="900" height="560" fill="#202124"/>
+  <rect x="0" y="0" width="900" height="34" fill="#292a2d"/>
+  <text x="14" y="22" font-size="12" fill="#9aa0a6">Routes</text>
+
+  <!-- current route box -->
+  <rect x="14" y="48" width="872" height="150" fill="#232326" stroke="#3c4043"/>
+  <text x="30" y="72" font-size="12" fill="#5f6368">ROTTA CORRENTE</text>
+
+  <text x="30" y="98" font-size="13" fill="#8ab4f8" font-weight="bold">name:</text>
+  <text x="100" y="98" font-size="13" fill="#f28b82">'customer-detail'</text>
+
+  <text x="30" y="122" font-size="13" fill="#8ab4f8" font-weight="bold">path:</text>
+  <text x="100" y="122" font-size="13" fill="#e8eaed">/data/customers/64f0a1c2</text>
+
+  <text x="30" y="146" font-size="12" fill="#8ab4f8">params:</text>
+  <text x="110" y="146" font-size="12" fill="#9aa0a6">{ id: "64f0a1c2" }</text>
+
+  <text x="30" y="168" font-size="12" fill="#8ab4f8">query:</text>
+  <text x="110" y="168" font-size="12" fill="#9aa0a6">{}</text>
+
+  <!-- callout 1 -->
+  <circle cx="870" cy="66" r="9" fill="#42b883"/>
+  <text x="870" y="70" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">1</text>
+
+  <!-- meta block -->
+  <rect x="14" y="206" width="872" height="120" fill="#232326" stroke="#3c4043"/>
+  <text x="30" y="228" font-size="12" fill="#5f6368">meta</text>
+  <text x="46" y="252" font-size="12" fill="#8ab4f8">requiresAuth</text>
+  <text x="180" y="252" font-size="12" fill="#ffb04c">true</text>
+  <text x="46" y="276" font-size="12" fill="#8ab4f8">permission</text>
+  <text x="180" y="276" font-size="12" fill="#f28b82">'customers.read'</text>
+  <text x="46" y="300" font-size="12" fill="#8ab4f8">section</text>
+  <text x="180" y="300" font-size="12" fill="#f28b82">'data'</text>
+
+  <!-- callout 2 -->
+  <circle cx="870" cy="224" r="9" fill="#42b883"/>
+  <text x="870" y="228" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">2</text>
+
+  <!-- route list -->
+  <rect x="14" y="342" width="872" height="200" fill="#232326" stroke="#3c4043"/>
+  <text x="30" y="364" font-size="11" fill="#5f6368">TUTTE LE ROTTE REGISTRATE</text>
+  <rect x="30" y="374" width="220" height="20" rx="4" fill="#171717" stroke="#3c4043"/>
+  <text x="38" y="388" font-size="11" fill="#9aa0a6">Filter routes...</text>
+
+  <!-- callout 3 -->
+  <circle cx="270" cy="384" r="9" fill="#42b883"/>
+  <text x="270" y="388" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">3</text>
+
+  <text x="30" y="418" font-size="11" fill="#c58af9">customers</text>
+  <text x="220" y="418" font-size="11" fill="#5f6368">data/customers</text>
+
+  <text x="30" y="440" font-size="11" fill="#c58af9">customer-create</text>
+  <text x="220" y="440" font-size="11" fill="#5f6368">data/customers/new</text>
+
+  <rect x="14" y="450" width="872" height="20" fill="#31415e"/>
+  <rect x="14" y="450" width="3" height="20" fill="#42b883"/>
+  <text x="30" y="464" font-size="11" fill="#8ab4f8" font-weight="bold">customer-detail</text>
+  <text x="220" y="464" font-size="11" fill="#8ab4f8">data/customers/:id</text>
+
+  <text x="30" y="486" font-size="11" fill="#c58af9">login</text>
+  <text x="220" y="486" font-size="11" fill="#5f6368">/login</text>
+
+  <text x="30" y="508" font-size="11" fill="#c58af9">dashboard</text>
+  <text x="220" y="508" font-size="11" fill="#5f6368">dashboard</text>
+
+  <!-- callout 4: history -->
+  <circle cx="880" cy="500" r="9" fill="#42b883"/>
+  <text x="880" y="504" font-size="11" fill="#0b0b0b" text-anchor="middle" font-weight="bold">4</text>
+  <text x="30" y="530" font-size="10" fill="#5f6368">cronologia (nel tab Timeline, layer Router Navigations): dashboard → customers → customer-detail</text>
+</svg>

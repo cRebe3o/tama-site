@@ -1,0 +1,120 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>DevTools — Components</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html">Tama — Vue DevTools</a>
+    <a href="devtools-components.html" class="active">DevTools — Components</a>
+    <a href="devtools-pinia.html">DevTools — Pinia</a>
+    <a href="devtools-router.html">DevTools — Router</a>
+    <a href="devtools-timeline.html">DevTools — Timeline</a>
+  </nav>
+  <main>
+<h1>DevTools — Pannello Components</h1>
+<h2>Livello 1 — Base</h2>
+<p>Il pannello <strong>Components</strong> mostra l&#39;albero dei componenti Vue montati nella pagina, rispecchiando la gerarchia con cui sono composti nel template (non i file — un componente può comparire più volte se usato più volte, es. ogni riga di una <code>v-data-table-server</code>).</p>
+<p>Come aprirlo:</p>
+<ol>
+<li>Avviare il frontend in dev (<code>pnpm --filter frontend dev</code>).</li>
+<li>Aprire i DevTools del browser → tab <strong>Vue</strong> → sotto-tab <strong>Components</strong>.</li>
+</ol>
+<p>Selezionando un nodo dell&#39;albero, il pannello laterale mostra:</p>
+<ul>
+<li><strong>Props</strong> — i valori passati dal genitore, in sola lettura salvo editing esplicito (vedi Livello 2).</li>
+<li><strong>State locale</strong> (<code>ref</code>/<code>reactive</code> dichiarati con <code>&lt;script setup&gt;</code>) — su Tama corrisponde a tutte le variabili reattive definite nel <code>&lt;script setup&gt;</code> di un file <code>.vue</code>, es. <code>search</code>, <code>dialog</code>, <code>editedItem</code> in una pagina lista.</li>
+<li><strong>Setup</strong> — le funzioni esposte automaticamente da <code>&lt;script setup&gt;</code>.</li>
+<li><strong>Emits</strong> — eventi dichiarati con <code>defineEmits</code>.</li>
+</ul>
+<p>Sopra l&#39;albero c&#39;è un <strong>selettore a mirino</strong> (icona target): cliccandolo e poi cliccando un elemento nella pagina, DevTools salta direttamente al componente corrispondente nell&#39;albero — utile quando la gerarchia è profonda e non si sa a quale componente appartiene un pezzo di UI.</p>
+<div class="screenshot">
+<img src="images/devtools-components-panel.svg" alt="Mockup del pannello Components: albero a sinistra, ispettore a destra su CustomersPage">
+</div>
+<p class="caption">
+<strong>Come leggere il pannello</strong> (mockup illustrativo, non uno screenshot reale — i nomi dei componenti/valori sono presi dal codice Tama):<br>
+① <strong>Albero componenti</strong>, a sinistra: gerarchia annidata così come compare nel template (<code>AppShell</code> → <code>RouterView</code> → pagina → componenti Vuetify figli). I nomi in viola sono componenti, non elementi HTML.<br>
+② <strong>Nodo selezionato</strong>: evidenziato con sfondo blu e bordo verde a sinistra; è quello i cui dettagli compaiono nel pannello di destra — qui <code>CustomersPage</code>.<br>
+③ <strong>Tab attiva</strong> nel pannello destro (sottolineata in verde): <code>Props</code> / <code>State</code> / <code>Setup</code> / <code>Emits</code>. Il contenuto sotto cambia in base alla tab, non mostra tutto insieme.<br>
+④ <strong>Icona matita</strong> accanto a un valore: indica che quel valore è modificabile in place (editing live, vedi Livello 2).
+</p><h2>Livello 2 — Intermedio</h2>
+<p>Workflow tipico su Tama: <strong>capire perché una pagina lista non mostra i dati attesi</strong>.</p>
+<p>Le pagine dati di Tama (<code>pages/data/CustomersPage.vue</code>, <code>AccessoriesPage.vue</code>, ecc.) seguono tutte lo stesso pattern: <code>&lt;script setup&gt;</code> con stato locale (<code>search</code>, <code>dialog</code>, filtri) più un riferimento allo store Pinia del dominio. Aprendo <code>CustomersPage.vue</code> nell&#39;albero Components:</p>
+<ul>
+<li>Nel riquadro <strong>State</strong> si vede lo stato locale del componente (es. <code>dialog</code>, <code>editedItem</code>), separato dallo stato dello store (quello si ispeziona nel pannello Pinia, vedi <a href="devtools-pinia.md">devtools-pinia</a> — è un errore comune cercare <code>items</code>/<code>loading</code> qui invece che nello store).</li>
+<li>Nel riquadro <strong>Setup</strong>, la sezione <code>computed</code> mostra derivati locali se presenti.</li>
+</ul>
+<p>Un secondo workflow frequente: <strong>verificare quali props arrivano a un componente condiviso</strong>. I componenti custom condivisi vivono in <code>components/shared/</code>; selezionandoli nell&#39;albero (magari annidati sotto <code>AppShell.vue</code> → layout → pagina) si vedono le props effettive ricevute in quel punto specifico dell&#39;albero, utile per capire se un valore sbagliato arriva dal genitore o viene calcolato male all&#39;interno.</p>
+<p><strong>Editing live delle props/state</strong>: cliccando sull&#39;icona matita accanto a un valore nel pannello, si può modificare al volo (es. forzare <code>dialog = true</code> per aprire un dialog senza cliccare il bottone, o cambiare <code>search</code> per testare il filtro senza digitare). La modifica è reattiva e si propaga come se fosse avvenuta da codice — utile per riprodurre rapidamente uno stato UI specifico durante un bug report.</p>
+<h3>Esempio guidato: ispezionare il form di modifica cliente senza compilare nulla</h3>
+<p>Scenario: si sta lavorando sul dialog di modifica in una pagina lista e serve verificarne il rendering con dati realistici, senza rifare ogni volta il giro click-riga → click-modifica.</p>
+<ol>
+<li>Aprire <code>/data/customers</code>, selezionare <code>CustomersPage</code> nell&#39;albero (o usare il mirino puntando la tabella).</li>
+<li>Nel riquadro <strong>State</strong>, individuare le variabili del dialog (es. <code>dialog</code>, <code>editedItem</code>).</li>
+<li>Con la matita, valorizzare <code>editedItem.name</code> con una stringa lunga (es. 80 caratteri): serve a testare come il layout del dialog gestisce l&#39;overflow.</li>
+<li>Forzare <code>dialog = true</code>: il dialog si apre con i dati impostati, senza aver toccato la UI.</li>
+<li>Bonus: con il dialog aperto, riselezionare col mirino un campo del form per ispezionare il componente Vuetify interno (<code>VTextField</code>) e verificarne le props effettive (<code>rules</code>, <code>error-messages</code>, ecc.).</li>
+</ol>
+<p>Il tutto è volatile: un refresh della pagina riporta ogni valore allo stato reale. È il modo più rapido per rispondere a &quot;come renderizza il form se...?&quot; senza scrivere codice temporaneo.</p>
+<h2>Livello 3 — Avanzato</h2>
+<p><strong>&quot;Open in editor&quot;</strong>: ogni nodo dell&#39;albero ha un pulsante che apre il file <code>.vue</code> sorgente direttamente nell&#39;editor configurato (richiede il plugin Vite ufficiale, già presente via <code>vite-plugin-vuetify</code>/setup standard Vue-Vite). Su un progetto con decine di pagine sotto <code>pages/data/</code>, <code>pages/system/</code>, <code>pages/quotation/</code>, questo evita di cercare manualmente il file quando si parte dall&#39;ispezione visuale.</p>
+<p><strong>Debug di componenti dentro <code>v-for</code></strong>: le tabelle di Tama sono quasi sempre <code>v-data-table-server</code> di Vuetify con <code>item-slot</code> custom. Ogni cella custom renderizzata via slot compare nell&#39;albero come istanza separata — selezionando una riga specifica si può ispezionare il valore esatto di <code>item</code> per quella riga, molto più veloce che mettere un <code>console.log</code> dentro lo slot e filtrare l&#39;output per un id specifico.</p>
+<p><strong>Componenti &quot;anonimi&quot; o funzionali</strong>: i componenti Vuetify (<code>v-dialog</code>, <code>v-form</code>) compaiono nell&#39;albero con il loro nome interno Vuetify, non come parte del markup Tama — utile sapere che se si cerca <code>CustomerDetailPage</code> e non si trova subito, potrebbe essere annidato sotto diversi wrapper Vuetify (<code>v-dialog</code> → <code>v-card</code> → contenuto).</p>
+<p><strong>Accesso al componente selezionato dalla console (<code>$vm0</code>)</strong>: quando un componente è selezionato nell&#39;albero, DevTools lo espone nella console del browser come variabile <code>$vm0</code>. Da lì si accede all&#39;istanza reale: <code>$vm0.search</code>, <code>$vm0.fetchAll()</code>, ecc. È il ponte fra ispezione visuale e sperimentazione da console — utile quando l&#39;editing con la matita non basta (es. chiamare un metodo con argomenti, o ispezionare un valore che il pannello tronca). Nota per i componenti <code>&lt;script setup&gt;</code> di Tama: le variabili del setup non esposte con <code>defineExpose</code> potrebbero non essere raggiungibili direttamente dall&#39;istanza — in quel caso conviene leggere i valori dal pannello State, che invece li vede tutti.</p>
+<p><strong>Performance/re-render tracking</strong>: attivando l&#39;opzione &quot;Highlight updates on components&quot; (impostazioni del pannello, icona ingranaggio), ogni componente che si ri-renderizza lampeggia nella pagina. Su una pagina lista con <code>watchDebounced</code> (es. <code>CustomersPage.vue</code>, che sincronizza <code>store.search</code> con debounce di 300ms — vedi <code>pages/data/CustomersPage.vue</code>), questo permette di verificare visivamente che il debounce funzioni davvero: la tabella non dovrebbe lampeggiare ad ogni tasto digitato, solo alla fine della pausa di 300ms. Se lampeggia ad ogni carattere, il debounce non sta funzionando come atteso.</p>
+  </main>
+</div>

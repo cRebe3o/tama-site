@@ -1,0 +1,790 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Livello 3 — Dettaglio: codice completo, passo per passo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html">Tama — Guida sviluppo feature</a>
+    <a href="01-panoramica.html">Livello 1 — Panoramica</a>
+    <a href="02-nel-progetto.html">Livello 2 — Dove si inserisce</a>
+    <a href="03-dettaglio.html" class="active">Livello 3 — Dettaglio codice</a>
+  </nav>
+  <main>
+<h1>Livello 3 — Dettaglio: codice completo, passo per passo</h1>
+<p>Segue esattamente i 12 passaggi elencati in <a href="01-panoramica.html">01-panoramica</a>. Ogni sezione ha il codice completo del file e, dove serve, il "perché" della scelta. Le convenzioni generali (naming, struttura cartelle, pipeline MediatR) sono quelle già descritte in <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a> e <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a>: qui non vengono ripetute, solo applicate.</p>
+<h2>BACKEND</h2>
+<h2>Passaggio 1 — Documento MongoDB</h2>
+<p><strong>File nuovo</strong>: <code>apps/backend/Tama.Api/Features/_Shared/Documents/ExtraDocument.cs</code></p>
+<pre><code class="language-csharp">using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Tama.Api.Features._Shared.Documents;
+
+public class ExtraDocument
+{
+    public ObjectId Id { get; set; }
+    public string Description { get; set; } = string.Empty;
+
+    [BsonRepresentation(BsonType.Decimal128)]
+    public decimal Cost { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li>Nessun attributo <code>[BsonElement]</code>/<code>[Key]</code>: il progetto usa un <code>ConventionPack</code> globale registrato in <code>AddMongoDb</code> (vedi <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>, "cosa NON toccare senza motivo") che mappa automaticamente <code>PascalCase</code> C# → <code>camelCase</code> nei documenti Mongo. Non serve annotare nulla campo per campo.</li>
+<li><code>decimal</code> per <code>Cost</code>, non <code>double</code>: è un valore monetario, e <code>double</code> introdurrebbe errori di arrotondamento binario (il classico <code>0.1 + 0.2 ≠ 0.3</code>) — inaccettabili per un valore che finirà stampato nei preventivi.</li>
+<li><code>[BsonRepresentation(BsonType.Decimal128)]</code> esplicito su <code>Cost</code>: senza questo attributo, il serializzatore di default del driver .NET salva <code>decimal</code> come <strong>stringa</strong> BSON (scelta storica del driver per non perdere precisione), il che renderebbe scorretti ordinamenti e impossibili somme direttamente in query Mongo. <code>Decimal128</code> è il tipo decimale nativo di MongoDB (dalla versione 3.4): mantiene la precisione <strong>e</strong> resta un numero. È l'unico attributo BSON che serve in tutta la classe — se il progetto avesse già registrato globalmente un <code>DecimalSerializer</code> con rappresentazione <code>Decimal128</code> (da verificare in <code>AddMongoDb</code>), l'attributo diventerebbe ridondante ma non dannoso.</li>
+<li><code>CreatedAt</code>/<code>UpdatedAt</code>: presenti su <strong>ogni</strong> documento del progetto (stesso pattern di <code>CustomerDocument</code>), anche se qui non c'è ancora un caso d'uso che li legga attivamente — è la convenzione, non un'eccezione da giustificare caso per caso.</li>
+<li>Nessun campo di relazione: a differenza di <code>DraftDocument</code> (che referenzia <code>CustomerId</code>/<code>SeriesId</code>), <code>ExtraDocument</code> è un'entità "foglia" — non punta a nient'altro e, salvo sviluppi futuri, nessun'altra collection lo referenzia ancora.</li>
+</ul>
+<h2>Passaggio 2 — Repository</h2>
+<p><strong>Files nuovi</strong>: <code>Features/_Shared/Repositories/IExtraRepository.cs</code> e <code>ExtraRepository.cs</code></p>
+<pre><code class="language-csharp">// 📄 IExtraRepository.cs
+namespace Tama.Api.Features._Shared.Repositories;
+
+public interface IExtraRepository
+{
+    Task&lt;List&lt;ExtraDocument&gt;&gt; GetAllAsync(CancellationToken ct);
+    Task&lt;ExtraDocument?&gt; GetByIdAsync(ObjectId id, CancellationToken ct);
+    Task InsertAsync(ExtraDocument doc, CancellationToken ct);
+    Task UpdateAsync(ExtraDocument doc, CancellationToken ct);
+    Task DeleteAsync(ObjectId id, CancellationToken ct);
+}
+
+// 📄 ExtraRepository.cs
+public class ExtraRepository(IMongoDatabase db) : IExtraRepository
+{
+    private readonly IMongoCollection&lt;ExtraDocument&gt; _col = db.GetCollection&lt;ExtraDocument&gt;("extras");
+
+    public async Task&lt;List&lt;ExtraDocument&gt;&gt; GetAllAsync(CancellationToken ct) =&gt;
+        await _col.Find(FilterDefinition&lt;ExtraDocument&gt;.Empty)
+            .SortBy(x =&gt; x.Description)
+            .ToListAsync(ct);
+
+    public async Task&lt;ExtraDocument?&gt; GetByIdAsync(ObjectId id, CancellationToken ct) =&gt;
+        await _col.Find(x =&gt; x.Id == id).FirstOrDefaultAsync(ct);
+
+    public async Task InsertAsync(ExtraDocument doc, CancellationToken ct) =&gt;
+        await _col.InsertOneAsync(doc, cancellationToken: ct);
+
+    public async Task UpdateAsync(ExtraDocument doc, CancellationToken ct) =&gt;
+        await _col.ReplaceOneAsync(x =&gt; x.Id == doc.Id, doc, cancellationToken: ct);
+
+    public async Task DeleteAsync(ObjectId id, CancellationToken ct) =&gt;
+        await _col.DeleteOneAsync(x =&gt; x.Id == id, ct);
+}
+</code></pre>
+<p><strong>Registrazione</strong> — <code>Features/_Shared/Extensions/RepositoryExtensions.cs::AddRepositories()</code> (MODIFICA, aggiungi una riga):</p>
+<pre><code class="language-csharp">services.AddScoped&lt;IExtraRepository, ExtraRepository&gt;();
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li>Il nome della collection (<code>"extras"</code>) è passato come stringa letterale a <code>GetCollection&lt;T&gt;</code>, non c'è una costante centralizzata — stessa scelta osservata in tutti gli altri repository del progetto.</li>
+<li><code>SortBy(x =&gt; x.Description)</code> in <code>GetAllAsync</code>: per una lista di sole ~5-20 righe come gli extra (non paginata, a differenza di <code>customers</code>), ordinare alfabeticamente lato database evita di doverlo fare lato frontend ad ogni render.</li>
+<li>Nessuna paginazione (<code>Skip</code>/<code>Limit</code>) in <code>GetAllAsync</code>, a differenza di <code>ICustomerRepository.GetPagedAsync</code>: gli extra sono un elenco corto e stabile (tipicamente configurato una volta dall'amministrazione), non ha senso pagarne il costo di complessità. Se in futuro diventasse una lista lunga, si aggiungerebbe la paginazione allora — non prematuramente ora.</li>
+<li><code>AddScoped</code>, come gli altri repository del progetto: è il lifetime già in uso (lo conferma indirettamente il fatto che <code>ExceptionHandlingMiddleware</code> debba creare uno scope apposito per risolvere <code>IErrorLogRepository</code>, che è scoped — vedi <a href="../architecture/backend-03-nel-progetto.html">../architecture/backend-03-nel-progetto.md</a>, sezione sui DI lifetimes). Tecnicamente un repository così semplice potrebbe anche vivere come singleton (incapsula solo <code>IMongoCollection&lt;T&gt;</code>, che è thread-safe), ma seguire il lifetime degli altri repository conta più della micro-ottimizzazione: un lifetime "speciale" sarebbe un'eccezione da ricordare, e diventerebbe una captive dependency il giorno in cui il repository ricevesse una dipendenza scoped.</li>
+<li><strong>Indici</strong>: per una collection così piccola non serve alcun indice per le prestazioni. Se però si volesse impedire due extra con la stessa descrizione, il punto giusto è un indice <strong>unique</strong> su <code>description</code> aggiunto in <code>EnsureIndexesAsync</code> (dove il progetto crea tutti gli indici all'avvio) — con l'avvertenza già documentata in <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>: un indice unique su una collection che contiene già duplicati fa <strong>fallire l'avvio dell'applicazione</strong>. Il tentativo di inserire un duplicato a runtime diventerebbe automaticamente un <strong>409 Conflict</strong>, grazie al case <code>MongoWriteException</code>/<code>DuplicateKey</code> già presente in <code>ExceptionHandlingMiddleware</code> — nessun codice da scrivere negli Handler per gestirlo.</li>
+</ul>
+<h2>Passaggio 3 — Query (lettura)</h2>
+<p><strong>Files nuovi</strong>: <code>Features/Extras/GetExtras/</code> e <code>Features/Extras/GetExtraById/</code></p>
+<pre><code class="language-csharp">// 📄 Features/Extras/GetExtras/GetExtrasQuery.cs
+public record GetExtrasQuery : IRequest&lt;List&lt;ExtraResponse&gt;&gt;;
+
+// 📄 Features/Extras/ExtraResponse.cs (nella radice della feature: condiviso da tutte le operazioni)
+public record ExtraResponse(string Id, string Description, decimal Cost);
+
+// 📄 Features/Extras/GetExtras/GetExtrasHandler.cs
+public class GetExtrasHandler(IExtraRepository repo) : IRequestHandler&lt;GetExtrasQuery, List&lt;ExtraResponse&gt;&gt;
+{
+    public async Task&lt;List&lt;ExtraResponse&gt;&gt; Handle(GetExtrasQuery request, CancellationToken ct)
+    {
+        var docs = await repo.GetAllAsync(ct);
+        return docs.Select(d =&gt; new ExtraResponse(d.Id.ToString(), d.Description, d.Cost)).ToList();
+    }
+}
+
+// 📄 Features/Extras/GetExtraById/GetExtraByIdQuery.cs
+public record GetExtraByIdQuery(string Id) : IRequest&lt;ExtraResponse&gt;;
+
+// 📄 Features/Extras/GetExtraById/GetExtraByIdHandler.cs
+public class GetExtraByIdHandler(IExtraRepository repo) : IRequestHandler&lt;GetExtraByIdQuery, ExtraResponse&gt;
+{
+    public async Task&lt;ExtraResponse&gt; Handle(GetExtraByIdQuery request, CancellationToken ct)
+    {
+        if (!ObjectId.TryParse(request.Id, out var id))
+            throw new NotFoundException($"Extra {request.Id} non trovato");
+
+        var doc = await repo.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException($"Extra {request.Id} non trovato");
+
+        return new ExtraResponse(doc.Id.ToString(), doc.Description, doc.Cost);
+    }
+}
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>ExtraResponse</code> è un <code>record</code> unico condiviso da tutte le operazioni (lo restituiscono anche <code>CreateExtra</code> e <code>UpdateExtra</code> nei passaggi successivi): la convenzione stretta del progetto prevederebbe un <code>Response</code> per sottocartella-operazione, ma qui i quattro Response sarebbero <strong>identici carattere per carattere</strong> — Extra ha solo 2 campi visibili, non c'è nulla in più da mostrare in una vista "dettaglio" che già non sia nella lista. La duplicazione non comprerebbe niente; il file vive nella <strong>radice</strong> di <code>Features/Extras/</code> (non dentro una sottocartella operazione) proprio per non suggerire un'appartenenza che non ha. Se in futuro un'operazione avesse bisogno di campi propri, si creerebbe il suo Response dedicato allora.</li>
+<li><code>GetExtrasQuery</code> non ha parametri (né filtri, né paginazione): coerente con la scelta del Passaggio 2 di non paginare — è un <code>record</code> "vuoto" solo per rispettare l'interfaccia <code>IRequest&lt;T&gt;</code> di MediatR, che richiede comunque un oggetto messaggio anche quando non porta dati.</li>
+<li><code>ObjectId.TryParse</code> + <code>NotFoundException</code> in <code>GetExtraByIdHandler</code>: un id malformato (es. un id di un'altra entità copiato per errore nell'URL) deve dare <strong>404</strong>, non <strong>500</strong> — se si passasse la stringa non valida direttamente a un filtro Mongo si otterrebbe un'eccezione di parsing non gestita, che <code>ExceptionHandlingMiddleware</code> mapperebbe a 500 generico. Il controllo esplicito qui è ciò che rende l'errore corretto e comprensibile lato frontend.</li>
+</ul>
+<h2>Passaggio 4 — Command Create</h2>
+<p><strong>Files nuovi</strong>: <code>Features/Extras/CreateExtra/</code></p>
+<pre><code class="language-csharp">// 📄 CreateExtraCommand.cs
+public record CreateExtraCommand(string Description, decimal Cost) : IRequest&lt;ExtraResponse&gt;;
+
+// 📄 CreateExtraValidator.cs
+public class CreateExtraValidator : AbstractValidator&lt;CreateExtraCommand&gt;
+{
+    public CreateExtraValidator()
+    {
+        RuleFor(x =&gt; x.Description).NotEmpty().MaximumLength(200);
+        RuleFor(x =&gt; x.Cost).GreaterThanOrEqualTo(0);
+    }
+}
+
+// 📄 CreateExtraHandler.cs
+public class CreateExtraHandler(IExtraRepository repo) : IRequestHandler&lt;CreateExtraCommand, ExtraResponse&gt;
+{
+    public async Task&lt;ExtraResponse&gt; Handle(CreateExtraCommand request, CancellationToken ct)
+    {
+        var now = DateTime.UtcNow;
+        var doc = new ExtraDocument
+        {
+            Id = ObjectId.GenerateNewId(),
+            Description = request.Description,
+            Cost = request.Cost,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await repo.InsertAsync(doc, ct);
+
+        return new ExtraResponse(doc.Id.ToString(), doc.Description, doc.Cost);
+    }
+}
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>RuleFor(x =&gt; x.Cost).GreaterThanOrEqualTo(0)</code>: <code>decimal</code> di per sé accetta valori negativi, ma un costo negativo non ha senso di dominio — la regola non è nel tipo (<code>decimal</code> resta generico), è nel Validator, dove appartengono le regole di business specifiche di questa Command (stesso principio spiegato per <code>ReservationValidator</code> nel documento generico di riferimento, <a href="../generic/features/reservations-implementation.html">../generic/features/reservations-implementation.md</a>).</li>
+<li>Nessuna scrittura di <code>AuditLogDocument</code> in questa versione base: a differenza di <code>CreateCustomerHandler</code>, che la scrive sempre, per un dominio "di configurazione" come Extra il tracciamento è opzionale — va aggiunto solo se il progetto decide che serve sapere chi ha cambiato un costo. Il livello 2 la segnala come possibile estensione, non come passaggio obbligatorio. Se si decide di tracciare, il blocco da aggiungere in coda all'Handler (prima del <code>return</code>) è lo stesso di <code>CreateCustomerHandler</code> in <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>: <code>IAuditLogRepository</code> e <code>IHttpContextAccessor</code> in più nel costruttore, e un <code>auditRepo.InsertAsync(new AuditLogDocument { EntityType = "Extra", Action = "Created", After = doc.ToBsonDocument(), ... })</code> con attore letto dai claim del JWT.</li>
+<li>Il Validator <strong>non</strong> viene richiamato esplicitamente da nessuna parte nell'Handler: viene eseguito automaticamente da <code>ValidationBehavior</code> (pipeline MediatR) prima che <code>Handle()</code> sia mai chiamato — se la validazione fallisce, questo codice non viene proprio eseguito. Approfondito in <a href="../architecture/backend-03-nel-progetto.html">../architecture/backend-03-nel-progetto.md</a>, sezione "Pipeline behavior".</li>
+</ul>
+<h2>Passaggio 5 — Command Update e Delete</h2>
+<p><strong>Files nuovi</strong>: <code>Features/Extras/UpdateExtra/</code> e <code>Features/Extras/DeleteExtra/</code></p>
+<pre><code class="language-csharp">// 📄 UpdateExtra/UpdateExtraCommand.cs
+public record UpdateExtraCommand(string Id, string Description, decimal Cost) : IRequest&lt;ExtraResponse&gt;;
+
+// 📄 UpdateExtra/UpdateExtraValidator.cs
+public class UpdateExtraValidator : AbstractValidator&lt;UpdateExtraCommand&gt;
+{
+    public UpdateExtraValidator()
+    {
+        RuleFor(x =&gt; x.Id).NotEmpty();
+        RuleFor(x =&gt; x.Description).NotEmpty().MaximumLength(200);
+        RuleFor(x =&gt; x.Cost).GreaterThanOrEqualTo(0);
+    }
+}
+
+// 📄 UpdateExtra/UpdateExtraHandler.cs
+public class UpdateExtraHandler(IExtraRepository repo) : IRequestHandler&lt;UpdateExtraCommand, ExtraResponse&gt;
+{
+    public async Task&lt;ExtraResponse&gt; Handle(UpdateExtraCommand request, CancellationToken ct)
+    {
+        if (!ObjectId.TryParse(request.Id, out var id))
+            throw new NotFoundException($"Extra {request.Id} non trovato");
+
+        var existing = await repo.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException($"Extra {request.Id} non trovato");
+
+        existing.Description = request.Description;
+        existing.Cost = request.Cost;
+        existing.UpdatedAt = DateTime.UtcNow;
+
+        await repo.UpdateAsync(existing, ct);
+
+        return new ExtraResponse(existing.Id.ToString(), existing.Description, existing.Cost);
+    }
+}
+
+// 📄 DeleteExtra/DeleteExtraCommand.cs
+public record DeleteExtraCommand(string Id) : IRequest;
+
+// 📄 DeleteExtra/DeleteExtraHandler.cs
+public class DeleteExtraHandler(IExtraRepository repo) : IRequestHandler&lt;DeleteExtraCommand&gt;
+{
+    public async Task Handle(DeleteExtraCommand request, CancellationToken ct)
+    {
+        if (!ObjectId.TryParse(request.Id, out var id))
+            throw new NotFoundException($"Extra {request.Id} non trovato");
+
+        var existing = await repo.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException($"Extra {request.Id} non trovato");
+
+        await repo.DeleteAsync(existing.Id, ct);
+    }
+}
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>UpdateExtraHandler</code> modifica <code>existing</code> (il documento appena letto) invece di costruire un <code>ExtraDocument</code> nuovo da zero: a differenza dell'esempio generico con record immutabili C#, qui <code>ExtraDocument</code> è una <code>class</code> mutabile (coerente con l'uso di MongoDB.Driver visto in <code>CustomerDocument</code>), quindi si può aggiornare in place — più corto, stesso risultato, e <code>ReplaceOneAsync</code> sovrascrive comunque l'intero documento lato database.</li>
+<li><code>DeleteExtraHandler</code> <strong>legge prima di eliminare</strong> anche se non userebbe il valore di <code>existing</code> per altro: è così che si ottiene un <strong>404</strong> pulito se l'id non esiste, invece di una <code>DeleteOneAsync</code> "silenziosa" che non solleva errore se non trova nulla da cancellare (comportamento di default dei driver Mongo) — senza questo controllo, cancellare due volte lo stesso id restituirebbe sempre "200 OK" anche la seconda volta, quando in realtà non è stato cancellato nulla.</li>
+<li>Nessuna verifica di "referenze in uso" prima di eliminare (es. "questo extra è usato in un preventivo, impedisci la cancellazione"): dato che nell'esempio didattico "PLUS"/"EXTRA" non è ancora collegato a nessun'altra entità (vedi Passaggio 1), non c'è nulla da controllare. Se in futuro un preventivo referenziasse gli extra, andrebbe applicato lo stesso trade-off già documentato per <code>DeleteCustomerHandler</code> in <a href="../architecture/backend-03-nel-progetto.html">../architecture/backend-03-nel-progetto.md</a>: Mongo non ha integrità referenziale automatica, la decisione (bloccare, o permettere e lasciare un riferimento "orfano") è responsabilità del codice applicativo.</li>
+</ul>
+<h2>Passaggio 6 — Endpoints</h2>
+<p><strong>File nuovo</strong>: <code>Features/Extras/ExtraEndpoints.cs</code></p>
+<pre><code class="language-csharp">public static class ExtraEndpoints
+{
+    public static IEndpointRouteBuilder MapExtraEndpoints(this IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/extras").WithTags("Extras").RequireAuthorization();
+
+        group.MapGet("/", async (IMediator mediator, CancellationToken ct) =&gt;
+            Results.Ok(await mediator.Send(new GetExtrasQuery(), ct)))
+            .RequireAuthorization(p =&gt; p.RequireClaim("permissions", "extras.read"))
+            .WithName("GetExtras");
+
+        group.MapGet("/{id}", async (string id, IMediator mediator, CancellationToken ct) =&gt;
+            Results.Ok(await mediator.Send(new GetExtraByIdQuery(id), ct)))
+            .RequireAuthorization(p =&gt; p.RequireClaim("permissions", "extras.read"))
+            .WithName("GetExtraById");
+
+        group.MapPost("/", async (CreateExtraCommand cmd, IMediator mediator, CancellationToken ct) =&gt;
+        {
+            var result = await mediator.Send(cmd, ct);
+            return Results.Created($"/api/extras/{result.Id}", result);
+        })
+            .RequireAuthorization(p =&gt; p.RequireClaim("permissions", "extras.write"))
+            .WithName("CreateExtra")
+            .WithSummary("Crea un nuovo extra")
+            .Produces&lt;ExtraResponse&gt;(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapPut("/{id}", async (string id, UpdateExtraCommand cmd, IMediator mediator, CancellationToken ct) =&gt;
+        {
+            if (cmd.Id != id) return Results.BadRequest("L'id nel body non corrisponde all'id nella URL");
+            return Results.Ok(await mediator.Send(cmd, ct));
+        })
+            .RequireAuthorization(p =&gt; p.RequireClaim("permissions", "extras.write"))
+            .WithName("UpdateExtra");
+
+        group.MapDelete("/{id}", async (string id, IMediator mediator, CancellationToken ct) =&gt;
+        {
+            await mediator.Send(new DeleteExtraCommand(id), ct);
+            return Results.NoContent();
+        })
+            .RequireAuthorization(p =&gt; p.RequireClaim("permissions", "extras.delete"))
+            .WithName("DeleteExtra");
+
+        return app;
+    }
+}
+</code></pre>
+<p><strong>Registrazione — MODIFICA obbligatoria</strong>, <code>Features/_Shared/Extensions/EndpointExtensions.cs::MapAllEndpoints()</code>:</p>
+<pre><code class="language-csharp">app.MapExtraEndpoints();
+</code></pre>
+<blockquote>
+<p>⚠️ Senza questa riga, tutto il codice dei passaggi 1-6 compila ma <strong>l'endpoint non esiste a runtime</strong> — nessun errore visibile finché non si prova a chiamarlo (404 generico di ASP.NET, non un errore che indichi la causa reale). È l'errore più facile da fare in tutta questa guida, segnalato esplicitamente anche in <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>.</p>
+</blockquote>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>RequireAuthorization()</code> sul gruppo (senza argomenti) più <code>RequireAuthorization(p =&gt; ...)</code> per singolo endpoint: il primo garantisce "serve un JWT valido qualunque esso sia", il secondo aggiunge "e deve avere questo specifico permesso" — sono due controlli distinti, il secondo non sostituisce il primo.</li>
+<li><code>GET</code> usa <code>extras.read</code> per <strong>entrambi</strong> gli endpoint di lettura (lista e dettaglio): un solo permesso per entrambe le query, coerente con la scelta fatta anche per <code>write</code> (create+update). Il progetto non separa i permessi più finemente di <code>read</code>/<code>write</code>/<code>delete</code> per nessuna entità esistente.</li>
+<li>Il backend <strong>è la vera barriera di sicurezza</strong>: anche se il frontend nasconde bottoni con <code>v-if="can(...)"</code>, un client HTTP diverso dal frontend ufficiale (Postman, uno script) che avesse un JWT valido ma senza il claim giusto riceverebbe comunque <strong>403 Forbidden</strong> da questo controllo lato server — la UI che nasconde è solo comodità, non sicurezza (difesa in profondità, già discussa in <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a>).</li>
+<li><code>.WithSummary</code>/<code>.Produces</code>/<code>.ProducesProblem</code> (mostrati sul POST, da replicare sugli altri endpoint): non cambiano il comportamento a runtime — alimentano lo schema OpenAPI da cui Scalar e Swagger generano la documentazione interattiva, cioè esattamente lo strumento usato per la verifica intermedia descritta più sotto. Ometterli funziona, ma la documentazione API risulterebbe muta su cosa risponde l'endpoint.</li>
+</ul>
+<h2>Seed dei dati di esempio (opzionale, solo per sviluppo/demo)</h2>
+<p>Se si vuole popolare il database con le 5 righe di esempio di questa guida al primo avvio (stesso meccanismo con cui vengono seminati i template <code>.docx</code>, vedi <a href="../technical/backend-03-dettaglio.html">../technical/backend-03-dettaglio.md</a>), si aggiunge un blocco nel <code>DataSeeder</code> esistente:</p>
+<pre><code class="language-csharp">var existing = await extraRepo.GetAllAsync(ct);
+if (existing.Count == 0)
+{
+    var now = DateTime.UtcNow;
+    var seedExtras = new[]
+    {
+        ("Sopralluogo aggiuntivo", 50.00m),
+        ("Rilievo misure fuori zona", 80.00m),
+        ("Trasporto entro 30 km", 40.00m),
+        ("Pratica detrazione fiscale", 120.00m),
+        ("Certificazione posa", 80.00m),
+    };
+    foreach (var (description, cost) in seedExtras)
+    {
+        await extraRepo.InsertAsync(new ExtraDocument
+        {
+            Id = ObjectId.GenerateNewId(), Description = description, Cost = cost,
+            CreatedAt = now, UpdatedAt = now
+        }, ct);
+    }
+}
+</code></pre>
+<p>Il controllo "collection vuota" prima di seminare è lo stesso pattern usato per i template: il seed <strong>non deve mai duplicare</strong> dati a ogni riavvio dell'applicazione.</p>
+<h2>Verifica intermedia: testare il backend da solo</h2>
+<p>Prima di scrivere una riga di frontend, conviene verificare i passaggi 1-6 da Scalar (<code>/scalar</code>) o Swagger UI (<code>/swagger</code>) con l'app avviata in locale:</p>
+<ol>
+<li><strong>Seminare e assegnare i permessi</strong> <code>extras.read</code>/<code>extras.write</code>/<code>extras.delete</code> (vedi <a href="02-nel-progetto.html">02-nel-progetto</a> per il come).</li>
+<li><strong>Fare login</strong> con un utente che ha quei permessi e usare il token come Bearer in Scalar/Swagger (bottone "Authorize"). Attenzione al punto più disorientante di tutta la guida: i permessi vivono dentro il claim <code>permissions</code> del JWT, che viene costruito <strong>al momento del login</strong> — un token ottenuto <em>prima</em> dell'assegnazione dei permessi non li contiene, e ogni chiamata risponderà 403 anche se nel database è tutto corretto. Se "il codice è giusto e il permesso c'è" ma arriva 403, il token in tasca è vecchio: rifare il login.</li>
+<li><code>GET /api/extras</code> → <strong>200</strong> con <code>[]</code> (o con le 5 righe di esempio, se si è aggiunto il seed).</li>
+<li><code>POST /api/extras</code> con <code>{ "description": "Sopralluogo aggiuntivo", "cost": 50.00 }</code> → <strong>201</strong>; ripetere il GET per rivedere la riga in lista.</li>
+<li><code>POST /api/extras</code> con <code>{ "description": "", "cost": -5 }</code> → <strong>400</strong> con l'oggetto <code>errors</code> che elenca entrambe le violazioni: è la conferma che <code>ValidationBehavior</code> + <code>CreateExtraValidator</code> sono agganciati.</li>
+<li><code>DELETE /api/extras/{id}</code> con un id ben formato ma inesistente → <strong>404</strong>: è la conferma del controllo esplicito nel <code>DeleteExtraHandler</code>.</li>
+</ol>
+<p>Se questi punti passano, il backend è finito: ogni problema che emergerà dopo è, per esclusione, nel frontend.</p>
+<h2>FRONTEND</h2>
+<h2>Passaggio 7 — Tipi TypeScript</h2>
+<p><strong>File esistente — MODIFICA</strong>: <code>apps/frontend/src/types/api.types.ts</code> (aggiungi in fondo)</p>
+<pre><code class="language-typescript">export interface Extra {
+  id: string
+  description: string
+  cost: number
+}
+
+export interface CreateExtraRequest {
+  description: string
+  cost: number
+}
+
+export interface UpdateExtraRequest {
+  description: string
+  cost: number
+}
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>cost: number</code> in TypeScript, non un tipo "decimale" separato: JSON non ha un tipo decimale nativo, il <code>decimal</code> C# viene serializzato come numero e ricevuto come <code>number</code> — la precisione che <code>decimal</code> garantisce lato server (niente errori di arrotondamento nel calcolo/salvataggio) non ha un vero equivalente lato client, dove il valore viaggia com'è già "risolto" dal backend. Non c'è nulla da fare qui, è solo da sapere per non cercare un tipo che non esiste.</li>
+<li><code>CreateExtraRequest</code> e <code>UpdateExtraRequest</code> sono identici in questo caso (entrambi solo <code>description</code>+<code>cost</code>): restano comunque due interfacce separate, non un alias, perché è la convenzione osservata per ogni altra entità (<code>CreateCustomerRequest</code>/<code>UpdateCustomerRequest</code> sono anch'essi tenuti distinti anche quando si sovrappongono) — se in futuro Update acquisisse un campo in più che Create non ha (successo già visto con <code>isActive</code> per gli utenti), la separazione è già pronta.</li>
+</ul>
+<h2>Passaggio 8 — Service</h2>
+<p><strong>File nuovo</strong>: <code>apps/frontend/src/services/extras.service.ts</code></p>
+<pre><code class="language-typescript">import { api } from '@/plugins/axios'
+import type { Extra, CreateExtraRequest, UpdateExtraRequest } from '@/types/api.types'
+
+export const extrasService = {
+  getAll: () =&gt;
+    api.get&lt;Extra[]&gt;('/api/extras').then(r =&gt; r.data),
+
+  getById: (id: string) =&gt;
+    api.get&lt;Extra&gt;(`/api/extras/${id}`).then(r =&gt; r.data),
+
+  create: (data: CreateExtraRequest) =&gt;
+    api.post&lt;Extra&gt;('/api/extras', data).then(r =&gt; r.data),
+
+  update: (id: string, data: UpdateExtraRequest) =&gt;
+    api.put&lt;Extra&gt;(`/api/extras/${id}`, data).then(r =&gt; r.data),
+
+  delete: (id: string) =&gt;
+    api.delete(`/api/extras/${id}`),
+}
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>getAll()</code> ritorna direttamente <code>Extra[]</code>, non un oggetto paginato (<code>{ items, totalCount }</code>) come <code>customersService.getAll()</code>: coerente con la scelta di non paginare fatta a livello di backend (Passaggio 2/3) — il service rispecchia esattamente la forma della risposta reale dell'endpoint, non ne inventa una diversa.</li>
+<li>Nessuna chiamata <code>axios</code> diretta: importa sempre <code>api</code> da <code>plugins/axios.ts</code>, mai <code>import axios from 'axios'</code> — è la regola non negoziabile del <code>CLAUDE.md</code> frontend citata in <a href="../architecture/frontend-03-nel-progetto.html">../architecture/frontend-03-nel-progetto.md</a>, che garantisce che ogni chiamata porti automaticamente il Bearer token.</li>
+</ul>
+<h2>Passaggio 9 — Store Pinia</h2>
+<p><strong>File nuovo</strong>: <code>apps/frontend/src/stores/extras.store.ts</code></p>
+<pre><code class="language-typescript">import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { extrasService } from '@/services/extras.service'
+import type { Extra, CreateExtraRequest, UpdateExtraRequest } from '@/types/api.types'
+import i18n from '@/plugins/i18n'
+
+export const useExtrasStore = defineStore('extras', () =&gt; {
+  const items = ref&lt;Extra[]&gt;([])
+  const selectedItem = ref&lt;Extra | null&gt;(null)
+  const loading = ref(false)
+  const error = ref&lt;string | null&gt;(null)
+
+  async function fetchAll() {
+    loading.value = true
+    error.value = null
+    try {
+      items.value = await extrasService.getAll()
+    } catch {
+      error.value = i18n.global.t('errors.loadExtras')
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function create(data: CreateExtraRequest) {
+    await extrasService.create(data)
+    await fetchAll()
+  }
+
+  async function update(id: string, data: UpdateExtraRequest) {
+    await extrasService.update(id, data)
+    await fetchAll()
+  }
+
+  async function remove(id: string) {
+    await extrasService.delete(id)
+    items.value = items.value.filter(x =&gt; x.id !== id)
+  }
+
+  return { items, selectedItem, loading, error, fetchAll, create, update, remove }
+})
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li>Niente <code>page</code>/<code>pageSize</code>/<code>search</code>/<code>totalCount</code> nello state, a differenza dello scheletro standard descritto in <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a> punto 2: quei campi esistono nel pattern generico perché quasi tutte le entità di Tama sono paginate lato server, ma Extra non lo è (Passaggio 2). Copiare comunque quei campi "per abitudine" da <code>customers.store.ts</code> sarebbe un errore: introdurrebbero stato morto, mai letto da nessun componente.</li>
+<li><code>create</code>/<code>update</code> rifanno <code>fetchAll()</code> (round-trip in più ma stato sempre coerente col server), <code>remove</code> aggiorna <code>items</code> localmente senza rifetch: stessa doppia strategia già documentata per <code>customers.store.ts</code> in <a href="../architecture/frontend-03-nel-progetto.html">../architecture/frontend-03-nel-progetto.md</a> — per una lista corta come Extra, il costo del round-trip extra su create/update è trascurabile, quindi non vale la pena dell'update ottimistico più complesso lì dove basta rileggere tutto.</li>
+<li><code>selectedItem</code> è presente anche se, con la pagina lista + dialog descritta al Passaggio 11 (non una pagina di dettaglio separata come <code>UserDetailPage.vue</code>), il suo uso è minimo: serve solo a passare l'item corrente al dialog di modifica. Resta comunque nello store (non uno stato locale del componente) per coerenza con lo schema standard e perché è comunque dato "di dominio", non UI-only.</li>
+</ul>
+<h2>Passaggio 10 — Pagina lista</h2>
+<p><strong>File nuovo</strong>: <code>apps/frontend/src/pages/plus/ExtrasPage.vue</code></p>
+<pre><code class="language-vue">&lt;script setup lang="ts"&gt;
+import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+import { useExtrasStore } from '@/stores/extras.store'
+import { usePermission } from '@/composables/usePermission'
+import { useToastStore } from '@/stores/toast.store'
+import ExtraFormDialog from '@/components/plus/ExtraFormDialog.vue'
+import type { Extra } from '@/types/api.types'
+
+const { t, locale } = useI18n()
+const { mobile } = useDisplay()
+const store = useExtrasStore()
+const { can } = usePermission()
+const toast = useToastStore()
+
+const search = ref('')
+const formDialog = ref(false)
+const editingExtra = ref&lt;Extra | null&gt;(null)
+const deleteDialog = ref(false)
+const deleteTarget = ref&lt;string | null&gt;(null)
+const deleteLoading = ref(false)
+
+const filtered = computed(() =&gt; {
+  if (!search.value) return store.items
+  const s = search.value.toLowerCase()
+  return store.items.filter(x =&gt; x.description.toLowerCase().includes(s))
+})
+
+const headers = computed(() =&gt; [
+  { title: t('extras.columnDescription'), key: 'description' },
+  { title: t('extras.columnCost'), key: 'cost' },
+  { title: t('common.actions'), key: 'actions', sortable: false },
+])
+
+function formatCost(value: number) {
+  return new Intl.NumberFormat(locale.value, { style: 'currency', currency: 'EUR' }).format(value)
+}
+
+function openCreateDialog() {
+  editingExtra.value = null
+  formDialog.value = true
+}
+
+function openEditDialog(extra: Extra) {
+  editingExtra.value = extra
+  formDialog.value = true
+}
+
+function openDeleteDialog(id: string) {
+  deleteTarget.value = id
+  deleteDialog.value = true
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
+  try {
+    await store.remove(deleteTarget.value)
+    toast.success(t('extras.deleted'))
+    deleteDialog.value = false
+  } catch {
+    toast.error(t('common.error'))
+  } finally {
+    deleteLoading.value = false
+  }
+}
+
+onMounted(() =&gt; store.fetchAll())
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-container&gt;
+    &lt;div class="d-flex justify-space-between align-center mb-4"&gt;
+      &lt;h1&gt;{{ t('extras.title') }}&lt;/h1&gt;
+      &lt;v-btn v-if="can('extras.write')" color="primary" @click="openCreateDialog"&gt;
+        {{ t('common.new') }}
+      &lt;/v-btn&gt;
+    &lt;/div&gt;
+
+    &lt;v-text-field v-model="search" :label="t('common.search')" prepend-inner-icon="mdi-magnify" class="mb-4" /&gt;
+
+    &lt;v-data-table v-if="!mobile" :headers="headers" :items="filtered" :loading="store.loading" item-value="id"&gt;
+      &lt;template #item.cost="{ item }"&gt;{{ formatCost(item.cost) }}&lt;/template&gt;
+      &lt;template #item.actions="{ item }"&gt;
+        &lt;v-btn v-if="can('extras.write')" icon="mdi-pencil" variant="text" @click="openEditDialog(item)" /&gt;
+        &lt;v-btn v-if="can('extras.delete')" icon="mdi-delete" variant="text" @click="openDeleteDialog(item.id)" /&gt;
+      &lt;/template&gt;
+    &lt;/v-data-table&gt;
+
+    &lt;v-list v-else&gt;
+      &lt;v-list-item v-for="item in filtered" :key="item.id" :title="item.description" :subtitle="formatCost(item.cost)"&gt;
+        &lt;template #append&gt;
+          &lt;v-btn v-if="can('extras.write')" icon="mdi-pencil" variant="text" @click="openEditDialog(item)" /&gt;
+          &lt;v-btn v-if="can('extras.delete')" icon="mdi-delete" variant="text" @click="openDeleteDialog(item.id)" /&gt;
+        &lt;/template&gt;
+      &lt;/v-list-item&gt;
+    &lt;/v-list&gt;
+
+    &lt;ExtraFormDialog v-model="formDialog" :extra="editingExtra" /&gt;
+
+    &lt;v-dialog v-model="deleteDialog" max-width="420"&gt;
+      &lt;v-card&gt;
+        &lt;v-card-title&gt;{{ t('extras.confirmDeleteTitle') }}&lt;/v-card-title&gt;
+        &lt;v-card-actions&gt;
+          &lt;v-spacer /&gt;
+          &lt;v-btn @click="deleteDialog = false"&gt;{{ t('common.cancel') }}&lt;/v-btn&gt;
+          &lt;v-btn color="error" :loading="deleteLoading" @click="confirmDelete"&gt;{{ t('common.delete') }}&lt;/v-btn&gt;
+        &lt;/v-card-actions&gt;
+      &lt;/v-card&gt;
+    &lt;/v-dialog&gt;
+  &lt;/v-container&gt;
+&lt;/template&gt;
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>v-data-table</code> semplice, non <code>v-data-table-server</code>: quest'ultimo esiste in <code>CustomersPage.vue</code> perché la paginazione/ricerca/ordinamento avvengono <strong>lato server</strong> (parametri <code>page</code>/<code>search</code> inviati nella richiesta). Qui la lista intera è già in memoria nello store (Passaggio 9 non pagina), quindi filtro e tabella lavorano <strong>lato client</strong> su <code>filtered</code> — usare <code>v-data-table-server</code> qui sarebbe sbagliato: non ci sono parametri server da passargli.</li>
+<li><code>filtered</code> come <code>computed</code> che legge <code>store.items</code> e <code>search.value</code>, non una copia locale filtrata "a mano" con un watcher: si ricalcola automaticamente ogni volta che uno dei due cambia, senza codice esplicito di sincronizzazione — stesso principio di reattività "single source of truth" descritto in <a href="../architecture/frontend-03-nel-progetto.html">../architecture/frontend-03-nel-progetto.md</a>.</li>
+<li>Pattern responsive duplicato (<code>v-data-table</code> desktop + <code>v-list</code> mobile, scelto in base a <code>mobile</code> da <code>useDisplay()</code>): non è una scelta di questo documento, è la convenzione osservata in ogni pagina lista del progetto — vedi la stessa nota in <a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a>.</li>
+<li><code>formatCost</code> con <code>Intl.NumberFormat</code> legato a <code>locale</code> di vue-i18n, non <code>item.cost.toFixed(2)</code>: <code>toFixed</code> produce sempre il punto decimale (<code>50.00</code>) qualunque sia la lingua, mentre in italiano il costo va mostrato come <code>50,00 €</code> — <code>Intl.NumberFormat</code> (API standard del browser, nessuna libreria da aggiungere) applica separatori e simbolo di valuta corretti per la lingua attiva. E siccome <code>locale</code> è un ref reattivo, cambiando lingua dall'app la colonna si riformatta da sola.</li>
+<li><strong>Nessun testo hardcoded</strong>: ogni etichetta passa da <code>t('...')</code>. Le chiavi usate qui (<code>extras.title</code>, <code>extras.columnDescription</code>, ecc.) sono definite al Passaggio 12.</li>
+</ul>
+<h2>Passaggio 11 — Dialog di creazione/modifica</h2>
+<p><strong>File nuovo</strong>: <code>apps/frontend/src/components/plus/ExtraFormDialog.vue</code></p>
+<pre><code class="language-vue">&lt;script setup lang="ts"&gt;
+import { ref, reactive, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useExtrasStore } from '@/stores/extras.store'
+import { useToastStore } from '@/stores/toast.store'
+import type { Extra } from '@/types/api.types'
+
+const props = defineProps&lt;{ modelValue: boolean; extra: Extra | null }&gt;()
+const emit = defineEmits&lt;{ 'update:modelValue': [boolean] }&gt;()
+
+const { t } = useI18n()
+const store = useExtrasStore()
+const toast = useToastStore()
+
+const formRef = ref()
+const form = reactive({ description: '', cost: 0 })
+const saving = ref(false)
+
+const rules = {
+  required: (v: string) =&gt; !!v?.trim() || t('validation.required'),
+  requiredNumber: (v: number | string) =&gt; (v !== '' &amp;&amp; v !== null) || t('validation.required'),
+  positive: (v: number) =&gt; v &gt;= 0 || t('validation.positive'),
+}
+
+watch(() =&gt; props.modelValue, (open) =&gt; {
+  if (open) {
+    form.description = props.extra?.description ?? ''
+    form.cost = props.extra?.cost ?? 0
+  }
+})
+
+async function save() {
+  const { valid } = await formRef.value.validate()
+  if (!valid) return
+
+  saving.value = true
+  try {
+    if (props.extra) await store.update(props.extra.id, { ...form })
+    else await store.create({ ...form })
+    toast.success(t('common.saved'))
+    emit('update:modelValue', false)
+  } catch {
+    toast.error(t('common.error'))
+  } finally {
+    saving.value = false
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;v-dialog :model-value="modelValue" max-width="480" @update:model-value="emit('update:modelValue', $event)"&gt;
+    &lt;v-card&gt;
+      &lt;v-card-title&gt;{{ extra ? t('extras.editTitle') : t('extras.createTitle') }}&lt;/v-card-title&gt;
+      &lt;v-card-text&gt;
+        &lt;v-form ref="formRef"&gt;
+          &lt;v-text-field v-model="form.description" :label="t('extras.columnDescription')" :rules="[rules.required]" /&gt;
+          &lt;v-text-field v-model.number="form.cost" type="number" step="0.01" :label="t('extras.columnCost')" :rules="[rules.requiredNumber, rules.positive]" /&gt;
+        &lt;/v-form&gt;
+      &lt;/v-card-text&gt;
+      &lt;v-card-actions&gt;
+        &lt;v-spacer /&gt;
+        &lt;v-btn @click="emit('update:modelValue', false)"&gt;{{ t('common.cancel') }}&lt;/v-btn&gt;
+        &lt;v-btn color="primary" :loading="saving" @click="save"&gt;{{ t('common.save') }}&lt;/v-btn&gt;
+      &lt;/v-card-actions&gt;
+    &lt;/v-card&gt;
+  &lt;/v-dialog&gt;
+&lt;/template&gt;
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li>Un solo dialog per create <strong>e</strong> edit, distinto dalla prop <code>extra</code> (<code>null</code> = creazione, oggetto = modifica): stesso principio del pattern "stesso componente per create/edit" già visto in <code>UserDetailPage.vue</code> (<a href="../technical/frontend-03-dettaglio.html">../technical/frontend-03-dettaglio.md</a>), applicato qui a un <strong>dialog</strong> invece che a una pagina intera — scelta corretta per un'entità con soli due campi, dove aprire una pagina dedicata sarebbe sproporzionato (è la stessa distinzione fatta nella skill di progetto <code>vuetify-dialog-form</code> citata in quel documento).</li>
+<li><code>watch(() =&gt; props.modelValue, ...)</code> ripopola il form <strong>ogni volta che il dialog si apre</strong>, non una volta sola al mount: il componente dialog resta montato tra un'apertura e l'altra (è dentro <code>ExtrasPage.vue</code>, non instanziato/distrutto ogni volta), quindi senza questo watcher aprire "Modifica" su un secondo extra dopo aver già modificato il primo mostrerebbe ancora i valori vecchi.</li>
+<li><code>v-model.number</code> su <code>form.cost</code>: senza <code>.number</code>, <code>v-model</code> su un <code>&lt;input type="number"&gt;</code> restituirebbe comunque una stringa (<code>"50.00"</code> invece di <code>50.00</code>), che poi verrebbe inviata così al backend — .NET la deserializzerebbe comunque in <code>decimal</code> (conversione implicita nel binding JSON), ma è più corretto e prevedibile avere già un <code>number</code> lato TypeScript prima di spedirlo.</li>
+<li><code>formRef.value.validate()</code> <strong>prima</strong> di procedere, esattamente come in <code>UserDetailPage.vue</code>: non ci si affida alle sole regole inline <code>:rules</code>, che vengono valutate solo alla perdita di focus di un campo — un utente che compila il form e preme subito "Salva" senza mai uscire dall'ultimo campo bypasserebbe la validazione visiva se non ci fosse questa chiamata esplicita.</li>
+<li><code>requiredNumber</code> separata da <code>required</code>, per il campo costo: con <code>v-model.number</code>, un campo numerico <strong>svuotato</strong> dall'utente non vale <code>0</code> ma <strong>stringa vuota</strong> (è ciò che il modificatore <code>.number</code> restituisce quando l'input non è interpretabile come numero). E poiché in JavaScript <code>'' &gt;= 0</code> è <code>true</code> (coercizione implicita), la sola regola <code>positive</code> lascerebbe passare il campo vuoto — che arriverebbe al backend come <code>""</code> facendo fallire la deserializzazione JSON a <code>decimal</code>, con un 400 generico poco leggibile per l'utente. Il controllo esplicito <code>v !== ''</code> intercetta il caso a monte, con il messaggio di validazione giusto sul campo giusto.</li>
+</ul>
+<h2>Passaggio 12 — Route, sezione di menu, traduzioni</h2>
+<p><strong>MODIFICA — <code>apps/frontend/src/router/index.ts</code></strong> (aggiungi tra le altre route):</p>
+<pre><code class="language-typescript">{
+  path: '/plus/extras',
+  name: 'extras',
+  component: () =&gt; import('@/pages/plus/ExtrasPage.vue'),
+  meta: { requiresAuth: true, permission: 'extras.read', title: 'extras.title', section: 'plus' },
+},
+</code></pre>
+<p><strong>MODIFICA — <code>apps/frontend/src/config/sections.config.ts</code></strong> (nuova sezione, allo stesso livello di quella "DATI" esistente):</p>
+<pre><code class="language-typescript">{
+  key: 'plus',
+  labelKey: 'sections.plus',
+  icon: 'mdi-plus-box-outline',
+  items: [
+    { routeName: 'extras', labelKey: 'extras.title', permission: 'extras.read' },
+  ],
+},
+</code></pre>
+<p><strong>MODIFICA — <code>apps/frontend/src/locales/it.ts</code></strong>:</p>
+<pre><code class="language-typescript">sections: {
+  // ... voci esistenti
+  plus: 'Plus',
+},
+extras: {
+  title: 'Extra',
+  columnDescription: 'Descrizione extra',
+  columnCost: 'Costo',
+  createTitle: 'Nuovo extra',
+  editTitle: 'Modifica extra',
+  confirmDeleteTitle: 'Eliminare questo extra?',
+  deleted: 'Extra eliminato',
+},
+errors: {
+  // ... voci esistenti
+  loadExtras: 'Errore nel caricamento degli extra',
+},
+validation: {
+  // ... voci esistenti (required/positive probabilmente già presenti, altrimenti aggiungerle)
+  positive: 'Il valore deve essere maggiore o uguale a zero',
+},
+</code></pre>
+<p><strong>MODIFICA — <code>apps/frontend/src/locales/en.ts</code></strong> (stesse chiavi, valori inglesi):</p>
+<pre><code class="language-typescript">sections: {
+  plus: 'Plus',
+},
+extras: {
+  title: 'Extras',
+  columnDescription: 'Extra description',
+  columnCost: 'Cost',
+  createTitle: 'New extra',
+  editTitle: 'Edit extra',
+  confirmDeleteTitle: 'Delete this extra?',
+  deleted: 'Extra deleted',
+},
+errors: {
+  loadExtras: 'Error loading extras',
+},
+validation: {
+  positive: 'Value must be greater than or equal to zero',
+},
+</code></pre>
+<p><strong>Perché è fatto così</strong></p>
+<ul>
+<li><code>meta.title: 'extras.title'</code> è una <strong>chiave</strong> di traduzione, non il testo "Extra" scritto direttamente: il componente che mostra il titolo di pagina/breadcrumb la passa a <code>t(...)</code>, così il titolo cambia lingua insieme al resto dell'app senza codice aggiuntivo.</li>
+<li><code>meta.section: 'plus'</code> deve combaciare esattamente con <code>key: 'plus'</code> nella configurazione del menu: è così che il menu laterale sa quale sezione evidenziare come "attiva" quando l'utente si trova sulla pagina <code>extras</code> — un valore diverso (es. un refuso <code>'plu'</code>) non darebbe errori a compile time (sono entrambe stringhe libere) ma romperebbe silenziosamente l'evidenziazione, un bug tipicamente diagnosticato con <code>devtools-router.md</code>.</li>
+<li>Sia <code>router/index.ts</code> (<code>meta.permission</code>) sia <code>sections.config.ts</code> (<code>items[].permission</code>) portano <strong>lo stesso</strong> valore <code>'extras.read'</code>: sono due controlli con lo stesso permesso ma in due punti diversi (uno impedisce di navigare alla rotta se non autorizzati, l'altro nasconde la voce di menu) — servono entrambi, uno non sostituisce l'altro (un utente potrebbe digitare l'URL a mano bypassando il menu).</li>
+<li>Le chiavi <code>it.ts</code>/<code>en.ts</code> vanno aggiunte <strong>in coppia</strong>, nello stesso commit: il progetto non ha un fallback silenzioso pulito per chiavi mancanti in una sola lingua (tipicamente <code>vue-i18n</code> stampa la chiave grezza a schermo, es. <code>extras.title</code> letterale, se manca la traduzione per la lingua attiva) — è un bug visibile solo cambiando lingua, quindi facile da dimenticare se si testa sempre in italiano.</li>
+<li>Le chiavi <code>common.*</code> e <code>validation.required</code> usate nella pagina e nel dialog (<code>common.new</code>, <code>common.search</code>, <code>common.actions</code>, <code>common.cancel</code>, <code>common.delete</code>, <code>common.save</code>, <code>common.saved</code>, <code>common.error</code>) <strong>esistono già</strong> in entrambi i locale, usate da ogni altra pagina del progetto: non vanno ricreate. Prima di aggiungere una chiave "generica" nuova, verificare sempre che non esista già — una chiave duplicata nello stesso file non dà errori di compilazione, semplicemente una definizione sovrascrive l'altra in silenzio.</li>
+</ul>
+<h2>Verifica finale end-to-end</h2>
+<p>Con tutti e 12 i passaggi completati, il flusso di creazione di un extra attraversa questi punti, nell'ordine — utile per isolare dove cercare se qualcosa non funziona:</p>
+<pre><code>Click "Nuovo" (ExtrasPage.vue)
+        ↓
+ExtraFormDialog si apre, utente compila e clicca "Salva"
+        ↓
+formRef.validate() → store.create({ description, cost })
+        ↓
+extras.store.ts → extrasService.create(data)
+        ↓
+services/extras.service.ts → api.post('/api/extras', data)   [axios, JWT allegato dall'interceptor]
+        ↓
+POST /api/extras   → ExtraEndpoints.cs
+        ↓
+RequireClaim("permissions", "extras.write")   → 403 se assente
+        ↓
+CreateExtraCommand → ValidationBehavior → CreateExtraValidator
+        ↓
+CreateExtraHandler → repo.InsertAsync → MongoDB collection "extras"
+        ↓
+Results.Created(...) → 201 + ExtraResponse
+        ↓
+store.create() → await fetchAll()   → GET /api/extras rilegge la lista intera
+        ↓
+store.items aggiornato → ExtrasPage.vue si ridisegna da sola (reattività Pinia)
+</code></pre>
+<p>Se un passaggio della guida è stato saltato, questo è tipicamente il flusso in cui si manifesta l'errore: endpoint non registrato → 404 al passo <code>POST /api/extras</code>; permesso non seminato/assegnato (o assegnato ma <strong>senza rifare il login</strong>: il vecchio JWT non lo contiene) → 403 subito dopo; validator con regola dimenticata → 400 con <code>errors</code> popolato ma nessun record salvato; chiave i18n mancante → nessun errore, ma testo grezzo <code>extras.xxx</code> visibile a schermo.</p>
+  </main>
+</div>

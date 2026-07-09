@@ -1,0 +1,149 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tama — Guida allo sviluppo di una nuova feature</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html" class="active">Tama — Guida sviluppo feature</a>
+    <a href="01-panoramica.html">Livello 1 — Panoramica</a>
+    <a href="02-nel-progetto.html">Livello 2 — Dove si inserisce</a>
+    <a href="03-dettaglio.html">Livello 3 — Dettaglio codice</a>
+  </nav>
+  <main>
+<h1>Tama — Guida allo sviluppo di una nuova feature</h1>
+<p>Questa documentazione è diversa da <a href="../technical/00-indice.html">../technical/00-indice.md</a> (che spiega <strong>come è fatto</strong> il codice esistente) e da <a href="../architecture/00-indice.html">../architecture/00-indice.md</a> (che spiega <strong>perché</strong> è fatto così). Qui l'obiettivo è opposto e più pratico: <strong>partire da zero e arrivare ad avere una feature nuova funzionante</strong>, con ogni file da creare, il suo contenuto reale e il motivo di ogni scelta.</p>
+<p>Chi legge questa guida non deve necessariamente conoscere già Tama: deve conoscere le basi di .NET/C# e di Vue/TypeScript. Tutto il resto — le convenzioni specifiche di <em>questo</em> progetto — è spiegato qui.</p>
+<h2>Esempio guida usato in tutta la documentazione</h2>
+<p>Per rendere concreta ogni spiegazione, tutti e tre i livelli seguono <strong>lo stesso esempio end-to-end</strong>: aggiungere una sezione di menu <strong>"PLUS"</strong> (allo stesso livello della sezione esistente <strong>"DATI"</strong>) che contiene la gestione degli <strong>EXTRA</strong>, una tabella semplice con due soli campi:</p>
+<table>
+<thead>
+<tr>
+<th>Descrizione extra</th>
+<th>Costo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sopralluogo aggiuntivo</td>
+<td>50,00</td>
+</tr>
+<tr>
+<td>Rilievo misure fuori zona</td>
+<td>80,00</td>
+</tr>
+<tr>
+<td>Trasporto entro 30 km</td>
+<td>40,00</td>
+</tr>
+<tr>
+<td>Pratica detrazione fiscale</td>
+<td>120,00</td>
+</tr>
+<tr>
+<td>Certificazione posa</td>
+<td>80,00</td>
+</tr>
+</tbody></table>
+<p>È deliberatamente il caso più semplice possibile (due campi, nessuna relazione con altre entità, CRUD puro) proprio per poter concentrare l'attenzione sul <strong>processo</strong> invece che sulla complessità del dominio. Una volta capito questo schema, si applica identico a qualunque nuova entità dati di Tama (con l'aggiunta delle parti specifiche — relazioni, calcoli, stampa — se il dominio reale le richiede).</p>
+<blockquote>
+<p>⚠️ Questo è un esempio <strong>didattico</strong>. "PLUS"/"EXTRA" non esiste nel codice reale di Tama al momento della stesura di questa guida: è scelto come caso di scuola, non come specifica di una feature da consegnare. Se in futuro si deciderà davvero di costruirla, questa guida è comunque un buon punto di partenza, ma andrà verificata contro lo stato del codice in quel momento (nomi di file, convenzioni, permessi già esistenti possono essere cambiati).</p>
+</blockquote>
+<h2>I tre livelli</h2>
+<table>
+<thead>
+<tr>
+<th>Livello</th>
+<th>Documento</th>
+<th>A cosa serve</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1 — Panoramica</strong></td>
+<td><a href="01-panoramica.html">01-panoramica</a></td>
+<td>La lista dei passaggi da compiere, in ordine, <strong>senza codice</strong>: cosa si crea, dove, e perché in quell'ordine. Da leggere per primo per avere la mappa mentale completa prima di scrivere una riga.</td>
+</tr>
+<tr>
+<td><strong>2 — Dove si inserisce nel progetto</strong></td>
+<td><a href="02-nel-progetto.html">02-nel-progetto</a></td>
+<td>Come "PLUS"/"EXTRA" si aggancia alle parti <strong>esistenti</strong> di Tama che non vengono create da zero: il menu laterale, il sistema permessi, il modello di navigazione, le convenzioni di naming — usando la sezione "DATI" e il dominio <code>accessories</code> (struttura più simile a EXTRA nel progetto reale) come riferimento concreto.</td>
+</tr>
+<tr>
+<td><strong>3 — Dettaglio codice</strong></td>
+<td><a href="03-dettaglio.html">03-dettaglio</a></td>
+<td>Ogni file, per intero, con il codice reale (backend .NET + MongoDB, frontend Vue + Pinia), riga per riga dove serve, con una sezione "<strong>perché è fatto così</strong>" per ogni scelta non ovvia.</td>
+</tr>
+</tbody></table>
+<p>Si consiglia di leggerli <strong>in ordine</strong>: il livello 3 dà per scontato tutto quello che è già stato spiegato nei livelli 1 e 2, e non ripete le motivazioni architetturali generali già coperte da <a href="../technical/00-indice.html">../technical/00-indice.md</a> — quando serve, rimanda lì.</p>
+<blockquote>
+<p>Ogni documento è disponibile anche in versione <code>.html</code> autonoma (stesso nome), con lo stesso stile del resto del sito di documentazione.</p>
+</blockquote>
+<h2>Prerequisiti per seguire questa guida</h2>
+<ul>
+<li>Aver letto almeno <a href="../technical/backend-01-panoramica.html">../technical/backend-01-panoramica.md</a> e <a href="../technical/frontend-01-panoramica.html">../technical/frontend-01-panoramica.md</a> (elenco tecnologie), per non trovarsi davanti a nomi come "MediatR" o "Pinia" senza sapere cosa sono.</li>
+<li>Ambiente di sviluppo Tama avviato in locale: backend (<code>dotnet run</code> su <code>apps/backend/Tama.Api</code>) e frontend (<code>pnpm --filter frontend dev</code>), con MongoDB raggiungibile (locale o istanza di sviluppo condivisa).</li>
+<li>Un editor con supporto C# e TypeScript (il progetto non richiede altro: nessun tool di scaffolding automatico è usato per aggiungere una feature, tutto è scritto a mano seguendo le convenzioni).</li>
+</ul>
+<h2>Come è strutturato ogni "passaggio" nei livelli 2 e 3</h2>
+<p>Per coerenza, ogni sezione dei documenti segue lo stesso schema, che è anche quello con cui vale la pena leggerli:</p>
+<ol>
+<li><strong>Cosa fare</strong> — l'azione concreta (creare un file, modificare una riga).</li>
+<li><strong>File coinvolti</strong> — percorso esatto, e se è <code>NEW</code> (file nuovo) o <code>MODIFICA</code> (file esistente da toccare).</li>
+<li><strong>Codice</strong> — il contenuto reale, non pseudocodice.</li>
+<li><strong>Perché è fatto così</strong> — la motivazione, con riferimento alla documentazione architetturale quando la spiegazione è generale e non specifica di questo passaggio.</li>
+</ol>
+  </main>
+</div>

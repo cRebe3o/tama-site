@@ -1,0 +1,110 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Livello 1 — Panoramica: cosa c'è da fare</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html">Tama — Guida sviluppo feature</a>
+    <a href="01-panoramica.html" class="active">Livello 1 — Panoramica</a>
+    <a href="02-nel-progetto.html">Livello 2 — Dove si inserisce</a>
+    <a href="03-dettaglio.html">Livello 3 — Dettaglio codice</a>
+  </nav>
+  <main>
+<h1>Livello 1 — Panoramica: cosa c'è da fare</h1>
+<p>Nessun codice in questo documento: solo la mappa completa dei passaggi, nell'ordine in cui vanno affrontati, e il motivo di quell'ordine. Il dettaglio di ciascuno è nei livelli successivi.</p>
+<h2>L'idea di fondo: "vertical slice", non "layer per layer"</h2>
+<p>Tama <strong>non</strong> si costruisce una feature scrivendo prima <em>tutti</em> i modelli, poi <em>tutti</em> i repository, poi <em>tutti</em> gli handler. Si costruisce <strong>una fetta verticale completa</strong> — dal database fino al pixel sullo schermo — per una singola entità (qui: <code>Extra</code>). Backend e frontend restano comunque due mondi separati con il proprio ordine interno, ma <strong>dentro</strong> ciascuno si procede "dal basso": prima il dato, poi chi lo legge/scrive, poi chi lo espone.</p>
+<p>Motivo pratico: ogni passaggio, una volta completato, è testabile da solo (es. con Swagger/Scalar per il backend, prima ancora che esista una riga di frontend). Se si sbaglia un passaggio, l'errore si isola subito invece di emergere solo alla fine con l'intera feature assemblata.</p>
+<h2>Backend — 6 passaggi</h2>
+<ol>
+<li><strong>Documento MongoDB</strong> (<code>ExtraDocument</code>) — la forma del dato così come vive nel database. Non è una "migration": MongoDB non ha schema rigido, la struttura è implicita nella classe C#.</li>
+<li><strong>Repository</strong> (<code>IExtraRepository</code> / <code>ExtraRepository</code>) — l'unico punto del codice che parla direttamente con la collection Mongo <code>extras</code>.</li>
+<li><strong>Query</strong> (lettura: <code>GetExtras</code>, <code>GetExtraById</code>) — nessuna mutazione, solo lettura e mappatura a DTO di risposta.</li>
+<li><strong>Command Create</strong> (<code>CreateExtra</code>) — Command + Validator (FluentValidation) + Handler, che scrive un nuovo documento.</li>
+<li><strong>Command Update/Delete</strong> (<code>UpdateExtra</code>, <code>DeleteExtra</code>) — stesso schema del Create, con la differenza di dover prima recuperare il documento esistente.</li>
+<li><strong>Endpoints</strong> (<code>ExtraEndpoints.cs</code>) — l'unico punto dove tutto quanto sopra diventa raggiungibile via HTTP, con la registrazione dei permessi (<code>extras.read</code>, <code>extras.write</code>, <code>extras.delete</code>) e l'aggancio in <code>MapAllEndpoints()</code>.</li>
+</ol>
+<p>A questo punto la feature è <strong>completa e testabile lato backend</strong>, indipendentemente dal frontend (via Scalar/Swagger UI su <code>/scalar</code> o <code>/swagger</code>, con un JWT valido). Il livello 3 include una checklist di verifica intermedia esattamente per questo punto — conviene eseguirla prima di iniziare il frontend.</p>
+<h2>Frontend — 6 passaggi</h2>
+<ol>
+<li><strong>Tipi TypeScript</strong> (<code>types/api.types.ts</code>) — l'equivalente TypeScript dei DTO C# creati al passaggio 3-5. Mantenuti a mano, non generati.</li>
+<li><strong>Service</strong> (<code>services/extras.service.ts</code>) — le chiamate HTTP pure (axios), nessuna logica.</li>
+<li><strong>Store Pinia</strong> (<code>stores/extras.store.ts</code>) — lo stato condiviso dell'app per gli extra (<code>items</code>, <code>loading</code>, <code>error</code>, ecc.) e le azioni che orchestrano il service.</li>
+<li><strong>Pagina lista</strong> (<code>pages/plus/ExtrasPage.vue</code>) — tabella con elenco, ricerca, azioni di modifica/eliminazione.</li>
+<li><strong>Dialog di creazione/modifica</strong> — form per creare/modificare un extra (descrizione + costo).</li>
+<li><strong>Route + voce di menu</strong> — registrazione in <code>router/index.ts</code> (con <code>meta.permission</code>) e aggiunta della nuova sezione "PLUS" in <code>config/sections.config.ts</code> (menu laterale).</li>
+</ol>
+<p>A questo punto la feature è visibile e utilizzabile da un utente con i permessi giusti.</p>
+<h2>Trasversale, da non dimenticare</h2>
+<p>Questi tre punti <strong>non sono un passaggio numerato a sé</strong>, perché toccano quasi tutti i passaggi sopra invece di essere un file isolato:</p>
+<ul>
+<li><strong>Permessi</strong>: <code>extras.read</code> / <code>extras.write</code> / <code>extras.delete</code> vanno seminati nel database (collection <code>permissions</code>) e assegnati almeno al ruolo amministratore, altrimenti nessuno — nemmeno l'amministratore — vedrà la nuova sezione, anche a codice perfettamente scritto. E dopo l'assegnazione serve <strong>rifare il login</strong>: i permessi viaggiano dentro il JWT emesso al momento del login, un token già in tasca non si aggiorna da solo.</li>
+<li><strong>Traduzioni</strong>: ogni stringa visibile (titolo pagina, colonne tabella, messaggi di errore, voce di menu) va aggiunta <strong>sia</strong> in <code>locales/it.ts</code> <strong>sia</strong> in <code>locales/en.ts</code>. Il progetto non ammette testo hardcoded nei template.</li>
+<li><strong>Audit log</strong>: se si vuole tracciare chi ha creato/modificato/eliminato un extra (come avviene per i clienti), va aggiunta la scrittura esplicita di un <code>AuditLogDocument</code> in ciascun Handler Create/Update/Delete — non è automatico.</li>
+</ul>
+<h2>Cosa NON serve fare (rispetto ad altri stack che si potrebbero conoscere)</h2>
+<p>Per chi arriva da un progetto con Entity Framework / SQL / ORM relazionale, questi passaggi <strong>non esistono</strong> in Tama e vanno consapevolmente saltati:</p>
+<ul>
+<li>Nessuna migration SQL da generare o applicare: la "creazione della tabella" è semplicemente il primo documento che viene inserito nella collection <code>extras</code> (MongoDB la crea automaticamente al primo insert).</li>
+<li>Nessun mapping ORM/AutoMapper da configurare: la conversione tra Document Mongo e DTO di risposta si scrive a mano, dentro l'Handler.</li>
+<li>Nessuna generazione automatica di client API per il frontend: i tipi TypeScript si scrivono a mano e vanno tenuti allineati ai record C# "a occhio".</li>
+</ul>
+<h2>Ordine consigliato di lettura del livello 3</h2>
+<p>Il documento di dettaglio (<a href="03-dettaglio.html">03-dettaglio</a>) segue esattamente questi 12 passaggi, nello stesso ordine. Non è necessario scriverli tutti prima di testare: dopo il passaggio 6 il backend è già verificabile da solo, e dopo il passaggio 9 anche lo store è ispezionabile in console/DevTools prima ancora di avere una UI.</p>
+  </main>
+</div>

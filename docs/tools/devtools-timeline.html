@@ -1,0 +1,108 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>DevTools — Timeline</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+    --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+}
+:root[data-theme="dark"] { --bg: #14141f; --fg: #e8e8f0; --muted: #a0a0b8; --border: #2e2e42;
+  --code-bg: #1d1d2e; --accent: #6fa8dc; --card: #1a1a28; --warn-bg: #2a230f; --warn-border: #8a6d1a; }
+:root[data-theme="light"] { --bg: #ffffff; --fg: #1a1a2e; --muted: #5a5a72; --border: #e2e2ea;
+  --code-bg: #f5f5fa; --accent: #2b6cb0; --card: #f8f9fc; --warn-bg: #fff8e6; --warn-border: #e8b93a; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.6; margin: 0; }
+.layout { display: flex; max-width: 1200px; margin: 0 auto; }
+nav.sidebar { flex: 0 0 240px; padding: 24px 16px; border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+nav.sidebar a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 2px; }
+nav.sidebar a:hover { background: var(--card); color: var(--fg); }
+nav.sidebar a.active { background: var(--accent); color: #fff; }
+main { flex: 1; min-width: 0; padding: 32px 40px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+h2 { font-size: 1.4rem; margin-top: 2.2em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.8em; }
+a { color: var(--accent); }
+p { max-width: 90ch; }
+code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em;
+  font-family: 'SF Mono', Consolas, monospace; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; max-width: 100%; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+th { background: var(--card); }
+blockquote { border-left: 3px solid var(--warn-border); background: var(--warn-bg);
+  margin: 1em 0; padding: 0.6em 1em; border-radius: 0 6px 6px 0; }
+.diagram { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px; margin: 1.4em 0; overflow-x: auto; }
+.diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .diagram svg { filter: invert(0.92) hue-rotate(180deg); } }
+:root[data-theme="dark"] .diagram svg { filter: invert(0.92) hue-rotate(180deg); }
+:root[data-theme="light"] .diagram svg { filter: none; }
+.screenshot { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4em 0; }
+.screenshot img { max-width: 100%; height: auto; display: block; }
+.caption { color: var(--muted); font-size: 0.85rem; margin-top: -1em; margin-bottom: 1.6em; }
+.caption strong { color: var(--fg); }
+@media (max-width: 900px) { .layout { flex-direction: column; }
+  nav.sidebar { position: static; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+<div class="layout">
+  <nav class="sidebar">
+    <div style="font-weight:600;margin-bottom:14px;color:var(--fg);">Tama — Docs</div>
+    <a href="../index.html">← Torna all'indice generale</a>
+    <a href="00-indice.html">Tama — Vue DevTools</a>
+    <a href="devtools-components.html">DevTools — Components</a>
+    <a href="devtools-pinia.html">DevTools — Pinia</a>
+    <a href="devtools-router.html">DevTools — Router</a>
+    <a href="devtools-timeline.html" class="active">DevTools — Timeline</a>
+  </nav>
+  <main>
+<h1>DevTools — Pannello Timeline</h1>
+<h2>Livello 1 — Base</h2>
+<p>Il pannello <strong>Timeline</strong> registra, in ordine cronologico su un unico asse temporale, gli eventi provenienti da più fonti contemporaneamente: mutazioni Pinia, navigazioni router, eventi dei componenti (mount/update), click e, se abilitati, eventi custom (<code>performance.mark</code>). È l&#39;unico pannello che mostra <strong>la relazione temporale</strong> fra un&#39;azione utente e le sue conseguenze, mentre Components/Pinia/Router mostrano solo lo <em>stato corrente</em>.</p>
+<p>Come aprirlo: tab <strong>Vue</strong> → sotto-tab <strong>Timeline</strong>. Le &quot;corsie&quot; (layer) da cui provengono gli eventi sono selezionabili/deselezionabili con le icone in alto — utile per non essere sommersi da eventi irrilevanti (es. disattivare &quot;Component events&quot; se si sta seguendo solo Pinia).</p>
+<div class="screenshot">
+<img src="images/devtools-timeline-panel.svg" alt="Mockup del pannello Timeline: corsie Component/Pinia/Router con un click correlato a una mutazione Pinia">
+</div>
+<p class="caption">
+<strong>Come leggere il pannello</strong> (mockup illustrativo con dati di esempio Tama):<br>
+① <strong>Selettore corsie</strong>, in alto: attiva/disattiva gli eventi Component (C), Pinia (P), Router (R) mostrati.<br>
+② <strong>Evento su una corsia</strong> (qui un click su "Elimina" in <code>CustomersPage</code>): posizionato sull'asse orizzontale del tempo, in basso.<br>
+③ <strong>Evento correlato su un'altra corsia</strong> (qui la mutazione Pinia <code>remove</code>): la linea tratteggiata che li collega non è disegnata da DevTools stesso, ma è il tipo di relazione temporale che va cercata leggendo i timestamp dei due eventi — se sono a pochi millisecondi l'uno dall'altro ed è coerente col codice (click → azione store), sono la stessa catena causale.<br>
+④ <strong>Finestra temporale selezionata</strong> (drag sull'asse): isola solo gli eventi avvenuti in quell'intervallo, utile per scartare eventi di sfondo non pertinenti (es. il polling di <code>server-wake.store.ts</code>).
+</p><h2>Livello 2 — Intermedio</h2>
+<p>Workflow tipico: <strong>verificare che un&#39;azione utente produca esattamente le mutazioni di stato attese, nell&#39;ordine giusto</strong>.</p>
+<p>Esempio concreto su Tama: cliccare &quot;Elimina&quot; su una riga di <code>CustomersPage.vue</code>. La sequenza attesa, ricostruibile leggendo <code>customers.store.ts</code>, è:</p>
+<ol>
+<li>Conferma dialog → chiamata a <code>customersStore.remove(id)</code>.</li>
+<li>Dentro <code>remove()</code>: chiamata HTTP DELETE (<code>customersService.delete(id)</code>), poi mutazione sincrona di <code>items</code> (filter) e <code>totalCount--</code> (righe 61-65).</li>
+</ol>
+<p>Sulla Timeline, questo deve comparire come: un evento click, seguito da un evento Pinia &quot;customers&quot; con la mutazione di <code>items</code>/<code>totalCount</code>, <strong>senza</strong> un evento di navigazione o un secondo fetch di rete in mezzo. Se invece si osserva un <code>fetchAll()</code> completo (con relativo evento <code>loading: true</code> → <code>loading: false</code>) al posto della rimozione ottimistica attesa, significa che il codice non sta più seguendo il pattern &quot;filtra localmente&quot; ma è stato cambiato per ri-fetchare tutto — informazione utile per capire se una modifica recente ha cambiato il comportamento di performance della pagina.</p>
+<p><strong>Filtrare per intervallo di tempo</strong>: la Timeline permette di selezionare una finestra temporale (drag sull&#39;asse) per isolare solo gli eventi avvenuti durante un&#39;interazione specifica, invece di scorrere l&#39;intera sessione di debug.</p>
+<h3>Esempio guidato: registrare una sessione pulita dell&#39;eliminazione cliente</h3>
+<p>La procedura pratica per osservare la sequenza descritta sopra senza rumore:</p>
+<ol>
+<li>Aprire il tab <strong>Timeline</strong> <em>prima</em> di fare qualsiasi cosa (gli eventi precedenti all&#39;apertura non vengono recuperati, vedi Livello 3).</li>
+<li>Disattivare i layer non pertinenti: per questo caso servono solo <strong>Pinia</strong> e <strong>Mouse</strong> — &quot;Component events&quot; su una pagina con <code>v-data-table-server</code> produce decine di eventi di update che coprono il segnale.</li>
+<li>Cliccare l&#39;icona &quot;Clear&quot; (cestino) per azzerare gli eventi accumulati finora.</li>
+<li>Eseguire l&#39;azione una sola volta: click su &quot;Elimina&quot; → conferma nel dialog.</li>
+<li>Fermarsi e leggere: devono esserci il click, l&#39;evento azione <code>remove</code> sullo store <code>customers</code> e la mutazione di <code>items</code>/<code>totalCount</code>. Selezionare l&#39;evento Pinia per vedere nel riquadro laterale lo state prima/dopo.</li>
+<li>Se compare qualcosa di inatteso in mezzo (una navigazione, un <code>fetchAll</code> completo, un evento sullo store <code>toast</code>), quello è il punto in cui il comportamento reale diverge da quello previsto dal codice — e si sa esattamente dove andare a guardare.</li>
+</ol>
+<h2>Livello 3 — Avanzato</h2>
+<p><strong>Debug del debounce di ricerca</strong>: <code>CustomersPage.vue</code> usa <code>watchDebounced(() =&gt; store.search, ..., { debounce: 300 })</code> per rilanciare <code>fetchAll()</code> solo dopo che l&#39;utente ha smesso di digitare per 300ms. Sulla Timeline, digitando velocemente una stringa di ricerca, ci si aspetta <strong>un solo</strong> evento Pinia di fetch (con <code>loading</code> che passa a <code>true</code> e poi <code>false</code>) circa 300ms dopo l&#39;ultimo tasto premuto — non uno per ogni carattere. Se la Timeline mostra un evento di fetch per ogni pressione di tasto, il debounce non sta funzionando (esattamente il tipo di regressione silenziosa che un <code>watch</code> con opzioni scritte male — vedi la nota storica su <code>{ debounce: 300 } as any</code> nella documentazione tecnica frontend — può introdurre). Questo è più affidabile del solo &quot;component highlight&quot; del pannello Components, perché mostra anche la relazione con la mutazione dello store, non solo il re-render visivo.</p>
+<p><strong>Correlazione redirect silenziosi ↔ eventi</strong>: per il caso del redirect di <code>router.beforeEach</code> verso <code>login</code> o <code>dashboard</code> (vedi <a href="devtools-router.md">devtools-router</a> Livello 2), la Timeline mostra un evento di navigazione &quot;annullata/reindirizzata&quot; subito dopo il tentativo di navigazione originale — utile per confermare che il redirect è avvenuto <em>dentro</em> la guardia (prima che la rotta target venga mai renderizzata), invece di essere un secondo redirect innescato più tardi da qualche altro codice (es. un interceptor axios che su 401 forza un logout — vedi <code>plugins/axios.ts</code>).</p>
+<p><strong>Eventi custom sulla Timeline</strong>: per operazioni non coperte dai layer nativi (es. misurare quanto passa fra il click &quot;Salva&quot; su un preventivo e la risposta del motore di generazione <code>.docx</code> lato backend), la Timeline di Vue DevTools supporta layer custom tramite il pacchetto <code>@vue/devtools-api</code> (<code>addTimelineLayer</code> + <code>addTimelineEvent</code>). Attenzione a un equivoco comune: i marker nativi del browser (<code>performance.mark</code>/<code>performance.measure</code>) <strong>non</strong> compaiono nella Timeline di Vue DevTools — quelli si vedono nel pannello <strong>Performance</strong> di Chrome, che è lo strumento giusto se serve correlare gli eventi Vue con paint/network/main-thread a livello di browser. In pratica: <code>@vue/devtools-api</code> per restare dentro la vista Vue, Performance di Chrome per l&#39;analisi completa.</p>
+<p><strong>Misurare i tempi delle azioni Pinia senza librerie</strong>: alternativa leggera per il caso &quot;quanto ci mette davvero <code>fetchAll</code>?&quot;: ogni evento del layer Pinia ha un timestamp — basta leggere la distanza fra l&#39;evento di inizio azione e la mutazione finale (<code>loading: false</code>). Per log più espliciti si può registrare temporaneamente un hook <code>store.$onAction</code> (API pubblica Pinia) che logga <code>after</code>/<code>onError</code> con durata, utile da tenere in un composable di debug attivato solo in dev.</p>
+<p><strong>Limiti da conoscere</strong>: la Timeline registra solo ciò che accade <strong>mentre il pannello è aperto e il layer è attivo</strong> — a differenza del time-travel di Pinia (che mantiene una history anche se il pannello viene aperto dopo), gli eventi Timeline precedenti all&#39;apertura del pannello non vengono recuperati. Per bug intermittenti conviene aprire la Timeline <strong>prima</strong> di riprodurre l&#39;azione, non dopo aver notato il problema.</p>
+  </main>
+</div>
